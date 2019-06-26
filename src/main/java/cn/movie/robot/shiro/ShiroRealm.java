@@ -5,6 +5,7 @@ import cn.movie.robot.model.Permission;
 import cn.movie.robot.model.Role;
 import cn.movie.robot.model.User;
 import cn.movie.robot.service.IPermissionService;
+import cn.movie.robot.vo.common.SessionUser;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;
@@ -65,6 +66,7 @@ public class ShiroRealm extends AuthorizingRealm {
     if (Objects.isNull(user)){
       return null;
     }
+
     SimpleAuthenticationInfo info = new SimpleAuthenticationInfo(
         user,
         user.getPassword(),
