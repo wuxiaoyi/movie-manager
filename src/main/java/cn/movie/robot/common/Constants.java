@@ -11,6 +11,6 @@ public class Constants {
   public static final int ERROR_CODE = 1;
   public static final String ERROR_MSG = "error";
 
-  public static final BigDecimal buyRatio = new BigDecimal(0.98);
-  public static final BigDecimal sellRatio = new BigDecimal(1.05);
+  public static final int NO_AUTH_ERROR_CODE = 403;
+  public static final String NO_AUTH_ERROR_MSG = "请登录";
 }

@@ -5,6 +5,7 @@ import cn.movie.robot.shiro.ShiroRealm;
 import org.apache.shiro.authc.credential.HashedCredentialsMatcher;
 import org.apache.shiro.codec.Base64;
 import org.apache.shiro.mgt.SecurityManager;
+import org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor;
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
 import org.apache.shiro.web.mgt.CookieRememberMeManager;
 import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
@@ -46,7 +47,7 @@ public class ShiroConfig {
     filterChainDefinitionMap.put("/session/login", "anon");
     filterChainDefinitionMap.put("/**", "authc");
     //配置shiro默认登录界面地址，前后端分离中登录界面跳转应由前端路由控制，后台仅返回json数据
-    shiroFilterFactoryBean.setLoginUrl("/web/unauth");
+    shiroFilterFactoryBean.setLoginUrl("/session/unauth");
     shiroFilterFactoryBean.setFilterChainDefinitionMap(filterChainDefinitionMap);
     return shiroFilterFactoryBean;
   }
@@ -67,6 +68,13 @@ public class ShiroConfig {
     SessionManager mySessionManager = new SessionManager();
     mySessionManager.setSessionDAO(redisSessionDAO());
     return mySessionManager;
+  }
+
+  @Bean
+  public AuthorizationAttributeSourceAdvisor authorizationAttributeSourceAdvisor(SecurityManager securityManager){
+    AuthorizationAttributeSourceAdvisor authorizationAttributeSourceAdvisor = new AuthorizationAttributeSourceAdvisor();
+    authorizationAttributeSourceAdvisor.setSecurityManager(securityManager);
+    return authorizationAttributeSourceAdvisor;
   }
 
   @Bean
