@@ -44,7 +44,6 @@ import java.util.Map;
  * asyncSend        boolean         是否异步发送请求
  * charset          String          字符编码
  *
- * @author 刘宇泽
  */
 public class MailAppender extends AppenderBase<ILoggingEvent> {
   /**

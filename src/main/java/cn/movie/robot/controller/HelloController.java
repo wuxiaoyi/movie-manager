@@ -13,9 +13,6 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping(value = "/api/v1/", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 public class HelloController {
-
-  @Autowired
-  TestService testService;
   @GetMapping("hello")
   public Result listUpstreamNodes() {
     return Result.error("demo1 hello");
