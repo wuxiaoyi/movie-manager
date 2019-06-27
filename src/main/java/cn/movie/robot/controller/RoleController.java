@@ -3,13 +3,16 @@ package cn.movie.robot.controller;
 import cn.movie.robot.common.Constants;
 import cn.movie.robot.service.IRoleService;
 import cn.movie.robot.vo.common.Result;
-import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.springframework.data.domain.Sort.Direction.ASC;
 
@@ -37,6 +40,9 @@ public class RoleController {
 
   @PutMapping("/{role_id}/update_permission")
   public Result updatePermission(@PathVariable("role_id") Integer roleId, @RequestParam("permission_ids") String permissionIds){
-    return roleService.updatePermission(roleId, permissionIds);
+    List<Integer> permissionIdList = Arrays.asList(permissionIds.split(",")).stream().map(Integer::parseInt).collect(Collectors.toList());
+    return roleService.updatePermission(roleId, permissionIdList);
   }
+
+
 }
