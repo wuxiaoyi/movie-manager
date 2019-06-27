@@ -7,6 +7,9 @@ import java.math.BigDecimal;
  * @date 2019/6/12
  */
 public class Constants {
+  /**
+   * 错误码相关
+   */
   public static final int SUCCESS_CODE = 0;
   public static final int ERROR_CODE = 1;
   public static final String ERROR_MSG = "error";
@@ -20,5 +23,13 @@ public class Constants {
   public static final int UNKNOW_EXCEPTION_ERROR_CODE = 103;
   public static final String UNKNOW_EXCEPTION_ERROR_MSG = "系统异常";
 
+  /**
+   * 登录注册相关
+   */
+
+  public static final String USER_SIGN_UP_KEY_PREFIX = "user_sign_up:";
+
   public static final String COMMON_FIELD_NAME_ID = "id";
+
+
 }
