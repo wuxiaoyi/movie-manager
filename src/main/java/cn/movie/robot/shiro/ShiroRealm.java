@@ -1,5 +1,6 @@
 package cn.movie.robot.shiro;
 
+import cn.movie.robot.common.Constants;
 import cn.movie.robot.dao.UserRepository;
 import cn.movie.robot.model.Permission;
 import cn.movie.robot.model.Role;
@@ -8,10 +9,7 @@ import cn.movie.robot.service.IPermissionService;
 import cn.movie.robot.vo.common.SessionUser;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.authc.AuthenticationException;
-import org.apache.shiro.authc.AuthenticationInfo;
-import org.apache.shiro.authc.AuthenticationToken;
-import org.apache.shiro.authc.SimpleAuthenticationInfo;
+import org.apache.shiro.authc.*;
 import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.apache.shiro.realm.AuthorizingRealm;
@@ -65,6 +63,10 @@ public class ShiroRealm extends AuthorizingRealm {
     User user = userRepository.findByEmail(email);
     if (Objects.isNull(user)){
       return null;
+    }
+
+    if (user.getState() == Constants.USER_STATE_FORBIDDEN){
+      throw new LockedAccountException();
     }
 
     SimpleAuthenticationInfo info = new SimpleAuthenticationInfo(

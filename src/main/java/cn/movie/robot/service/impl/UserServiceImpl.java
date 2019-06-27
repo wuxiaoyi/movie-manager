@@ -37,7 +37,7 @@ public class UserServiceImpl implements IUserService {
     String uuid = UUID.randomUUID().toString();
     String key = Constants.USER_SIGN_UP_KEY_PREFIX + uuid;
     redisTemplate.opsForValue().set(key, 1);
-    redisTemplate.expire(key, 5, TimeUnit.MINUTES);
+    redisTemplate.expire(key, 20, TimeUnit.MINUTES);
     return Result.succ(uuid);
   }
 
@@ -46,7 +46,7 @@ public class UserServiceImpl implements IUserService {
     String signUpUuid = signUpVo.getSignUpKey();
 
     if (Objects.isNull(redisTemplate.opsForValue().get(Constants.USER_SIGN_UP_KEY_PREFIX + signUpUuid))){
-      return Result.error("注册码5分钟有效,已过期");
+      return Result.error("注册码20分钟有效,已过期");
     }
 
     User user = new User();

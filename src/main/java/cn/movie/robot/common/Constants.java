@@ -29,6 +29,9 @@ public class Constants {
 
   public static final String USER_SIGN_UP_KEY_PREFIX = "user_sign_up:";
 
+  public static final int USER_STATE_NORMAL = 0;
+  public static final int USER_STATE_FORBIDDEN = 1;
+
   public static final String COMMON_FIELD_NAME_ID = "id";
 
 

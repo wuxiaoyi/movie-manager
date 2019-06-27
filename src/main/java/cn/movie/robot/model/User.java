@@ -31,17 +31,25 @@ public class User implements Serializable {
   private Integer id;
   @NotNull(message = "用户名不能为空")
   private String name;
+
   @NotNull(message = "邮箱不能为空")
   private String email;
+
   @NotNull(message = "电话不能为空")
   private String cellphone;
+
   @NotNull(message = "密码不能为空")
   private String password;
+
   @NotNull(message = "密码盐不能为空")
   private String passwordSlat;
+
+  private int state;
+
   @CreatedDate
   @Column(updatable = false)
   private Date createdAt;
+
   @LastModifiedDate
   private Date updatedAt;
 }
