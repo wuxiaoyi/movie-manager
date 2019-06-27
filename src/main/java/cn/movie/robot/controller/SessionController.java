@@ -3,10 +3,7 @@ package cn.movie.robot.controller;
 import cn.movie.robot.common.Constants;
 import cn.movie.robot.service.ISessionService;
 import cn.movie.robot.vo.common.Result;
-import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
-import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
@@ -16,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
  * @date 2019/6/25
  */
 @RestController
-@RequestMapping(value = "/session/", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+@RequestMapping(value = "/api/v1/session/", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 public class SessionController {
 
   @Autowired

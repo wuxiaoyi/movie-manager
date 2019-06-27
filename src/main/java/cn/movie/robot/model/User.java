@@ -8,6 +8,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -28,10 +29,15 @@ public class User implements Serializable {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Integer id;
+  @NotNull(message = "用户名不能为空")
   private String name;
+  @NotNull(message = "邮箱不能为空")
   private String email;
+  @NotNull(message = "电话不能为空")
   private String cellphone;
+  @NotNull(message = "密码不能为空")
   private String password;
+  @NotNull(message = "密码盐不能为空")
   private String passwordSlat;
   @CreatedDate
   @Column(updatable = false)

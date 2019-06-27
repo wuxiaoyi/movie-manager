@@ -2,7 +2,9 @@ package cn.movie.robot.dao;
 
 import cn.movie.robot.model.PermissionRole;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 
+import javax.transaction.Transactional;
 import java.util.List;
 
 /**
@@ -11,4 +13,10 @@ import java.util.List;
  */
 public interface PermissionRoleRepository extends JpaRepository<PermissionRole, Integer> {
   List<PermissionRole> findAllByRoleIdIn(List<Integer> roleIds);
+
+  List<PermissionRole> findAllByRoleId(Integer roleId);
+
+  @Transactional
+  @Modifying
+  Integer deleteByRoleIdAndPermissionIdIn(Integer roleId, List<Integer> permissionIds);
 }

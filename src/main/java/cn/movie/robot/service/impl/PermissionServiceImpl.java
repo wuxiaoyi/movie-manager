@@ -6,6 +6,10 @@ import cn.movie.robot.dao.RoleRepository;
 import cn.movie.robot.dao.UserRoleRepository;
 import cn.movie.robot.model.*;
 import cn.movie.robot.service.IPermissionService;
+import cn.movie.robot.vo.common.Result;
+import cn.movie.robot.vo.resp.PageBean;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -47,5 +51,16 @@ public class PermissionServiceImpl implements IPermissionService {
     List<Integer> roleIds = userRoleList.stream().map(UserRole::getRoleId).collect(Collectors.toList());
     List<Role> roles = roleRepository.findAllByIdIn(roleIds);
     return roles;
+  }
+
+  @Override
+  public Result queryAll(Pageable pageable) {
+    Page<Permission> permissionPageable = permissionRepository.findAll(pageable);
+    PageBean<Permission> permissionPageBean = new PageBean<>(
+        permissionPageable.getTotalElements(),
+        permissionPageable.getTotalPages(),
+        permissionPageable.getContent()
+    );
+    return Result.succ(permissionPageBean);
   }
 }
