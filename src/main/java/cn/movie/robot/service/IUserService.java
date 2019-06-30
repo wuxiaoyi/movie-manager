@@ -9,7 +9,7 @@ import cn.movie.robot.vo.req.SignUpVo;
  */
 public interface IUserService {
   /**
-   * 生成注册key
+   * 生成忘记密码key
    * @return
    */
   Result signUpKey();
@@ -34,4 +34,12 @@ public interface IUserService {
    * @return
    */
   Result forgetPwdKey(String email);
+
+  /**
+   * 重置密码
+   * @param email
+   * @param password
+   * @return
+   */
+  Result resetPwd(String email, String password);
 }

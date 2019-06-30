@@ -14,7 +14,7 @@ import java.io.Serializable;
  * @date 2019/6/25
  */
 public class SessionManager extends DefaultWebSessionManager {
-  private static final String AUTHORIZATION = "Authorization";
+  private static final String AUTHORIZATION = "X-Token";
 
   public SessionManager() {
     super();

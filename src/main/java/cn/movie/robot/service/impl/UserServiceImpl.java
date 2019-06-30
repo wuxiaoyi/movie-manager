@@ -10,7 +10,6 @@ import org.apache.shiro.crypto.RandomNumberGenerator;
 import org.apache.shiro.crypto.SecureRandomNumberGenerator;
 import org.apache.shiro.crypto.hash.SimpleHash;
 import org.apache.shiro.util.ByteSource;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
@@ -44,8 +43,9 @@ public class UserServiceImpl implements IUserService {
   @Override
   public Result signUp(SignUpVo signUpVo) {
     String signUpUuid = signUpVo.getSignUpKey();
+    String key = Constants.USER_SIGN_UP_KEY_PREFIX + signUpUuid;
 
-    if (Objects.isNull(redisTemplate.opsForValue().get(Constants.USER_SIGN_UP_KEY_PREFIX + signUpUuid))){
+    if (Objects.isNull(redisTemplate.opsForValue().get(key))){
       return Result.error("注册码20分钟有效,已过期");
     }
 
@@ -62,16 +62,46 @@ public class UserServiceImpl implements IUserService {
 
     userRepository.save(user);
 
+    redisTemplate.delete(key);
+
     return Result.succ();
   }
 
   @Override
   public Result forbiddenUser(Integer userId) {
-    return null;
+    User user = userRepository.getOne(userId);
+    if (Objects.isNull(user)){
+      return Result.error("此用户不存在");
+    }
+    user.setState(Constants.USER_STATE_FORBIDDEN);
+    userRepository.save(user);
+    return Result.succ();
   }
 
   @Override
   public Result forgetPwdKey(String email) {
-    return null;
+    String key = Constants.USER_FORGET_PWD_KEY_PREFIX + email;
+    redisTemplate.opsForValue().set(key, 1);
+    redisTemplate.expire(key, 20, TimeUnit.MINUTES);
+    return Result.succ();
+  }
+
+  @Override
+  public Result resetPwd(String email, String password) {
+    User user = userRepository.findByEmail(email);
+    String key = Constants.USER_FORGET_PWD_KEY_PREFIX + email;
+    if (Objects.isNull(user) || Objects.isNull(redisTemplate.opsForValue().get(key))){
+      return Result.error("重置密码时效期已过，请联系管理员重新操作允许此邮箱修改密码");
+    }
+
+    RandomNumberGenerator randomNumberGenerator = new SecureRandomNumberGenerator();
+    String slat = randomNumberGenerator.nextBytes().toHex();
+    String encryptPwd = new SimpleHash("md5", password,
+        ByteSource.Util.bytes(slat), 1).toHex();
+    user.setPassword(encryptPwd);
+    user.setPasswordSlat(slat);
+    userRepository.save(user);
+
+    return Result.succ();
   }
 }
