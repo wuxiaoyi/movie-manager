@@ -78,20 +78,19 @@ public class UserServiceImpl implements IUserService {
     return Result.succ();
   }
 
-  @Override
-  public Result forgetPwdKey(String email) {
-    String key = Constants.USER_FORGET_PWD_KEY_PREFIX + email;
-    redisTemplate.opsForValue().set(key, 1);
-    redisTemplate.expire(key, 20, TimeUnit.MINUTES);
-    return Result.succ();
-  }
+//  @Override
+//  public Result forgetPwdKey(String email) {
+//    String key = Constants.USER_FORGET_PWD_KEY_PREFIX + email;
+//    redisTemplate.opsForValue().set(key, 1);
+//    redisTemplate.expire(key, 20, TimeUnit.MINUTES);
+//    return Result.succ();
+//  }
 
   @Override
-  public Result resetPwd(String email, String password) {
-    User user = userRepository.findByEmail(email);
-    String key = Constants.USER_FORGET_PWD_KEY_PREFIX + email;
-    if (Objects.isNull(user) || Objects.isNull(redisTemplate.opsForValue().get(key))){
-      return Result.error("重置密码时效期已过，请联系管理员重新操作允许此邮箱修改密码");
+  public Result resetPwd(Integer userId, String password) {
+    User user = userRepository.getOne(userId);
+    if (Objects.isNull(user)){
+      return Result.error("用户不存在");
     }
 
     RandomNumberGenerator randomNumberGenerator = new SecureRandomNumberGenerator();

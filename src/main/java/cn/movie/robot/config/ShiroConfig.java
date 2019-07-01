@@ -36,6 +36,7 @@ public class ShiroConfig {
   @Value("${shiro.redis.database}")
   private Integer redisDatebase;
 
+
   @Bean
   public ShiroFilterFactoryBean shiroFilter(SecurityManager securityManager) {
     ShiroFilterFactoryBean shiroFilterFactoryBean = new ShiroFilterFactoryBean();

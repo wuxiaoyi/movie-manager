@@ -11,5 +11,8 @@ import java.util.List;
 @Data
 public class LoginVo {
   private String authCode;
+  private String name;
+  private String email;
+  private String cellphone;
   private List<String> permissions;
 }

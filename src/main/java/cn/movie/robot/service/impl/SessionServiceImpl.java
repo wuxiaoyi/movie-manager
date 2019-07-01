@@ -36,13 +36,18 @@ public class SessionServiceImpl implements ISessionService {
       UsernamePasswordToken token = new UsernamePasswordToken(email, password);
       subject.login(token);
 
-      LoginVo loginVo = new LoginVo();
       String authorization = (String) subject.getSession().getId();
+
+      LoginVo loginVo = new LoginVo();
       loginVo.setAuthCode(authorization);
 
       User user = (User)subject.getPrincipal();
       List<Permission> permissions = permissionService.queryPermissionByUser(user);
       loginVo.setPermissions(permissions.stream().map(Permission::getName).collect(Collectors.toList()));
+
+      loginVo.setName(user.getName());
+      loginVo.setEmail(user.getEmail());
+      loginVo.setCellphone(user.getCellphone());
 
       return Result.succ(loginVo);
     } catch (IncorrectCredentialsException e) {

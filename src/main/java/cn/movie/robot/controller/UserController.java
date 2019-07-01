@@ -37,14 +37,14 @@ public class UserController {
     return userService.signUpKey();
   }
 
-  @GetMapping("/allow_forget_pwd")
-  public Result allowForgetPwd(@RequestParam("email") String email){
-    return userService.forgetPwdKey(email);
-  }
+//  @GetMapping("/allow_forget_pwd")
+//  public Result allowForgetPwd(@RequestParam("email") String email){
+//    return userService.forgetPwdKey(email);
+//  }
 
-  @GetMapping("/reset_pwd")
-  public Result resetPwd(@RequestParam("email") String email, @RequestParam("password") String password){
-    return userService.resetPwd(email, password);
+  @GetMapping("/{user_id}/reset_pwd")
+  public Result resetPwd(@PathVariable("user_id") Integer userId, @RequestParam("password") String password){
+    return userService.resetPwd(userId, password);
   }
 
   @PostMapping("/")

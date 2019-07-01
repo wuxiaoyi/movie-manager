@@ -1,6 +1,6 @@
 CREATE TABLE `projects` (
   `id`                  INT(11)         NOT NULL AUTO_INCREMENT COMMENT '自增主键',
-  `sid`                 VARCHAR(100)    NOT NULL AUTO_INCREMENT COMMENT '项目id',
+  `sid`                 VARCHAR(100) COMMENT '项目id',
   `name`                VARCHAR(200)    NOT NULL COMMENT '项目名称',
   `film_complete_duration` INT(5)   NOT NULL COMMENT '邮箱',
   `project_leader`      VARCHAR(100) COMMENT '项目负责人',
@@ -30,7 +30,7 @@ CREATE TABLE `projects` (
 
 CREATE TABLE `project_detail` (
   `id`                INT(11)     NOT NULL AUTO_INCREMENT COMMENT '自增主键',
-  `project_id`        INT(11)     NOT NULL AUTO_INCREMENT COMMENT '项目id',
+  `project_id`        INT(11)     NOT NULL COMMENT '项目id',
   `stage`             INT(3) NOT NULL COMMENT '费用阶段',
   `category`          INT(5) NOT NULL COMMENT '费用大类',
   `child_category`    INT(5) NOT NULL COMMENT '费用子类',

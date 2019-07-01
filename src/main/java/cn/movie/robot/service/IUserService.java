@@ -33,13 +33,13 @@ public interface IUserService {
    * @param email
    * @return
    */
-  Result forgetPwdKey(String email);
+//  Result forgetPwdKey(String email);
 
   /**
    * 重置密码
-   * @param email
+   * @param userId
    * @param password
    * @return
    */
-  Result resetPwd(String email, String password);
+  Result resetPwd(Integer userId, String password);
 }
