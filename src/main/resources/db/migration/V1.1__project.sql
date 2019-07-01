@@ -38,8 +38,28 @@ CREATE TABLE `project_members` (
   `staff_id`          INT(11)     NOT NULL COMMENT '员工id',
   `created_at`        DATETIME    NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `updated_at`        DATETIME    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  KEY `ix_staff_id` (`staff_id`),
+  KEY `ix_project_id` (`project_id`)
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8 COMMENT = '项目成员表';
+
+CREATE TABLE `project_detail` (
+  `id`                INT(11)     NOT NULL AUTO_INCREMENT COMMENT '自增主键',
+  `project_id`        INT(11)     NOT NULL COMMENT '项目id',
+  `stage`             INT(3) NOT NULL COMMENT '费用阶段',
+  `category`          INT(5) NOT NULL COMMENT '费用大类',
+  `child_category`    INT(5) NOT NULL COMMENT '费用子类',
+  `desc`              VARCHAR(500)   NOT NULL COMMENT '定义',
+  `budget_amount`     DECIMAL(15, 2) NOT NULL COMMENT '预算金额',
+  `real_amount`       DECIMAL(15, 2) NOT NULL COMMENT '实际金额',
+  `provider_id`       DECIMAL(15, 2) NOT NULL COMMENT '供应商id',
+  `rank_score`        INT(5)      NOT NULL COMMENT '评分',
+  `created_at`        DATETIME    NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `updated_at`        DATETIME    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  PRIMARY KEY (`id`),
+  KEY `ix_budget_amount` (`budget_amount`),
+  KEY `ix_real_amount` (`real_amount`)
+) ENGINE = InnoDB DEFAULT CHARSET = utf8 COMMENT = '项目费用表';
 
 CREATE TABLE `staffs` (
   `id`                INT(11)     NOT NULL AUTO_INCREMENT COMMENT '自增主键',
@@ -53,17 +73,16 @@ CREATE TABLE `staffs` (
   KEY `ix_name` (`name`)
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8 COMMENT = '公司员工表';
 
-CREATE TABLE `project_detail` (
-  `id`                INT(11)     NOT NULL AUTO_INCREMENT COMMENT '自增主键',
-  `project_id`        INT(11)     NOT NULL COMMENT '项目id',
-  `stage`             INT(3) NOT NULL COMMENT '费用阶段',
-  `category`          INT(5) NOT NULL COMMENT '费用大类',
-  `child_category`    INT(5) NOT NULL COMMENT '费用子类',
-  `desc`              VARCHAR(500)   NOT NULL COMMENT '定义',
-  `budget_amount`     DECIMAL(15, 2) NOT NULL COMMENT '预算金额',
-  `real_amount`       DECIMAL(15, 2) NOT NULL COMMENT '实际金额',
+CREATE TABLE `providers` (
+  `id`                INT(11)     NOT NULL  AUTO_INCREMENT COMMENT '自增主键',
+  `name`              VARCHAR(50) NOT NULL  COMMENT '供应商名',
+  `bank_account`      VARCHAR(100)          COMMENT '银行账户',
+  `bank_name`         VARCHAR(100)          COMMENT '开户行',
+  `cellphone`         VARCHAR(100)          COMMENT '联系方式',
+  `state`             INT(3)      DEFAULT 0 COMMENT '状态，0正常，1禁用',
   `created_at`        DATETIME    NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `updated_at`        DATETIME    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
-  PRIMARY KEY (`id`)
-) ENGINE = InnoDB DEFAULT CHARSET = utf8 COMMENT = '项目费用表';
+  PRIMARY KEY (`id`),
+  KEY `ix_name` (`name`)
+) ENGINE = InnoDB DEFAULT CHARSET = utf8 COMMENT = '供应商表';
 
