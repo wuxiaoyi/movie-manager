@@ -7,6 +7,8 @@ import java.math.BigDecimal;
  * @date 2019/6/12
  */
 public class Constants {
+  public static final String COMMON_FIELD_NAME_ID = "id";
+
   /**
    * 错误码相关
    */
@@ -33,7 +35,8 @@ public class Constants {
   public static final int USER_STATE_NORMAL = 0;
   public static final int USER_STATE_FORBIDDEN = 1;
 
-  public static final String COMMON_FIELD_NAME_ID = "id";
+  public static final int STAFF_STATE_NORMAL = 0;
+  public static final int STAFF_STATE_FORBIDDEN = 1;
 
 
 }

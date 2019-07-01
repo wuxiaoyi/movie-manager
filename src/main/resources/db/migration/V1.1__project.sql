@@ -1,19 +1,21 @@
 CREATE TABLE `projects` (
-  `id`                  INT(11)         NOT NULL AUTO_INCREMENT COMMENT '自增主键',
-  `sid`                 VARCHAR(100) COMMENT '项目id',
-  `name`                VARCHAR(200)    NOT NULL COMMENT '项目名称',
-  `film_complete_duration` INT(5)   NOT NULL COMMENT '拍摄完成时长',
-  `project_leader`      VARCHAR(100) COMMENT '项目负责人',
-  `customer_manager`    VARCHAR(100) COMMENT '客户对接人',
-  `director`            VARCHAR(100) COMMENT '导演',
-  `executive_director`  VARCHAR(100) COMMENT '执行导演',
-  `copywriting`         VARCHAR(100) COMMENT '文案',
-  `producer`            VARCHAR(100) COMMENT '制片',
-  `post_editing`        VARCHAR(100) COMMENT '后期剪辑',
-  `compositing`         VARCHAR(100) COMMENT '后期合成',
-  `art`                 VARCHAR(100) COMMENT '美术',
-  `music`               VARCHAR(100) COMMENT '音乐',
-  `storyboard`          VARCHAR(100) COMMENT '分镜',
+  `id`                      INT(11)         NOT NULL AUTO_INCREMENT COMMENT '自增主键',
+  `sid`                     VARCHAR(100) COMMENT '项目id',
+  `contract_subject`        VARCHAR(200) COMMENT '合同签署主体',
+  `name`                    VARCHAR(200) NOT NULL COMMENT '项目名称',
+  `film_start_at`           DATETIME     COMMENT '创建时间',
+  `film_complete_duration`  INT(6) COMMENT '拍摄完成时长',
+  `project_leader_id`       INT(6) COMMENT '项目负责人',
+  `customer_manager_id`     INT(6) COMMENT '客户对接人',
+  `director_id`             INT(6) COMMENT '导演',
+  `executive_director_id`   INT(6) COMMENT '执行导演',
+  `copywriting_id`          INT(6) COMMENT '文案',
+  `producer_id`             INT(6) COMMENT '制片',
+  `post_editing_id`         INT(6) COMMENT '后期剪辑',
+  `compositing_id`          INT(6) COMMENT '后期合成',
+  `art_id`                  INT(6) COMMENT '美术',
+  `music_id`                INT(6) COMMENT '音乐',
+  `storyboard_id`           INT(6) COMMENT '分镜',
   `contract_amount`   DECIMAL(15, 2) COMMENT '项目合同金额',
   `return_amount`     DECIMAL(15, 2) COMMENT '项目回款金额',
   `real_cost`         DECIMAL(15, 2) COMMENT '项目实际总成本',
@@ -25,8 +27,31 @@ CREATE TABLE `projects` (
   `state`             INT(3)          DEFAULT 0 COMMENT '项目状态',
   `created_at`        DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `updated_at`        DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  KEY `ix_name` (`name`)
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8 COMMENT = '项目表';
+
+CREATE TABLE `project_members` (
+  `id`                INT(11)     NOT NULL AUTO_INCREMENT COMMENT '自增主键',
+  `project_id`        INT(11)     NOT NULL COMMENT '项目id',
+  `member_type`       INT(3)      NOT NULL COMMENT '组员类型',
+  `staff_id`          INT(11)     NOT NULL COMMENT '员工id',
+  `created_at`        DATETIME    NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `updated_at`        DATETIME    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  PRIMARY KEY (`id`)
+) ENGINE = InnoDB DEFAULT CHARSET = utf8 COMMENT = '项目成员表';
+
+CREATE TABLE `staffs` (
+  `id`                INT(11)     NOT NULL AUTO_INCREMENT COMMENT '自增主键',
+  `name`              VARCHAR(50) NOT NULL  COMMENT '用户名',
+  `email`             VARCHAR(100)          COMMENT '邮箱',
+  `cellphone`         VARCHAR(100)          COMMENT '电话',
+  `state`             INT(3)      DEFAULT 0 COMMENT '状态，0正常，1禁用',
+  `created_at`        DATETIME    NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `updated_at`        DATETIME    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  PRIMARY KEY (`id`),
+  KEY `ix_name` (`name`)
+) ENGINE = InnoDB DEFAULT CHARSET = utf8 COMMENT = '公司员工表';
 
 CREATE TABLE `project_detail` (
   `id`                INT(11)     NOT NULL AUTO_INCREMENT COMMENT '自增主键',
@@ -40,5 +65,5 @@ CREATE TABLE `project_detail` (
   `created_at`        DATETIME    NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `updated_at`        DATETIME    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   PRIMARY KEY (`id`)
-) ENGINE = InnoDB DEFAULT CHARSET = utf8 COMMENT = '项目表';
+) ENGINE = InnoDB DEFAULT CHARSET = utf8 COMMENT = '项目费用表';
 
