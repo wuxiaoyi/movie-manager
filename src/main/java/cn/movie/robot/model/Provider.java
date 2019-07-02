@@ -13,28 +13,28 @@ import java.util.Date;
 
 /**
  * @author Wuxiaoyi
- * @date 2019/7/1
+ * @date 2019/7/2
  */
 @Data
 @Entity
 @DynamicInsert
 @DynamicUpdate
-@Table(name = "staffs")
+@Table(name = "providers")
 @EntityListeners({AuditingEntityListener.class})
-public class Staff {
+public class Provider {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Integer id;
   @NotNull(message = "用户名不能为空")
   private String name;
 
-  private String email;
+  private String bankAccount;
 
-  private String cellphone;
+  private String bankName;
+
+  private int cellphone;
 
   private int state;
-
-  private int ascription;
 
   @CreatedDate
   @Column(updatable = false)

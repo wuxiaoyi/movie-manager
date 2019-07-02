@@ -1,8 +1,9 @@
 package cn.movie.robot.controller;
 
 import cn.movie.robot.common.Constants;
-import cn.movie.robot.service.IStaffService;
+import cn.movie.robot.service.IProviderService;
 import cn.movie.robot.vo.common.Result;
+import cn.movie.robot.vo.req.ProviderVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -14,34 +15,34 @@ import static org.springframework.data.domain.Sort.Direction.ASC;
 
 /**
  * @author Wuxiaoyi
- * @date 2019/7/1
+ * @date 2019/7/2
  */
 @RestController
-@RequestMapping(value = "/api/v1/staffs", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-public class StaffController {
+@RequestMapping(value = "/api/v1/providers", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+public class ProviderController {
 
   @Autowired
-  IStaffService staffService;
+  IProviderService providerService;
 
   @GetMapping("")
   public Result list(@RequestParam("page") int page, @RequestParam("page_size") int pageSize){
     Pageable pageable = PageRequest.of(page-1, pageSize, Sort.by(ASC, Constants.COMMON_FIELD_NAME_ID));
-    return staffService.queryAll(pageable);
+    return providerService.queryAll(pageable);
   }
 
   @GetMapping("/normal_all")
-  public Result queryAllNormal(@RequestParam("ascription") Integer ascription){
-    return staffService.queryNormal(ascription);
+  public Result queryAllNormal(){
+    return providerService.queryNormal();
   }
 
   @PostMapping("")
-  public Result save(@RequestParam("name") String name, @RequestParam("ascription") Integer ascription){
-    return staffService.save(name, ascription);
+  public Result save(@RequestBody ProviderVo providerVo){
+    return providerService.save(providerVo);
   }
 
-  @DeleteMapping("/{staff_id}")
-  public Result save(@PathVariable("staff_id") Integer staffId){
-    return staffService.forbiddenStaff(staffId);
+  @DeleteMapping("/{provider_id}")
+  public Result save(@PathVariable("provider_id") Integer providerId){
+    return providerService.forbiddenProvider(providerId);
   }
 
 }

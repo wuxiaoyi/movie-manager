@@ -65,7 +65,7 @@ public class ShiroRealm extends AuthorizingRealm {
       return null;
     }
 
-    if (user.getState() == Constants.USER_STATE_FORBIDDEN){
+    if (user.getState() == Constants.COMMON_STATE_FORBIDDEN){
       throw new LockedAccountException();
     }
 

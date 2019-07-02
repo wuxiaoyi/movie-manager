@@ -54,6 +54,7 @@ CREATE TABLE `project_detail` (
   `real_amount`       DECIMAL(15, 2) NOT NULL COMMENT '实际金额',
   `provider_id`       DECIMAL(15, 2) NOT NULL COMMENT '供应商id',
   `rank_score`        INT(5)      NOT NULL COMMENT '评分',
+  `remark`            TEXT        NOT NULL COMMENT '备注',
   `created_at`        DATETIME    NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `updated_at`        DATETIME    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   PRIMARY KEY (`id`),
@@ -66,6 +67,7 @@ CREATE TABLE `staffs` (
   `name`              VARCHAR(50) NOT NULL  COMMENT '用户名',
   `email`             VARCHAR(100)          COMMENT '邮箱',
   `cellphone`         VARCHAR(100)          COMMENT '电话',
+  `ascription`        INT(3)      DEFAULT 0 COMMENT '员工归属，0内部员工，1外部员工',
   `state`             INT(3)      DEFAULT 0 COMMENT '状态，0正常，1禁用',
   `created_at`        DATETIME    NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `updated_at`        DATETIME    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
@@ -86,3 +88,22 @@ CREATE TABLE `providers` (
   KEY `ix_name` (`name`)
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8 COMMENT = '供应商表';
 
+CREATE TABLE `contract_subjects` (
+  `id`                INT(11)     NOT NULL  AUTO_INCREMENT COMMENT '自增主键',
+  `name`              VARCHAR(50) NOT NULL  COMMENT '主体名',
+  `state`             INT(3)      DEFAULT 0 COMMENT '状态，0正常，1禁用',
+  `created_at`        DATETIME    NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `updated_at`        DATETIME    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  PRIMARY KEY (`id`)
+) ENGINE = InnoDB DEFAULT CHARSET = utf8 COMMENT = '合同签署主体表';
+
+CREATE TABLE `fee_category` (
+  `id`                  INT(11)     NOT NULL  AUTO_INCREMENT COMMENT '自增主键',
+  `name`                VARCHAR(50) NOT NULL  COMMENT '费用名称',
+  `category_type`       INT(3)      NOT NULL  COMMENT '费用级别，1：一级，2：二级',
+  `parent_category_id`  INT(11)     COMMENT '父config id',
+  `state`               INT(3)      DEFAULT 0 COMMENT '状态，0正常，1禁用',
+  `created_at`          DATETIME    NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `updated_at`          DATETIME    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  PRIMARY KEY (`id`)
+) ENGINE = InnoDB DEFAULT CHARSET = utf8 COMMENT = '费用配置表';

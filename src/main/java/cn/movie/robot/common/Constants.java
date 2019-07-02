@@ -10,7 +10,7 @@ public class Constants {
   public static final String COMMON_FIELD_NAME_ID = "id";
 
   /**
-   * 错误码相关
+   * 错误码相关 start
    */
   public static final int SUCCESS_CODE = 0;
   public static final int ERROR_CODE = 1;
@@ -26,17 +26,35 @@ public class Constants {
   public static final String UNKNOW_EXCEPTION_ERROR_MSG = "系统异常";
 
   /**
-   * 登录注册相关
+   * 错误码相关 end
+   */
+
+  public static final int COMMON_STATE_NORMAL = 0;
+  public static final int COMMON_STATE_FORBIDDEN = 1;
+
+  /**
+   * 登录注册相关 start
    */
 
   public static final String USER_SIGN_UP_KEY_PREFIX = "user_sign_up:";
   public static final String USER_FORGET_PWD_KEY_PREFIX = "user_forget_pwd:";
 
-  public static final int USER_STATE_NORMAL = 0;
-  public static final int USER_STATE_FORBIDDEN = 1;
+  /**
+   * 登录注册相关 end
+   */
 
-  public static final int STAFF_STATE_NORMAL = 0;
-  public static final int STAFF_STATE_FORBIDDEN = 1;
+  /**
+   * 员工相关 start
+   */
 
+  /**
+   * 员工归属，0内部，1外部
+   */
+  public static final int STAFF_ASCRIPTION_INTERNAL = 0;
+  public static final int STAFF_ASCRIPTION_EXTERNAL = 1;
+
+  /**
+   * 员工相关 end
+   */
 
 }

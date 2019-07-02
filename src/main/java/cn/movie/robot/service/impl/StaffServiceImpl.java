@@ -2,7 +2,6 @@ package cn.movie.robot.service.impl;
 
 import cn.movie.robot.common.Constants;
 import cn.movie.robot.dao.StaffRepository;
-import cn.movie.robot.model.Role;
 import cn.movie.robot.model.Staff;
 import cn.movie.robot.service.IStaffService;
 import cn.movie.robot.vo.common.Result;
@@ -37,9 +36,15 @@ public class StaffServiceImpl implements IStaffService {
   }
 
   @Override
-  public Result queryNormal() {
-    List<Staff> staffList = staffRepository.queryByState(Constants.STAFF_STATE_NORMAL);
-
+  public Result queryNormal(Integer ascription) {
+    List<Staff> staffList;
+    if (ascription == Constants.STAFF_ASCRIPTION_INTERNAL){
+      staffList = staffRepository.queryByStateAndAscription(Constants.COMMON_STATE_NORMAL, ascription);
+    }else if (ascription == Constants.STAFF_ASCRIPTION_EXTERNAL){
+      staffList = staffRepository.queryByStateAndAscription(Constants.COMMON_STATE_NORMAL, ascription);
+    }else {
+      staffList = staffRepository.queryByState(Constants.COMMON_STATE_NORMAL);
+    }
     return Result.succ(staffList);
   }
 
@@ -49,15 +54,16 @@ public class StaffServiceImpl implements IStaffService {
     if (Objects.isNull(staff)){
       return Result.error("该员工不存在");
     }
-    staff.setState(Constants.STAFF_STATE_FORBIDDEN);
+    staff.setState(Constants.COMMON_STATE_FORBIDDEN);
     staffRepository.save(staff);
     return Result.succ();
   }
 
   @Override
-  public Result save(String name) {
+  public Result save(String name, Integer ascription) {
     Staff staff = new Staff();
     staff.setName(name);
+    staff.setAscription(ascription);
     staffRepository.save(staff);
     return Result.succ();
   }

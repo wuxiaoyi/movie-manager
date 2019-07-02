@@ -11,4 +11,5 @@ import java.util.List;
  */
 public interface StaffRepository extends JpaRepository<Staff, Integer> {
   List<Staff> queryByState(Integer state);
+  List<Staff> queryByStateAndAscription(Integer state, Integer ascription);
 }

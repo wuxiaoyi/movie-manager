@@ -73,7 +73,7 @@ public class UserServiceImpl implements IUserService {
     if (Objects.isNull(user)){
       return Result.error("此用户不存在");
     }
-    user.setState(Constants.USER_STATE_FORBIDDEN);
+    user.setState(Constants.COMMON_STATE_FORBIDDEN);
     userRepository.save(user);
     return Result.succ();
   }
