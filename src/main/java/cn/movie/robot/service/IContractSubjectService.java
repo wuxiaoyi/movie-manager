@@ -1,38 +1,38 @@
 package cn.movie.robot.service;
 
 import cn.movie.robot.vo.common.Result;
-import cn.movie.robot.vo.req.ProviderVo;
 import org.springframework.data.domain.Pageable;
 
 /**
  * @author Wuxiaoyi
  * @date 2019/7/2
  */
-public interface IProviderService {
+public interface IContractSubjectService {
   /**
-   * 查询所有供应商
+   * 查询所有合同主体
    * @param pageable
    * @return
    */
   Result queryAll(Pageable pageable);
 
   /**
-   * 根据状态查询供应商
+   * 查询生效的合同主体
    * @return
    */
   Result queryNormal();
 
   /**
-   * 禁用供应商
-   * @param providerId
+   * 禁用合同主体
+   * @param contractId
    * @return
    */
-  Result forbiddenProvider(Integer providerId);
+  Result forbiddenContractSubject(Integer contractId);
 
   /**
-   * 创建员工
-   * @param providerVo
+   * 保存合同主体
+   * @param name
    * @return
    */
-  Result save(ProviderVo providerVo);
+  Result save(String name);
+
 }
