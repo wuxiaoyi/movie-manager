@@ -1,5 +1,6 @@
 package cn.movie.robot.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
@@ -25,13 +26,19 @@ public class UserRole {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Integer id;
+
   @NotNull(message = "用户不能为空")
   private Integer userId;
+
   @NotNull(message = "角色不能为空")
   private Integer roleId;
+
   @CreatedDate
   @Column(updatable = false)
+  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
   private Date createdAt;
+
   @LastModifiedDate
+  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
   private Date updatedAt;
 }
