@@ -26,7 +26,7 @@ public class FeeCategory {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Integer id;
-  @NotNull(message = "用户名不能为空")
+
   private String name;
 
   private Integer categoryType;
