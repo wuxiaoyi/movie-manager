@@ -50,8 +50,8 @@ public class Constants {
   /**
    * 员工归属，0内部，1外部
    */
-  public static final int STAFF_ASCRIPTION_INTERNAL = 0;
-  public static final int STAFF_ASCRIPTION_EXTERNAL = 1;
+  public static final int STAFF_ASCRIPTION_INTERNAL = 1;
+  public static final int STAFF_ASCRIPTION_EXTERNAL = 2;
 
   /**
    * 员工相关 end
