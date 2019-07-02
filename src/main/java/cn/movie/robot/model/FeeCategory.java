@@ -33,6 +33,8 @@ public class FeeCategory {
 
   private Integer parentCategoryId;
 
+  private int stage;
+
   private int state;
 
   @CreatedDate

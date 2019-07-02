@@ -31,9 +31,9 @@ public class ProjectDetail {
 
   private Integer stage;
 
-  private Integer feeCategory;
+  private Integer feeCategoryId;
 
-  private Integer feeChildCategory;
+  private Integer feeChildCategoryId;
 
   private String desc;
 
