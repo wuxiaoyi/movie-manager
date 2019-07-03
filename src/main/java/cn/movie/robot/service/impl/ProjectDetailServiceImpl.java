@@ -38,8 +38,8 @@ public class ProjectDetailServiceImpl implements IProjectDetailService {
   private List<ProjectDetail> initByProjectIdAndStage(Integer projectId, Integer stage){
     List<ProjectDetail> projectDetailList = new ArrayList<>();
     List<FeeCategory> feeCategoryList = feeCategoryRepository.queryByStageAndStateAndCategoryType(
-        Constants.COMMON_STATE_NORMAL,
         stage,
+        Constants.COMMON_STATE_NORMAL,
         Constants.FEE_CATEGORY_TYPE_CHILD
     );
 
@@ -48,6 +48,7 @@ public class ProjectDetailServiceImpl implements IProjectDetailService {
       projectDetail.setProjectId(projectId);
       projectDetail.setFeeCategoryId(feeCategory.getParentCategoryId());
       projectDetail.setFeeChildCategoryId(feeCategory.getId());
+      projectDetail.setStage(feeCategory.getStage());
       projectDetailRepository.save(projectDetail);
       projectDetailList.add(projectDetail);
     }

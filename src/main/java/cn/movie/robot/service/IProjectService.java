@@ -12,10 +12,10 @@ import cn.movie.robot.vo.req.project.ProjectShottingInfoVo;
 public interface IProjectService {
   Result create(String name);
 
-  Result saveBaseInfo(ProjectBaseInfoVo projectBaseInfoVo);
+  Result saveBaseInfo(int projectId, ProjectBaseInfoVo projectBaseInfoVo);
 
-  Result saveShottingInfo(ProjectShottingInfoVo projectShottingInfoVo);
+  Result saveShottingInfo(int projectId, ProjectShottingInfoVo projectShottingInfoVo);
 
-  Result saveLastStateInfo(ProjectLastStateInfoVo projectLastStateInfoVo);
+  Result saveLastStateInfo(int projectId, ProjectLastStateInfoVo projectLastStateInfoVo);
 
 }

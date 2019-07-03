@@ -1,5 +1,6 @@
 package cn.movie.robot.service.impl;
 
+import cn.movie.robot.dao.ProjectMemberRepository;
 import cn.movie.robot.dao.ProjectRepository;
 import cn.movie.robot.model.Project;
 import cn.movie.robot.model.ProjectDetail;
@@ -27,6 +28,9 @@ public class ProjectServiceImpl implements IProjectService {
   @Resource
   ProjectRepository projectRepository;
 
+  @Resource
+  ProjectMemberRepository projectMemberRepository;
+
   @Autowired
   IProjectDetailService projectDetailService;
 
@@ -47,17 +51,39 @@ public class ProjectServiceImpl implements IProjectService {
   }
 
   @Override
-  public Result saveBaseInfo(ProjectBaseInfoVo projectBaseInfoVo) {
+  public Result saveBaseInfo(int projectId, ProjectBaseInfoVo projectBaseInfoVo) {
+    Project project = projectRepository.getOne(projectId);
+    if (Objects.isNull(project)){
+      return Result.error("该项目不存在");
+    }
+    project.setSid(projectBaseInfoVo.getSid());
+    project.setName(projectBaseInfoVo.getName());
+    project.setFilmDuration(projectBaseInfoVo.getFilmDuration());
+    project.setContractSubjectId(projectBaseInfoVo.getContractSubjectId());
+    project.setShootingStartAt(projectBaseInfoVo.getShootingStartAt());
+    project.setShootingDuration(projectBaseInfoVo.getShootingDuration());
+    projectRepository.save(project);
+
+
+
     return null;
   }
 
   @Override
-  public Result saveShottingInfo(ProjectShottingInfoVo projectShottingInfoVo) {
+  public Result saveShottingInfo(int projectId, ProjectShottingInfoVo projectShottingInfoVo) {
+    Project project = projectRepository.getOne(projectId);
+    if (Objects.isNull(project)){
+      return Result.error("该项目不存在");
+    }
     return null;
   }
 
   @Override
-  public Result saveLastStateInfo(ProjectLastStateInfoVo projectLastStateInfoVo) {
+  public Result saveLastStateInfo(int projectId, ProjectLastStateInfoVo projectLastStateInfoVo) {
+    Project project = projectRepository.getOne(projectId);
+    if (Objects.isNull(project)){
+      return Result.error("该项目不存在");
+    }
     return null;
   }
 }
