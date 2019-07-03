@@ -35,7 +35,9 @@ public class ProjectMemberServiceImpl implements IProjectMemberService {
     /**
      * 删除
      */
-    projectMemberRepository.deleteByIdIn(existMemberIds);
+    if (existMemberIds.size() > 0){
+      projectMemberRepository.deleteByIdIn(existMemberIds);
+    }
 
     /**
      * 新增或修改

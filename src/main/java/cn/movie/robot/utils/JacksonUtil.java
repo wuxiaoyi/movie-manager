@@ -22,7 +22,7 @@ public class JacksonUtil {
     objectMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
     objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
     objectMapper.setTimeZone(TimeZone.getTimeZone("GMT+8"));
-    objectMapper.setPropertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE);
+//    objectMapper.setPropertyNamingStrategy(PropertyNamingStrategy.LOWER_CAMEL_CASE);
     objectMapper.disable(MapperFeature.DEFAULT_VIEW_INCLUSION);
   }
 

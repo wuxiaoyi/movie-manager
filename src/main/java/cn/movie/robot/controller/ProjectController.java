@@ -42,7 +42,7 @@ public class ProjectController {
 
   @PutMapping("/{id}/base_info")
   public Result updateBaseInfo(@PathVariable("id") Integer id, @RequestBody ProjectBaseInfoVo projectBaseInfoVo){
-    return Result.succ();
+    return projectService.saveBaseInfo(id, projectBaseInfoVo);
   }
 
   @PutMapping("/{id}/shooting_info")
