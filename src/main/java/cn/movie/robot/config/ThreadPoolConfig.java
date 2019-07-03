@@ -8,9 +8,10 @@ import org.springframework.scheduling.annotation.EnableAsync;
 import java.util.concurrent.*;
 
 /**
- * @author 刘宇泽
- * @date 2018/7/12
+ * @author Wuxiaoyi
+ * @date 2019/6/28
  */
+
 @EnableAsync
 @Configuration
 public class ThreadPoolConfig {

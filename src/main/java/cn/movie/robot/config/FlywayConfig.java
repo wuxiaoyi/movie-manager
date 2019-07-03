@@ -8,6 +8,11 @@ import javax.annotation.Resource;
 import javax.sql.DataSource;
 import java.nio.charset.StandardCharsets;
 
+/**
+ * @author Wuxiaoyi
+ * @date 2019/6/28
+ */
+
 @Configuration
 public class FlywayConfig {
 

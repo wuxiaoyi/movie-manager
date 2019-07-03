@@ -14,8 +14,4 @@ public interface IProjectService {
 
   Result saveBaseInfo(int projectId, ProjectBaseInfoVo projectBaseInfoVo);
 
-  Result saveShottingInfo(int projectId, ProjectShottingInfoVo projectShottingInfoVo);
-
-  Result saveLastStateInfo(int projectId, ProjectLastStateInfoVo projectLastStateInfoVo);
-
 }

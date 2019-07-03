@@ -19,8 +19,6 @@ import javax.servlet.http.HttpServletRequest;
 /**
  * 日志切面
  *
- * @author tw
- * @author 小柯
  * @date 2017/6/22
  */
 @Aspect

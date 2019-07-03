@@ -9,5 +9,5 @@ import java.util.List;
  * @date 2019/7/3
  */
 public interface IProjectMemberService {
-  boolean saveProjectMembers(List<ProjectMemberVo> projectMemberVoList);
+  boolean saveProjectMembers(int projectId, List<ProjectMemberVo> projectMemberVoList);
 }

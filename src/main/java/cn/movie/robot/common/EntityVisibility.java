@@ -1,9 +1,5 @@
 package cn.movie.robot.common;
 
-/**
- * @author 刘宇泽
- * @date 2018/7/10
- */
 public interface EntityVisibility {
 
   interface Result {

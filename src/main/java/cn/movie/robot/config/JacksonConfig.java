@@ -10,9 +10,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @author 刘宇泽
- * @date 2018/7/5
+ * @author Wuxiaoyi
+ * @date 2019/6/28
  */
+
 @Configuration
 public class JacksonConfig {
 
