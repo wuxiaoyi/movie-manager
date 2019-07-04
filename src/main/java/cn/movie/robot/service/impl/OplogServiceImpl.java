@@ -1,8 +1,16 @@
 package cn.movie.robot.service.impl;
 
+import cn.movie.robot.dao.ProjectMemberRepository;
+import cn.movie.robot.dao.ProjectRepository;
+import cn.movie.robot.enums.ProjectStateEnum;
+import cn.movie.robot.model.Project;
+import cn.movie.robot.model.ProjectMember;
 import cn.movie.robot.service.IOplogService;
 import cn.movie.robot.vo.oplog.ProjectBaseInfoOplog;
 import org.springframework.stereotype.Service;
+
+import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * @author Wuxiaoyi
@@ -10,6 +18,13 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class OplogServiceImpl implements IOplogService {
+
+  @Resource
+  ProjectRepository projectRepository;
+
+  @Resource
+  ProjectMemberRepository projectMemberRepository;
+
   @Override
   public void saveBaseInfoOplog() {
 
@@ -17,7 +32,12 @@ public class OplogServiceImpl implements IOplogService {
 
   @Override
   public ProjectBaseInfoOplog buildBaseInfoOplog(int projectId) {
+    Project project = projectRepository.getOne(projectId);
+    List<ProjectMember> projectMemberList = projectMemberRepository.queryByProjectId(projectId);
 
-    return null;
+    ProjectBaseInfoOplog baseInfoOplog = new ProjectBaseInfoOplog(project);
+    baseInfoOplog.setStateName(ProjectStateEnum.getStateName(project.getState()));
+
+    return baseInfoOplog;
   }
 }

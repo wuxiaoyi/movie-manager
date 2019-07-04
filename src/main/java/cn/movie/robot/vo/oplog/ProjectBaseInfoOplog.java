@@ -1,5 +1,7 @@
 package cn.movie.robot.vo.oplog;
 
+import cn.movie.robot.model.Project;
+import cn.movie.robot.utils.DateUtil;
 import lombok.Data;
 import org.javers.core.metamodel.annotation.Id;
 import org.javers.core.metamodel.annotation.PropertyName;
@@ -7,6 +9,7 @@ import org.javers.core.metamodel.annotation.TypeName;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author Wuxiaoyi
@@ -15,6 +18,25 @@ import java.util.List;
 @Data
 @TypeName("项目基本信息")
 public class ProjectBaseInfoOplog {
+
+  public ProjectBaseInfoOplog(Project project){
+    this.id = project.getId();
+    this.sid = project.getSid();
+    this.name = project.getName();
+    this.filmDuration = project.getFilmDuration();
+    if (Objects.nonNull(project.getShootingStartAt())){
+      this.shootingStartAt = DateUtil.format_yyyy_MM_dd(project.getShootingStartAt());
+    }
+    this.shootingDuration = project.getShootingDuration();
+    this.contractAmount = project.getContractAmount();
+    this.returnAmount = project.getReturnAmount();
+    this.realCost = project.getRealCost();
+    this.budgetCost = project.getBudgetCost();
+    this.shootingBudget = project.getShootingBudget();
+    this.lateStateBudget = project.getLateStateBudget();
+    this.lateStateCost = project.getLateStateCost();
+  }
+
   @Id
   private Integer id;
 
