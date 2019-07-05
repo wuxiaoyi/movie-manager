@@ -1,7 +1,9 @@
 package cn.movie.robot.controller;
 
+import cn.movie.robot.service.IOplogService;
 import cn.movie.robot.service.IProjectService;
 import cn.movie.robot.vo.common.Result;
+import cn.movie.robot.vo.oplog.ProjectBaseInfoOplog;
 import cn.movie.robot.vo.req.project.ProjectBaseInfoVo;
 import cn.movie.robot.vo.req.project.ProjectLastStateInfoVo;
 import cn.movie.robot.vo.req.project.ProjectShottingInfoVo;
@@ -19,6 +21,9 @@ public class ProjectController {
 
   @Autowired
   IProjectService projectService;
+
+  @Autowired
+  IOplogService oplogService;
 
   @PostMapping("")
   public Result create(@RequestParam("name") String name){
@@ -42,7 +47,11 @@ public class ProjectController {
 
   @PutMapping("/{id}/base_info")
   public Result updateBaseInfo(@PathVariable("id") Integer id, @RequestBody ProjectBaseInfoVo projectBaseInfoVo){
-    return projectService.saveBaseInfo(id, projectBaseInfoVo);
+    ProjectBaseInfoOplog oldInfo = oplogService.buildBaseInfoOplog(id);
+    Result result = projectService.saveBaseInfo(id, projectBaseInfoVo);
+    ProjectBaseInfoOplog newInfo = oplogService.buildBaseInfoOplog(id);
+    oplogService.saveBaseInfoOplog(newInfo, oldInfo);
+    return result;
   }
 
   @PutMapping("/{id}/shooting_info")

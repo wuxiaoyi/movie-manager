@@ -7,7 +7,7 @@ import cn.movie.robot.vo.oplog.ProjectBaseInfoOplog;
  * @date 2019/7/3
  */
 public interface IOplogService {
-  void saveBaseInfoOplog();
+  void saveBaseInfoOplog(ProjectBaseInfoOplog newOplog, ProjectBaseInfoOplog oldOplog);
 
   ProjectBaseInfoOplog buildBaseInfoOplog(int projectId);
 

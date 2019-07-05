@@ -2,6 +2,7 @@ package cn.movie.robot.service.impl;
 
 import cn.movie.robot.dao.ProjectRepository;
 import cn.movie.robot.model.Project;
+import cn.movie.robot.service.IOplogService;
 import cn.movie.robot.service.IProjectDetailService;
 import cn.movie.robot.service.IProjectMemberService;
 import cn.movie.robot.service.IProjectService;
@@ -30,6 +31,9 @@ public class ProjectServiceImpl implements IProjectService {
   @Autowired
   IProjectDetailService projectDetailService;
 
+  @Autowired
+  IOplogService oplogService;
+
   @Override
   @Transactional(rollbackOn = Exception.class)
   public Result create(String name) {
@@ -53,6 +57,7 @@ public class ProjectServiceImpl implements IProjectService {
     if (Objects.isNull(project)){
       return Result.error("该项目不存在");
     }
+
     project.setSid(projectBaseInfoVo.getSid());
     project.setName(projectBaseInfoVo.getName());
     project.setFilmDuration(projectBaseInfoVo.getFilmDuration());

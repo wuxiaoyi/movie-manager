@@ -77,4 +77,8 @@ public class Constants {
    * 项目相关 end
    */
 
+  public static final int OPERATION_LOG_TYPE_BASE_INFO = 1;
+  public static final int OPERATION_LOG_TYPE_SHOOTING = 2;
+  public static final int OPERATION_LOG_TYPE_LAST_STATE = 3;
+
 }

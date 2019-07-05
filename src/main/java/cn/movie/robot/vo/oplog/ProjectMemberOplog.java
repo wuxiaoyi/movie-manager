@@ -17,6 +17,6 @@ public class ProjectMemberOplog {
   @Id
   private String memberType;
 
-  @PropertyName("人员配置")
+  @PropertyName("组成人员")
   private List<String> memberList;
 }
