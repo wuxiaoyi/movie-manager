@@ -2,8 +2,7 @@ package cn.movie.robot.service;
 
 import cn.movie.robot.model.ProjectDetail;
 import cn.movie.robot.vo.common.Result;
-import cn.movie.robot.vo.req.project.ProjectLastStateInfoVo;
-import cn.movie.robot.vo.req.project.ProjectShottingInfoVo;
+import cn.movie.robot.vo.req.project.ProjectFeeDetailVo;
 
 import java.util.List;
 
@@ -16,19 +15,19 @@ public interface IProjectDetailService {
   /**
    * 保存项目拍摄费用明细
    * @param projectId
-   * @param projectShottingInfoVo
+   * @param projectDetails
    * @return
    */
-  Result saveShottingInfo(int projectId, ProjectShottingInfoVo projectShottingInfoVo);
+  Result saveShottingInfo(int projectId, List<ProjectFeeDetailVo> projectDetails);
 
   /**
    * 保存项目后期费用明细
    * @param projectId
-   * @param projectLastStateInfoVo
+   * @param projectDetails
    * @return
    */
 
-  Result saveLastStateInfo(int projectId, ProjectLastStateInfoVo projectLastStateInfoVo);
+  Result saveLastStateInfo(int projectId, List<ProjectFeeDetailVo> projectDetails);
 
 
   /**

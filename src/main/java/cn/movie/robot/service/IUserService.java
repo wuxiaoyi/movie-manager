@@ -2,6 +2,7 @@ package cn.movie.robot.service;
 
 import cn.movie.robot.vo.common.Result;
 import cn.movie.robot.vo.req.SignUpVo;
+import org.springframework.data.domain.Pageable;
 
 /**
  * @author Wuxiaoyi
@@ -42,4 +43,11 @@ public interface IUserService {
    * @return
    */
   Result resetPwd(Integer userId, String password);
+
+  /**
+   * 查询所有后台用户
+   * @param pageable
+   * @return
+   */
+  Result queryAll(Pageable pageable);
 }

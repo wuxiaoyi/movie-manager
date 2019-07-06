@@ -2,14 +2,18 @@ package cn.movie.robot.service.impl;
 
 import cn.movie.robot.common.Constants;
 import cn.movie.robot.dao.UserRepository;
+import cn.movie.robot.model.Provider;
 import cn.movie.robot.model.User;
 import cn.movie.robot.service.IUserService;
 import cn.movie.robot.vo.common.Result;
 import cn.movie.robot.vo.req.SignUpVo;
+import cn.movie.robot.vo.resp.PageBean;
 import org.apache.shiro.crypto.RandomNumberGenerator;
 import org.apache.shiro.crypto.SecureRandomNumberGenerator;
 import org.apache.shiro.crypto.hash.SimpleHash;
 import org.apache.shiro.util.ByteSource;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
@@ -30,6 +34,17 @@ public class UserServiceImpl implements IUserService {
 
   @Resource
   UserRepository userRepository;
+
+  @Override
+  public Result queryAll(Pageable pageable) {
+    Page<User> userPage = userRepository.findAll(pageable);
+    PageBean<User> userPageBean = new PageBean<>(
+        userPage.getTotalElements(),
+        userPage.getTotalPages(),
+        userPage.getContent()
+    );
+    return Result.succ(userPageBean);
+  }
 
   @Override
   public Result signUpKey() {

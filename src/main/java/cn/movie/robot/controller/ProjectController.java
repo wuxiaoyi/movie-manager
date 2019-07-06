@@ -2,10 +2,14 @@ package cn.movie.robot.controller;
 
 import cn.movie.robot.common.Constants;
 import cn.movie.robot.service.IOplogService;
+import cn.movie.robot.service.IProjectDetailService;
 import cn.movie.robot.service.IProjectService;
 import cn.movie.robot.vo.common.Result;
 import cn.movie.robot.vo.oplog.ProjectBaseInfoOplog;
+import cn.movie.robot.vo.oplog.ProjectLastStateDetailOplog;
+import cn.movie.robot.vo.oplog.ProjectShootingDetailOplog;
 import cn.movie.robot.vo.req.project.ProjectBaseInfoVo;
+import cn.movie.robot.vo.req.project.ProjectFeeDetailVo;
 import cn.movie.robot.vo.req.project.ProjectLastStateInfoVo;
 import cn.movie.robot.vo.req.project.ProjectShottingInfoVo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +18,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 import static org.springframework.data.domain.Sort.Direction.ASC;
 
@@ -27,6 +33,9 @@ public class ProjectController {
 
   @Autowired
   IProjectService projectService;
+
+  @Autowired
+  IProjectDetailService projectDetailService;
 
   @Autowired
   IOplogService oplogService;
@@ -67,12 +76,20 @@ public class ProjectController {
   }
 
   @PutMapping("/{id}/shooting_info")
-  public Result updateShootingInfo(@PathVariable("id") Integer id, @RequestBody ProjectShottingInfoVo projectShottingInfoVo){
-    return Result.succ();
+  public Result updateShootingInfo(@PathVariable("id") Integer id, @RequestBody List<ProjectFeeDetailVo> projectFeeDetailVoList){
+    ProjectShootingDetailOplog oldInfo = oplogService.buildShootingOplog(id);
+    Result result = projectDetailService.saveShottingInfo(id, projectFeeDetailVoList);
+    ProjectShootingDetailOplog newInfo = oplogService.buildShootingOplog(id);
+    oplogService.saveShootingOplog(newInfo, oldInfo);
+    return result;
   }
 
   @PutMapping("/{id}/last_state_info")
-  public Result updateLastStateInfo(@PathVariable("id") Integer id, @RequestBody ProjectLastStateInfoVo projectLastStateInfoVo){
-    return Result.succ();
+  public Result updateLastStateInfo(@PathVariable("id") Integer id, @RequestBody List<ProjectFeeDetailVo> projectFeeDetailVoList){
+    ProjectLastStateDetailOplog oldInfo = oplogService.buildLastStateOplog(id);
+    Result result = projectDetailService.saveLastStateInfo(id, projectFeeDetailVoList);
+    ProjectLastStateDetailOplog newInfo = oplogService.buildLastStateOplog(id);
+    oplogService.saveLastStateOplog(newInfo, oldInfo);
+    return result;
   }
 }

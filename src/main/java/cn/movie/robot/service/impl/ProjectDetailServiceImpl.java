@@ -9,14 +9,15 @@ import cn.movie.robot.model.Project;
 import cn.movie.robot.model.ProjectDetail;
 import cn.movie.robot.service.IProjectDetailService;
 import cn.movie.robot.vo.common.Result;
-import cn.movie.robot.vo.req.project.ProjectLastStateInfoVo;
-import cn.movie.robot.vo.req.project.ProjectShottingInfoVo;
+import cn.movie.robot.vo.req.project.ProjectFeeDetailVo;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * @author Wuxiaoyi
@@ -35,23 +36,30 @@ public class ProjectDetailServiceImpl implements IProjectDetailService {
   ProjectDetailRepository projectDetailRepository;
 
   @Override
-  public Result saveShottingInfo(int projectId, ProjectShottingInfoVo projectShottingInfoVo) {
+  @Transactional
+  public Result saveShottingInfo(int projectId, List<ProjectFeeDetailVo> projectFeeDetailVoList) {
     Project project = projectRepository.getOne(projectId);
     if (Objects.isNull(project)){
       return Result.error("该项目不存在");
     }
 
+    int projectStage = Constants.PROJECT_DETAIL_STATG_SHOOTING;
+    updateDetails(projectId, projectFeeDetailVoList, projectStage);
 
-    return null;
+    return Result.succ();
   }
 
   @Override
-  public Result saveLastStateInfo(int projectId, ProjectLastStateInfoVo projectLastStateInfoVo) {
+  public Result saveLastStateInfo(int projectId, List<ProjectFeeDetailVo> projectFeeDetailVoList) {
     Project project = projectRepository.getOne(projectId);
     if (Objects.isNull(project)){
       return Result.error("该项目不存在");
     }
-    return null;
+
+    int projectStage = Constants.PROJECT_DETAIL_STATG_LAST_STATE;
+    updateDetails(projectId, projectFeeDetailVoList, projectStage);
+
+    return Result.succ();
   }
 
   @Override
@@ -82,5 +90,43 @@ public class ProjectDetailServiceImpl implements IProjectDetailService {
       projectDetailList.add(projectDetail);
     }
     return projectDetailList;
+  }
+
+  private void updateDetails(int projectId, List<ProjectFeeDetailVo> projectFeeDetailVoList, int projectStage){
+    List<ProjectDetail> existDetails = projectDetailRepository.queryByProjectIdAndStage(projectId, projectStage);
+    List<Integer> existDetailIds = existDetails.stream()
+        .map(ProjectDetail::getId).collect(Collectors.toList());
+    List<Integer> updateDetailIds = projectFeeDetailVoList.stream()
+        .filter(projectFeeDetailVo -> Objects.nonNull(projectFeeDetailVo.getId()))
+        .map(ProjectFeeDetailVo::getId).collect(Collectors.toList());
+
+    existDetailIds.removeAll(updateDetailIds);
+    // 删除
+    if (existDetailIds.size() > 0){
+      projectDetailRepository.deleteByIdIn(existDetailIds);
+    }
+
+    for (ProjectFeeDetailVo projectFeeDetailVo : projectFeeDetailVoList){
+      ProjectDetail projectDetail;
+      // 更新 or 新增
+      if (Objects.nonNull(projectFeeDetailVo.getId())){
+        projectDetail = projectDetailRepository.getOne(projectFeeDetailVo.getId());
+      }else {
+        projectDetail = new ProjectDetail();
+        projectDetail.setStage(projectStage);
+        projectDetail.setProjectId(projectId);
+      }
+      if (Objects.isNull(projectDetail)){
+        continue;
+      }
+      projectDetail.setFeeCategoryId(projectFeeDetailVo.getFeeCategoryId());
+      projectDetail.setFeeChildCategoryId(projectFeeDetailVo.getFeeChildCategoryId());
+      projectDetail.setBudgetAmount(projectFeeDetailVo.getBudgetAmount());
+      projectDetail.setRealAmount(projectFeeDetailVo.getRealAmount());
+      projectDetail.setProviderId(projectFeeDetailVo.getProviderId());
+      projectDetail.setRankScore(projectFeeDetailVo.getRankScore());
+      projectDetail.setRemark(projectFeeDetailVo.getRemark());
+      projectDetailRepository.save(projectDetail);
+    }
   }
 }

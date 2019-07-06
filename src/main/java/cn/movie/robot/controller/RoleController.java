@@ -3,6 +3,7 @@ package cn.movie.robot.controller;
 import cn.movie.robot.common.Constants;
 import cn.movie.robot.service.IRoleService;
 import cn.movie.robot.vo.common.Result;
+import cn.movie.robot.vo.req.RoleVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -34,8 +35,8 @@ public class RoleController {
   }
 
   @PostMapping("")
-  public Result save(@RequestParam("name") String name){
-    return roleService.save(name);
+  public Result save(@RequestBody RoleVo roleVo){
+    return roleService.save(roleVo.getName());
   }
 
   @PutMapping("/{role_id}/update_permission")

@@ -1,16 +1,22 @@
 package cn.movie.robot.controller;
 
+import cn.movie.robot.common.Constants;
 import cn.movie.robot.service.IRoleService;
 import cn.movie.robot.service.IUserService;
 import cn.movie.robot.vo.common.Result;
 import cn.movie.robot.vo.req.SignUpVo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static org.springframework.data.domain.Sort.Direction.ASC;
 
 /**
  * @author Wuxiaoyi
@@ -26,6 +32,12 @@ public class UserController {
   @Autowired
   IUserService userService;
 
+  @GetMapping("")
+  public Result list(@RequestParam("page") int page, @RequestParam("page_size") int pageSize){
+    Pageable pageable = PageRequest.of(page-1, pageSize, Sort.by(ASC, Constants.COMMON_FIELD_NAME_ID));
+    return userService.queryAll(pageable);
+  }
+
   @PutMapping("/{user_id}/update_role")
   public Result updatePermission(@PathVariable("user_id") Integer userId, @RequestParam("role_ids") String roldIds){
     List<Integer> roleIdList = Arrays.asList(roldIds.split(",")).stream().map(Integer::parseInt).collect(Collectors.toList());
@@ -37,17 +49,12 @@ public class UserController {
     return userService.signUpKey();
   }
 
-//  @GetMapping("/allow_forget_pwd")
-//  public Result allowForgetPwd(@RequestParam("email") String email){
-//    return userService.forgetPwdKey(email);
-//  }
-
   @GetMapping("/{user_id}/reset_pwd")
   public Result resetPwd(@PathVariable("user_id") Integer userId, @RequestParam("password") String password){
     return userService.resetPwd(userId, password);
   }
 
-  @PostMapping("/")
+  @PostMapping("")
   public Result signUp(@RequestBody SignUpVo signUpVo){
     return userService.signUp(signUpVo);
   }

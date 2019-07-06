@@ -6,9 +6,11 @@ import cn.movie.robot.enums.ProjectMemberTypeEnum;
 import cn.movie.robot.enums.ProjectStateEnum;
 import cn.movie.robot.model.*;
 import cn.movie.robot.service.IOplogService;
-import cn.movie.robot.vo.oplog.ProjectBaseInfoOplog;
-import cn.movie.robot.vo.oplog.ProjectMemberOplog;
+import cn.movie.robot.vo.common.Result;
+import cn.movie.robot.vo.oplog.*;
+import cn.movie.robot.vo.resp.PageBean;
 import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
 import org.javers.core.Javers;
@@ -19,6 +21,8 @@ import org.javers.core.diff.ListCompareAlgorithm;
 import org.javers.core.diff.changetype.NewObject;
 import org.javers.core.diff.changetype.ObjectRemoved;
 import org.javers.core.metamodel.object.GlobalId;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -47,6 +51,26 @@ public class OplogServiceImpl implements IOplogService {
   @Resource
   OperationLogRepository operationLogRepository;
 
+  @Resource
+  ProjectDetailRepository projectDetailRepository;
+
+  @Resource
+  FeeCategoryRepository feeCategoryRepository;
+
+  @Resource
+  ProviderRepository providerRepository;
+
+  @Override
+  public Result list(Pageable pageable, int targetId, int targetType) {
+    Page<OperationLog> operationLogPage = operationLogRepository.queryAllByTargetIdAndTargetType(targetId, targetType, pageable);
+    PageBean<OperationLog> operationLogPageBean = new PageBean<>(
+        operationLogPage.getTotalElements(),
+        operationLogPage.getTotalPages(),
+        operationLogPage.getContent()
+    );
+    return Result.succ(operationLogPageBean);
+  }
+
   @Override
   public void saveBaseInfoOplog(ProjectBaseInfoOplog newBaseInfoOplog, ProjectBaseInfoOplog oldBaseInfoOplog) {
     Javers javers = JaversBuilder.javers()
@@ -72,7 +96,60 @@ public class OplogServiceImpl implements IOplogService {
       info.append("\n");
     });
     String result = dealEnToCn(info.toString());
-    saveOplog(newBaseInfoOplog.getId(), result);
+    if (StringUtils.isNoneEmpty(result)){
+      saveOplog(newBaseInfoOplog.getId(), Constants.OPERATION_LOG_TYPE_BASE_INFO, result);
+    }
+  }
+
+  @Override
+  public void saveShootingOplog(ProjectShootingDetailOplog newOplog, ProjectShootingDetailOplog oldOplog) {
+    Javers javers = JaversBuilder.javers()
+        .withListCompareAlgorithm(ListCompareAlgorithm.LEVENSHTEIN_DISTANCE)
+        .build();
+
+    Diff diff = javers.compare(oldOplog, newOplog);
+
+    StringBuilder info = new StringBuilder();
+
+    diff.groupByObject().forEach(byObject -> {
+      String byObjectChange = byObject.toString();
+      if (byObject.getGlobalId().getTypeName().equals("费用项")){
+        for (Change change : byObject.get()){
+          if (change instanceof NewObject || change instanceof ObjectRemoved){
+            ProjectFeeDetailOplog op = (ProjectFeeDetailOplog) change.getAffectedObject().get();
+            byObjectChange = byObjectChange.replace("\n", " ");
+            byObjectChange += op.toString();
+          }
+        }
+      }
+      info.append(byObjectChange);
+      info.append("\n");
+    });
+    String result = dealEnToCn(info.toString());
+    if (StringUtils.isNoneEmpty(result)){
+      saveOplog(newOplog.getProjectId(), Constants.OPERATION_LOG_TYPE_SHOOTING, result);
+    }
+  }
+
+  @Override
+  public void saveLastStateOplog(ProjectLastStateDetailOplog newOplog, ProjectLastStateDetailOplog oldOplog) {
+    Javers javers = JaversBuilder.javers()
+        .withListCompareAlgorithm(ListCompareAlgorithm.LEVENSHTEIN_DISTANCE)
+        .build();
+
+    Diff diff = javers.compare(oldOplog, newOplog);
+
+    StringBuilder info = new StringBuilder();
+
+    diff.groupByObject().forEach(byObject -> {
+      String byObjectChange = byObject.toString();
+      info.append(byObjectChange);
+      info.append("\n");
+    });
+    String result = dealEnToCn(info.toString());
+    if (StringUtils.isNoneEmpty(result)){
+      saveOplog(newOplog.getProjectId(), Constants.OPERATION_LOG_TYPE_LAST_STATE, result);
+    }
   }
 
   @Override
@@ -92,9 +169,8 @@ public class OplogServiceImpl implements IOplogService {
     HashMap<Integer, String> staffNameHash = new HashMap<>(staffList.size());
 
     // 生成员工id-名称 hash
-    for (Staff staff : staffList){
-      staffNameHash.put(staff.getId(), staff.getName());
-    }
+    staffList.forEach(staff -> staffNameHash.put(staff.getId(), staff.getName()));
+
     //生成member类型-员工名称 hash
     for (ProjectMember projectMember : projectMemberList){
       String memberTypeName = ProjectMemberTypeEnum.getTypeName(projectMember.getMemberType());
@@ -119,6 +195,66 @@ public class OplogServiceImpl implements IOplogService {
     return baseInfoOplog;
   }
 
+  @Override
+  public ProjectShootingDetailOplog buildShootingOplog(int projectId) {
+    Project project = projectRepository.getOne(projectId);
+    List<ProjectDetail> projectDetailList = projectDetailRepository.queryByProjectIdAndStage(projectId, Constants.PROJECT_DETAIL_STATG_SHOOTING);
+
+    ProjectShootingDetailOplog oplog = new ProjectShootingDetailOplog();
+    oplog.setProjectId(projectId);
+    oplog.setProjectFeeDetailOplogList(buildFeeDetailOplog(project, projectDetailList));
+    return oplog;
+  }
+
+  @Override
+  public ProjectLastStateDetailOplog buildLastStateOplog(int projectId) {
+    Project project = projectRepository.getOne(projectId);
+    List<ProjectDetail> projectDetailList = projectDetailRepository.queryByProjectIdAndStage(projectId, Constants.PROJECT_DETAIL_STATG_LAST_STATE);
+
+    ProjectLastStateDetailOplog oplog = new ProjectLastStateDetailOplog();
+    oplog.setProjectId(projectId);
+    oplog.setProjectFeeDetailOplogList(buildFeeDetailOplog(project, projectDetailList));
+    return oplog;
+  }
+
+  /**
+   * 通过projectid构建费用明细Oplog
+   * @param project
+   * @param projectDetailList
+   * @return
+   */
+  private List<ProjectFeeDetailOplog> buildFeeDetailOplog(Project project, List<ProjectDetail> projectDetailList){
+    List<FeeCategory> parentFeeList = feeCategoryRepository.queryByIdIn(projectDetailList.stream().map(ProjectDetail::getFeeCategoryId).collect(Collectors.toList()));
+    List<FeeCategory> childFeeList = feeCategoryRepository.queryByIdIn(projectDetailList.stream().map(ProjectDetail::getFeeChildCategoryId).collect(Collectors.toList()));
+    List<Provider> providerList = providerRepository.queryByIdIn(projectDetailList.stream().map(ProjectDetail::getProviderId).collect(Collectors.toList()));
+
+    // 费用项 id-名称 hash
+    HashMap<Integer, String> parentFeeNameHash = new HashMap<>(parentFeeList.size());
+    HashMap<Integer, String> childFeeNameHash = new HashMap<>(childFeeList.size());
+    parentFeeList.forEach(feeCategory -> parentFeeNameHash.put(feeCategory.getId(), feeCategory.getName()));
+    childFeeList.forEach(feeCategory -> childFeeNameHash.put(feeCategory.getId(), feeCategory.getName()));
+
+    // 供应商 id-名称 hash
+    HashMap<Integer, String> providerNameHash = new HashMap<>(projectDetailList.size());
+    providerList.forEach(provider -> providerNameHash.put(provider.getId(), provider.getName()));
+
+    List<ProjectFeeDetailOplog> projectFeeDetailOplogs = new ArrayList<>();
+
+    for (ProjectDetail projectDetail : projectDetailList){
+      ProjectFeeDetailOplog detailOplog = new ProjectFeeDetailOplog();
+      detailOplog.setBudgetAmount(projectDetail.getBudgetAmount());
+      detailOplog.setRealAmount(projectDetail.getRealAmount());
+      detailOplog.setRankScore(projectDetail.getRankScore());
+      detailOplog.setRemark(projectDetail.getRemark());
+      detailOplog.setFeeCategoryName(parentFeeNameHash.get(projectDetail.getFeeCategoryId()));
+      detailOplog.setFeeChildCategoryName(childFeeNameHash.get(projectDetail.getFeeChildCategoryId()));
+      detailOplog.setProviderName(providerNameHash.get(projectDetail.getProviderId()));
+      projectFeeDetailOplogs.add(detailOplog);
+    }
+
+    return projectFeeDetailOplogs;
+  }
+
   private String dealEnToCn(String result){
     result = result.replaceAll("change to", "变更为");
     result = result.replaceAll("object removed", "删除");
@@ -134,7 +270,7 @@ public class OplogServiceImpl implements IOplogService {
     return result;
   }
 
-  private void saveOplog(int projectId, String log){
+  private void saveOplog(int projectId, int targetType, String log){
     Subject subject = SecurityUtils.getSubject();
     User user = new User();
     try {
@@ -146,7 +282,7 @@ public class OplogServiceImpl implements IOplogService {
     operationLog.setOperatorName(user.getName());
     operationLog.setOperationInfo(log);
     operationLog.setTargetId(projectId);
-    operationLog.setTargetType(Constants.OPERATION_LOG_TYPE_BASE_INFO);
+    operationLog.setTargetType(targetType);
     operationLogRepository.save(operationLog);
   }
 }

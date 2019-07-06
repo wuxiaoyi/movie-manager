@@ -14,4 +14,5 @@ public interface FeeCategoryRepository extends JpaRepository<FeeCategory, Intege
   List<FeeCategory> queryByState(int state);
   FeeCategory findByCategoryTypeAndParentCategoryIdAndName(int type, int parentId, String name);
   FeeCategory findByCategoryTypeAndName(int type, String name);
+  List<FeeCategory> queryByIdIn(List<Integer> ids);
 }
