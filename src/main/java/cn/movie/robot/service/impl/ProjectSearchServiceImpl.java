@@ -47,12 +47,7 @@ public class ProjectSearchServiceImpl implements IProjectSearchService {
     List<Integer> memberProjectIds = queryProjectIdByMember(projectSearchVo);
     if (Objects.nonNull(memberProjectIds)){
       if (memberProjectIds.size() == 0){
-        PageBean<Project> projectPageBean = new PageBean<>(
-            0,
-            0,
-            null
-        );
-        return Result.succ(projectPageBean);
+        return emptyResult();
       }
       projectIds = new ArrayList<>();
       projectIds.addAll(memberProjectIds);
@@ -182,5 +177,14 @@ public class ProjectSearchServiceImpl implements IProjectSearchService {
 
       return criteriaQuery.where(predicates.toArray(new Predicate[0])).getRestriction();
     };
+  }
+
+  private Result emptyResult(){
+    PageBean<Project> projectPageBean = new PageBean<>(
+        0,
+        0,
+        null
+    );
+    return Result.succ(projectPageBean);
   }
 }
