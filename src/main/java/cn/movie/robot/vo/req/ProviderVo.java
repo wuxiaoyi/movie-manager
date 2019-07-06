@@ -14,5 +14,5 @@ public class ProviderVo {
 
   private String bankName;
 
-  private int cellphone;
+  private String cellphone;
 }

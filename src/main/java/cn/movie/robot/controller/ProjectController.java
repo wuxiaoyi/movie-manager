@@ -1,5 +1,6 @@
 package cn.movie.robot.controller;
 
+import cn.movie.robot.common.Constants;
 import cn.movie.robot.service.IOplogService;
 import cn.movie.robot.service.IProjectService;
 import cn.movie.robot.vo.common.Result;
@@ -8,8 +9,13 @@ import cn.movie.robot.vo.req.project.ProjectBaseInfoVo;
 import cn.movie.robot.vo.req.project.ProjectLastStateInfoVo;
 import cn.movie.robot.vo.req.project.ProjectShottingInfoVo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+
+import static org.springframework.data.domain.Sort.Direction.ASC;
 
 /**
  * @author Wuxiaoyi
@@ -28,6 +34,12 @@ public class ProjectController {
   @PostMapping("")
   public Result create(@RequestParam("name") String name){
     return projectService.create(name);
+  }
+
+  @GetMapping("")
+  public Result list(@RequestParam("page") int page, @RequestParam("page_size") int pageSize){
+    Pageable pageable = PageRequest.of(page-1, pageSize, Sort.by(ASC, Constants.COMMON_FIELD_NAME_ID));
+    return projectService.queryAll(pageable);
   }
 
   @GetMapping("/{id}/base_info")

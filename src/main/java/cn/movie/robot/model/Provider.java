@@ -33,7 +33,7 @@ public class Provider {
 
   private String bankName;
 
-  private int cellphone;
+  private String cellphone;
 
   private int state;
 

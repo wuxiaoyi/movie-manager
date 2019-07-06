@@ -1,9 +1,9 @@
 package cn.movie.robot.controller;
 
 import cn.movie.robot.common.Constants;
-import cn.movie.robot.service.IProviderService;
+import cn.movie.robot.service.IFeeCategoryService;
 import cn.movie.robot.vo.common.Result;
-import cn.movie.robot.vo.req.ProviderVo;
+import cn.movie.robot.vo.req.FeeCategoryVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -15,29 +15,28 @@ import static org.springframework.data.domain.Sort.Direction.ASC;
 
 /**
  * @author Wuxiaoyi
- * @date 2019/7/2
+ * @date 2019/7/6
  */
 @RestController
-@RequestMapping(value = "/api/v1/providers", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-public class ProviderController {
+@RequestMapping(value = "/api/v1/fee_categories", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+public class FeeCategoryController {
 
   @Autowired
-  IProviderService providerService;
+  IFeeCategoryService feeCategoryService;
 
   @GetMapping("")
   public Result list(@RequestParam("page") int page, @RequestParam("page_size") int pageSize){
     Pageable pageable = PageRequest.of(page-1, pageSize, Sort.by(ASC, Constants.COMMON_FIELD_NAME_ID));
-    return providerService.queryAll(pageable);
+    return feeCategoryService.queryAll(pageable);
   }
 
   @PostMapping("")
-  public Result save(@RequestBody ProviderVo providerVo){
-    return providerService.save(providerVo);
+  public Result save(@RequestBody FeeCategoryVo feeCategoryVo){
+    return feeCategoryService.save(feeCategoryVo);
   }
 
-  @DeleteMapping("/{provider_id}")
-  public Result save(@PathVariable("provider_id") Integer providerId){
-    return providerService.forbiddenProvider(providerId);
+  @DeleteMapping("/{fee_category_id}")
+  public Result save(@PathVariable("fee_category_id") Integer id){
+    return feeCategoryService.forbidden(id);
   }
-
 }

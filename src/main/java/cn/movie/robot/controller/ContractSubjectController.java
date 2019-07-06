@@ -30,11 +30,6 @@ public class ContractSubjectController {
     return contractSubjectService.queryAll(pageable);
   }
 
-  @GetMapping("/normal_all")
-  public Result queryAllNormal(){
-    return contractSubjectService.queryNormal();
-  }
-
   @PostMapping("")
   public Result save(@RequestParam("name") String name){
     return contractSubjectService.save(name);

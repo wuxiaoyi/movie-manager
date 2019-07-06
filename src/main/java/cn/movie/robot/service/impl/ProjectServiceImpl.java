@@ -2,13 +2,17 @@ package cn.movie.robot.service.impl;
 
 import cn.movie.robot.dao.ProjectRepository;
 import cn.movie.robot.model.Project;
+import cn.movie.robot.model.Provider;
 import cn.movie.robot.service.IOplogService;
 import cn.movie.robot.service.IProjectDetailService;
 import cn.movie.robot.service.IProjectMemberService;
 import cn.movie.robot.service.IProjectService;
 import cn.movie.robot.vo.common.Result;
 import cn.movie.robot.vo.req.project.ProjectBaseInfoVo;
+import cn.movie.robot.vo.resp.PageBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -33,6 +37,17 @@ public class ProjectServiceImpl implements IProjectService {
 
   @Autowired
   IOplogService oplogService;
+
+  @Override
+  public Result queryAll(Pageable pageable) {
+    Page<Project> projectPage = projectRepository.findAll(pageable);
+    PageBean<Project> projectPageBean = new PageBean<>(
+        projectPage.getTotalElements(),
+        projectPage.getTotalPages(),
+        projectPage.getContent()
+    );
+    return Result.succ(projectPageBean);
+  }
 
   @Override
   @Transactional(rollbackOn = Exception.class)

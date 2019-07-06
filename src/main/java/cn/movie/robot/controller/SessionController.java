@@ -5,6 +5,7 @@ import cn.movie.robot.model.User;
 import cn.movie.robot.service.ISessionService;
 import cn.movie.robot.service.IUserService;
 import cn.movie.robot.vo.common.Result;
+import cn.movie.robot.vo.req.SignInVo;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.apache.shiro.subject.Subject;
@@ -29,8 +30,8 @@ public class SessionController {
   IUserService userService;
 
   @PostMapping("login")
-  public Result login(@RequestParam("email") String email, @RequestParam("password") String password) {
-    return sessionService.login(email, password);
+  public Result login(@RequestBody SignInVo signInVo) {
+    return sessionService.login(signInVo.getEmail(), signInVo.getPassword());
   }
 
   @DeleteMapping("logout")

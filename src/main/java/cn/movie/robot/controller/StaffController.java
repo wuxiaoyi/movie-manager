@@ -29,11 +29,6 @@ public class StaffController {
     return staffService.queryAll(pageable);
   }
 
-  @GetMapping("/normal_all")
-  public Result queryAllNormal(@RequestParam("ascription") Integer ascription){
-    return staffService.queryNormal(ascription);
-  }
-
   @PostMapping("")
   public Result save(@RequestParam("name") String name, @RequestParam("ascription") Integer ascription){
     return staffService.save(name, ascription);
