@@ -39,4 +39,9 @@ public class FeeCategoryController {
   public Result save(@PathVariable("fee_category_id") Integer id){
     return feeCategoryService.forbidden(id);
   }
+
+  @PutMapping("/{fee_category_id}")
+  public Result update(@PathVariable("fee_category_id") Integer id, @RequestBody FeeCategoryVo feeCategoryVo){
+    return feeCategoryService.update(id, feeCategoryVo);
+  }
 }

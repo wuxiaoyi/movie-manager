@@ -6,6 +6,7 @@ import cn.movie.robot.model.Staff;
 import cn.movie.robot.service.IStaffService;
 import cn.movie.robot.utils.DateUtil;
 import cn.movie.robot.vo.common.Result;
+import cn.movie.robot.vo.req.StaffVo;
 import cn.movie.robot.vo.resp.PageBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -61,11 +62,25 @@ public class StaffServiceImpl implements IStaffService {
   }
 
   @Override
-  public Result save(String name, Integer ascription) {
+  public Result save(StaffVo staffVo) {
     Staff staff = new Staff();
-    staff.setName(name);
-    staff.setAscription(ascription);
+    staff.setName(staffVo.getName());
+    staff.setAscription(staffVo.getAscription());
+    staff.setCellphone(staffVo.getCellphone());
     staffRepository.save(staff);
     return Result.succ();
+  }
+
+  @Override
+  public Result update(Integer staffId, StaffVo staffVo) {
+    Staff staff = staffRepository.getOne(staffId);
+    if (Objects.isNull(staff)){
+      return Result.error("该员工不存在");
+    }
+    staff.setName(staffVo.getName());
+    staff.setAscription(staffVo.getAscription());
+    staff.setCellphone(staffVo.getCellphone());
+    staffRepository.save(staff);
+    return null;
   }
 }

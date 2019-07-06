@@ -60,4 +60,15 @@ public class ContractSubjectServiceImpl implements IContractSubjectService {
     contractSubjectRepository.save(contractSubject);
     return null;
   }
+
+  @Override
+  public Result update(Integer contractId, String name) {
+    ContractSubject contractSubject = contractSubjectRepository.getOne(contractId);
+    if (Objects.isNull(contractSubject)){
+      return Result.error("该合同主体不存在");
+    }
+    contractSubject.setName(name);
+    contractSubjectRepository.save(contractSubject);
+    return Result.succ();
+  }
 }

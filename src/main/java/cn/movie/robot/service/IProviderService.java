@@ -30,9 +30,17 @@ public interface IProviderService {
   Result forbiddenProvider(Integer providerId);
 
   /**
-   * 创建员工
+   * 创建供应商
    * @param providerVo
    * @return
    */
   Result save(ProviderVo providerVo);
+
+  /**
+   * 更新供应商
+   * @param providerId
+   * @param providerVo
+   * @return
+   */
+  Result update(Integer providerId, ProviderVo providerVo);
 }

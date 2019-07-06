@@ -3,6 +3,7 @@ package cn.movie.robot.controller;
 import cn.movie.robot.common.Constants;
 import cn.movie.robot.service.IStaffService;
 import cn.movie.robot.vo.common.Result;
+import cn.movie.robot.vo.req.StaffVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -30,8 +31,8 @@ public class StaffController {
   }
 
   @PostMapping("")
-  public Result save(@RequestParam("name") String name, @RequestParam("ascription") Integer ascription){
-    return staffService.save(name, ascription);
+  public Result save(@RequestBody StaffVo staffVo){
+    return staffService.save(staffVo);
   }
 
   @DeleteMapping("/{staff_id}")
@@ -39,4 +40,8 @@ public class StaffController {
     return staffService.forbiddenStaff(staffId);
   }
 
+  @PutMapping("/{staff_id}")
+  public Result save(@PathVariable("staff_id") Integer staffId, @RequestBody StaffVo staffVo){
+    return staffService.update(staffId, staffVo);
+  }
 }

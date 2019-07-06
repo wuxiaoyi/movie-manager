@@ -63,4 +63,18 @@ public class ProviderServiceImpl implements IProviderService {
     providerRepository.save(provider);
     return Result.succ();
   }
+
+  @Override
+  public Result update(Integer providerId, ProviderVo providerVo) {
+    Provider provider = providerRepository.getOne(providerId);
+    if (Objects.isNull(provider)){
+      return Result.error("该供应商不存在");
+    }
+    provider.setName(providerVo.getName());
+    provider.setBankName(providerVo.getBankName());
+    provider.setBankAccount(providerVo.getBankAccount());
+    provider.setCellphone(providerVo.getCellphone());
+    providerRepository.save(provider);
+    return Result.succ();
+  }
 }

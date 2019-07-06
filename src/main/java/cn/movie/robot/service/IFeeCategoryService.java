@@ -35,4 +35,12 @@ public interface IFeeCategoryService {
    * @return
    */
   Result save(FeeCategoryVo feeCategoryVo);
+
+  /**
+   * 更新
+   * @param id
+   * @param feeCategoryVo
+   * @return
+   */
+  Result update(Integer id, FeeCategoryVo feeCategoryVo);
 }

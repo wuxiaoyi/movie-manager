@@ -36,8 +36,13 @@ public class ProviderController {
   }
 
   @DeleteMapping("/{provider_id}")
-  public Result save(@PathVariable("provider_id") Integer providerId){
+  public Result forbidden(@PathVariable("provider_id") Integer providerId){
     return providerService.forbiddenProvider(providerId);
+  }
+
+  @PutMapping("/{provider_id}")
+  public Result update(@PathVariable("provider_id") Integer providerId, @RequestBody ProviderVo providerVo){
+    return providerService.update(providerId, providerVo);
   }
 
 }

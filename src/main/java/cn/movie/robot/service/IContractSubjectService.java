@@ -35,4 +35,12 @@ public interface IContractSubjectService {
    */
   Result save(String name);
 
+  /**
+   * 更新合同主体
+   * @param contractId
+   * @param name
+   * @return
+   */
+  Result update(Integer contractId, String name);
+
 }

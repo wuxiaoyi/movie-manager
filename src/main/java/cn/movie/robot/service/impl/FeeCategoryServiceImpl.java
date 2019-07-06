@@ -56,6 +56,34 @@ public class FeeCategoryServiceImpl implements IFeeCategoryService {
 
   @Override
   public Result save(FeeCategoryVo feeCategoryVo) {
+    if (Objects.nonNull(findExistFeeCategory(feeCategoryVo))){
+      return Result.error("费用项名称重复");
+    }
+    FeeCategory newFee = new FeeCategory();
+    newFee.setStage(feeCategoryVo.getStage());
+    newFee.setCategoryType(feeCategoryVo.getCategoryType());
+    newFee.setName(feeCategoryVo.getName());
+    newFee.setParentCategoryId(newFee.getParentCategoryId());
+    feeCategoryRepository.save(newFee);
+    return Result.succ();
+  }
+
+  @Override
+  public Result update(Integer id, FeeCategoryVo feeCategoryVo) {
+    FeeCategory existFeeCategory = findExistFeeCategory(feeCategoryVo);
+    if (Objects.nonNull(existFeeCategory) && existFeeCategory.getId().equals(id)){
+      return Result.error("费用项名称重复");
+    }
+    FeeCategory feeCategory = feeCategoryRepository.getOne(id);
+    feeCategory.setStage(feeCategoryVo.getStage());
+    feeCategory.setCategoryType(feeCategoryVo.getCategoryType());
+    feeCategory.setName(feeCategoryVo.getName());
+    feeCategory.setParentCategoryId(feeCategory.getParentCategoryId());
+    feeCategoryRepository.save(feeCategory);
+    return null;
+  }
+
+  private FeeCategory findExistFeeCategory(FeeCategoryVo feeCategoryVo){
     FeeCategory feeCategory;
     if (feeCategoryVo.getCategoryType() == Constants.FEE_CATEGORY_TYPE_CHILD){
       feeCategory = feeCategoryRepository.findByCategoryTypeAndParentCategoryIdAndName(
@@ -69,15 +97,6 @@ public class FeeCategoryServiceImpl implements IFeeCategoryService {
           feeCategoryVo.getName()
       );
     }
-    if (Objects.nonNull(feeCategory)){
-      return Result.error("费用项名称重复");
-    }
-    FeeCategory newFee = new FeeCategory();
-    newFee.setStage(feeCategoryVo.getStage());
-    newFee.setCategoryType(feeCategoryVo.getCategoryType());
-    newFee.setName(feeCategoryVo.getName());
-    newFee.setParentCategoryId(newFee.getParentCategoryId());
-    feeCategoryRepository.save(newFee);
-    return Result.succ();
+    return feeCategory;
   }
 }

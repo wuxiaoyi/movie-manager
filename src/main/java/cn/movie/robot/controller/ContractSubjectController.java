@@ -3,6 +3,7 @@ package cn.movie.robot.controller;
 import cn.movie.robot.common.Constants;
 import cn.movie.robot.service.IContractSubjectService;
 import cn.movie.robot.vo.common.Result;
+import cn.movie.robot.vo.req.ContractSubjectVo;
 import cn.movie.robot.vo.req.ProviderVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -31,12 +32,17 @@ public class ContractSubjectController {
   }
 
   @PostMapping("")
-  public Result save(@RequestParam("name") String name){
-    return contractSubjectService.save(name);
+  public Result save(@RequestBody ContractSubjectVo contractSubjectVo){
+    return contractSubjectService.save(contractSubjectVo.getName());
   }
 
   @DeleteMapping("/{contract_id}")
   public Result save(@PathVariable("contract_id") Integer contractId){
     return contractSubjectService.forbiddenContractSubject(contractId);
+  }
+
+  @PutMapping("/{contract_id}")
+  public Result update(@PathVariable("contract_id") Integer contractId, @RequestBody ContractSubjectVo contractSubjectVo){
+    return contractSubjectService.update(contractId, contractSubjectVo.getName());
   }
 }
