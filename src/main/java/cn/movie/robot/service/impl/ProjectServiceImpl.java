@@ -1,8 +1,11 @@
 package cn.movie.robot.service.impl;
 
+import cn.movie.robot.common.Constants;
+import cn.movie.robot.dao.ProjectDetailRepository;
 import cn.movie.robot.dao.ProjectMemberRepository;
 import cn.movie.robot.dao.ProjectRepository;
 import cn.movie.robot.model.Project;
+import cn.movie.robot.model.ProjectDetail;
 import cn.movie.robot.model.ProjectMember;
 import cn.movie.robot.model.Provider;
 import cn.movie.robot.service.IOplogService;
@@ -46,6 +49,9 @@ public class ProjectServiceImpl implements IProjectService {
 
   @Resource
   ProjectMemberRepository projectMemberRepository;
+
+  @Resource
+  ProjectDetailRepository projectDetailRepository;
 
   @Override
   public Result queryAll(Pageable pageable) {

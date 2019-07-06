@@ -7,11 +7,14 @@ import cn.movie.robot.dao.ProjectRepository;
 import cn.movie.robot.model.FeeCategory;
 import cn.movie.robot.model.Project;
 import cn.movie.robot.model.ProjectDetail;
+import cn.movie.robot.service.IProjectAmountService;
 import cn.movie.robot.service.IProjectDetailService;
+import cn.movie.robot.service.IProjectService;
 import cn.movie.robot.vo.common.Result;
 import cn.movie.robot.vo.req.project.ProjectFeeDetailVo;
 import cn.movie.robot.vo.resp.ProjectDetailRespVo;
 import cn.movie.robot.vo.resp.ProjectFeeRespVo;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -36,6 +39,9 @@ public class ProjectDetailServiceImpl implements IProjectDetailService {
 
   @Resource
   ProjectDetailRepository projectDetailRepository;
+
+  @Autowired
+  IProjectAmountService projectAmountService;
 
   @Override
   public Result shootingDetail(Integer projectId) {
@@ -71,7 +77,7 @@ public class ProjectDetailServiceImpl implements IProjectDetailService {
 
     int projectStage = Constants.PROJECT_DETAIL_STATG_SHOOTING;
     updateDetails(projectId, projectFeeDetailVoList, projectStage);
-
+    projectAmountService.refreshAmount(projectId);
     return Result.succ();
   }
 
@@ -84,6 +90,7 @@ public class ProjectDetailServiceImpl implements IProjectDetailService {
 
     int projectStage = Constants.PROJECT_DETAIL_STATG_LAST_STATE;
     updateDetails(projectId, projectFeeDetailVoList, projectStage);
+    projectAmountService.refreshAmount(projectId);
 
     return Result.succ();
   }

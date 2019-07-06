@@ -11,5 +11,6 @@ import java.util.List;
  */
 public interface ProjectDetailRepository extends JpaRepository<ProjectDetail, Integer> {
   List<ProjectDetail> queryByProjectIdAndStage(int projectId, int stage);
+  List<ProjectDetail> queryByProjectId(int projectId);
   Integer deleteByIdIn(List<Integer> id);
 }
