@@ -33,4 +33,12 @@ public interface IProjectService {
    */
   Result detail(int projectId);
 
+  /**
+   * 更新项目状态
+   * @param projectId
+   * @param state
+   * @return
+   */
+  Result updateState(int projectId, int state);
+
 }

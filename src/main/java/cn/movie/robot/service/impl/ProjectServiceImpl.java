@@ -4,6 +4,7 @@ import cn.movie.robot.common.Constants;
 import cn.movie.robot.dao.ProjectDetailRepository;
 import cn.movie.robot.dao.ProjectMemberRepository;
 import cn.movie.robot.dao.ProjectRepository;
+import cn.movie.robot.enums.ProjectStateEnum;
 import cn.movie.robot.model.Project;
 import cn.movie.robot.model.ProjectDetail;
 import cn.movie.robot.model.ProjectMember;
@@ -138,5 +139,19 @@ public class ProjectServiceImpl implements IProjectService {
     }
     projectRespVo.setProjectMembers(projectMemberRespVos);
     return Result.succ(projectRespVo);
+  }
+
+  @Override
+  public Result updateState(int projectId, int state) {
+    Project project = projectRepository.getOne(projectId);
+    if (Objects.isNull(project)){
+      return Result.error("项目不存在");
+    }
+    if (ProjectStateEnum.getStates().contains(state)){
+      return Result.error("状态不存在");
+    }
+    project.setState(state);
+    projectRepository.save(project);
+    return Result.succ();
   }
 }

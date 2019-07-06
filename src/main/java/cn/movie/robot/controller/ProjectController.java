@@ -8,6 +8,7 @@ import cn.movie.robot.vo.common.Result;
 import cn.movie.robot.vo.oplog.ProjectBaseInfoOplog;
 import cn.movie.robot.vo.oplog.ProjectLastStateDetailOplog;
 import cn.movie.robot.vo.oplog.ProjectShootingDetailOplog;
+import cn.movie.robot.vo.req.ProjectStateVo;
 import cn.movie.robot.vo.req.project.ProjectBaseInfoVo;
 import cn.movie.robot.vo.req.project.ProjectFeeDetailVo;
 import cn.movie.robot.vo.req.project.ProjectLastStateInfoVo;
@@ -91,5 +92,10 @@ public class ProjectController {
     ProjectLastStateDetailOplog newInfo = oplogService.buildLastStateOplog(id);
     oplogService.saveLastStateOplog(newInfo, oldInfo);
     return result;
+  }
+
+  @PutMapping("/{id}/update_state")
+  public Result updateState(@PathVariable("id") Integer id, @RequestBody ProjectStateVo projectStateVo){
+    return projectService.updateState(id, projectStateVo.getState());
   }
 }

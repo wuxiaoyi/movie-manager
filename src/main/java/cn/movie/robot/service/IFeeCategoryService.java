@@ -20,7 +20,7 @@ public interface IFeeCategoryService {
    * 查询生效的费用类别
    * @return
    */
-  Result queryNormal();
+  Result queryByTypeAndState(int type, int state);
 
   /**
    * 修改状态

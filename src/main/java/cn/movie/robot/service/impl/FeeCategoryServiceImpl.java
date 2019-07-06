@@ -38,8 +38,8 @@ public class FeeCategoryServiceImpl implements IFeeCategoryService {
   }
 
   @Override
-  public Result queryNormal() {
-    List<FeeCategory> feeCategoryList = feeCategoryRepository.queryByState(Constants.COMMON_STATE_NORMAL);
+  public Result queryByTypeAndState(int type, int state) {
+    List<FeeCategory> feeCategoryList = feeCategoryRepository.queryByCategoryTypeAndState(type, state);
     return Result.succ(feeCategoryList);
   }
 
