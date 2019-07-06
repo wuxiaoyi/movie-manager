@@ -12,6 +12,7 @@ import java.util.List;
 public interface FeeCategoryRepository extends JpaRepository<FeeCategory, Integer> {
   List<FeeCategory> queryByStageAndStateAndCategoryType(Integer stage, Integer state, Integer type);
   List<FeeCategory> queryByCategoryTypeAndState(int type, int state);
+  List<FeeCategory> queryByCategoryType(int type);
   FeeCategory findByCategoryTypeAndParentCategoryIdAndName(int type, int parentId, String name);
   FeeCategory findByCategoryTypeAndName(int type, String name);
   List<FeeCategory> queryByIdIn(List<Integer> ids);
