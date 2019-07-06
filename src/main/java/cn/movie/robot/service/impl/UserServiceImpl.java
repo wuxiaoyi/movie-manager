@@ -83,12 +83,12 @@ public class UserServiceImpl implements IUserService {
   }
 
   @Override
-  public Result forbiddenUser(Integer userId) {
+  public Result updateState(Integer userId, int state) {
     User user = userRepository.getOne(userId);
     if (Objects.isNull(user)){
       return Result.error("此用户不存在");
     }
-    user.setState(Constants.COMMON_STATE_FORBIDDEN);
+    user.setState(state);
     userRepository.save(user);
     return Result.succ();
   }

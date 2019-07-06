@@ -22,11 +22,11 @@ public interface IContractSubjectService {
   Result queryNormal();
 
   /**
-   * 禁用合同主体
+   * 更新状态
    * @param contractId
    * @return
    */
-  Result forbiddenContractSubject(Integer contractId);
+  Result updateState(Integer contractId, int state);
 
   /**
    * 保存合同主体

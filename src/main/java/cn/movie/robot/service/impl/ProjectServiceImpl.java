@@ -85,4 +85,14 @@ public class ProjectServiceImpl implements IProjectService {
 
     return Result.succ();
   }
+
+  @Override
+  public Result detail(int projectId) {
+    Project project = projectRepository.getOne(projectId);
+    if (Objects.isNull(project)){
+      return Result.error("项目不存在");
+    }
+
+    return null;
+  }
 }

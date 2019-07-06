@@ -23,11 +23,11 @@ public interface IUserService {
   Result signUp(SignUpVo signUpVo);
 
   /**
-   * 禁用用户
+   * 更新状态
    * @param userId
    * @return
    */
-  Result forbiddenUser(Integer userId);
+  Result updateState(Integer userId, int state);
 
   /**
    * 生成忘记密码key

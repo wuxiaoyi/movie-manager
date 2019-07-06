@@ -5,6 +5,7 @@ import cn.movie.robot.model.User;
 import cn.movie.robot.service.ISessionService;
 import cn.movie.robot.service.IUserService;
 import cn.movie.robot.vo.common.Result;
+import cn.movie.robot.vo.req.ResetPwdVo;
 import cn.movie.robot.vo.req.SignInVo;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
@@ -47,10 +48,10 @@ public class SessionController {
   }
 
   @PutMapping("reset_pwd")
-  public Result resetPwd(@RequestParam("password") String password){
+  public Result resetPwd(@RequestBody ResetPwdVo resetPwdVo){
     Subject subject = SecurityUtils.getSubject();
     User user = (User)subject.getPrincipal();
-    return userService.resetPwd(user.getId(), password);
+    return userService.resetPwd(user.getId(), resetPwdVo.getPassword());
   }
 
   @RequiresPermissions("user:view")

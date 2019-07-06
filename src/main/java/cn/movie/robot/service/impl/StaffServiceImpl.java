@@ -51,12 +51,12 @@ public class StaffServiceImpl implements IStaffService {
   }
 
   @Override
-  public Result forbiddenStaff(Integer staffId) {
+  public Result updateState(Integer staffId, int state) {
     Staff staff = staffRepository.getOne(staffId);
     if (Objects.isNull(staff)){
       return Result.error("该员工不存在");
     }
-    staff.setState(Constants.COMMON_STATE_FORBIDDEN);
+    staff.setState(state);
     staffRepository.save(staff);
     return Result.succ();
   }

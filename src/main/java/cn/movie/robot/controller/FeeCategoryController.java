@@ -36,8 +36,13 @@ public class FeeCategoryController {
   }
 
   @DeleteMapping("/{fee_category_id}")
-  public Result save(@PathVariable("fee_category_id") Integer id){
-    return feeCategoryService.forbidden(id);
+  public Result forbidden(@PathVariable("fee_category_id") Integer id){
+    return feeCategoryService.updateState(id, Constants.COMMON_STATE_FORBIDDEN);
+  }
+
+  @PutMapping("/{fee_category_id}/recover")
+  public Result recover(@PathVariable("fee_category_id") Integer id){
+    return feeCategoryService.updateState(id, Constants.COMMON_STATE_NORMAL);
   }
 
   @PutMapping("/{fee_category_id}")

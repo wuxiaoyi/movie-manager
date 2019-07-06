@@ -37,8 +37,13 @@ public class ContractSubjectController {
   }
 
   @DeleteMapping("/{contract_id}")
-  public Result save(@PathVariable("contract_id") Integer contractId){
-    return contractSubjectService.forbiddenContractSubject(contractId);
+  public Result forbidden(@PathVariable("contract_id") Integer contractId){
+    return contractSubjectService.updateState(contractId, Constants.COMMON_STATE_FORBIDDEN);
+  }
+
+  @PutMapping("/{contract_id}/recover")
+  public Result recover(@PathVariable("contract_id") Integer contractId){
+    return contractSubjectService.updateState(contractId, Constants.COMMON_STATE_NORMAL);
   }
 
   @PutMapping("/{contract_id}")

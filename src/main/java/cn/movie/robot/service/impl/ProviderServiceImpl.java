@@ -43,12 +43,12 @@ public class ProviderServiceImpl implements IProviderService {
   }
 
   @Override
-  public Result forbiddenProvider(Integer providerId) {
+  public Result updateState(Integer providerId, int state) {
     Provider provider = providerRepository.getOne(providerId);
     if (Objects.isNull(provider)){
       return Result.error("该供应商不存在");
     }
-    provider.setState(Constants.COMMON_STATE_FORBIDDEN);
+    provider.setState(state);
     providerRepository.save(provider);
     return Result.succ();
   }

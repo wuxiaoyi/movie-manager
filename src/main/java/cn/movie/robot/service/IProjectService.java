@@ -26,4 +26,11 @@ public interface IProjectService {
    */
   Result saveBaseInfo(int projectId, ProjectBaseInfoVo projectBaseInfoVo);
 
+  /**
+   * 详情
+   * @param projectId
+   * @return
+   */
+  Result detail(int projectId);
+
 }

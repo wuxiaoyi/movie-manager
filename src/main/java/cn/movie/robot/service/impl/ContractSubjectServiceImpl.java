@@ -43,12 +43,12 @@ public class ContractSubjectServiceImpl implements IContractSubjectService {
   }
 
   @Override
-  public Result forbiddenContractSubject(Integer contractId) {
+  public Result updateState(Integer contractId, int state) {
     ContractSubject contractSubject = contractSubjectRepository.getOne(contractId);
     if (Objects.isNull(contractSubject)){
       return Result.error("该合同主体不存在");
     }
-    contractSubject.setState(Constants.COMMON_STATE_FORBIDDEN);
+    contractSubject.setState(state);
     contractSubjectRepository.save(contractSubject);
     return null;
   }

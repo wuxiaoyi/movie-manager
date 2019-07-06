@@ -36,12 +36,17 @@ public class StaffController {
   }
 
   @DeleteMapping("/{staff_id}")
-  public Result save(@PathVariable("staff_id") Integer staffId){
-    return staffService.forbiddenStaff(staffId);
+  public Result forbidden(@PathVariable("staff_id") Integer staffId){
+    return staffService.updateState(staffId, Constants.COMMON_STATE_FORBIDDEN);
+  }
+
+  @PutMapping("/{staff_id}/recover")
+  public Result recover(@PathVariable("staff_id") Integer staffId){
+    return staffService.updateState(staffId, Constants.COMMON_STATE_NORMAL);
   }
 
   @PutMapping("/{staff_id}")
-  public Result save(@PathVariable("staff_id") Integer staffId, @RequestBody StaffVo staffVo){
+  public Result update(@PathVariable("staff_id") Integer staffId, @RequestBody StaffVo staffVo){
     return staffService.update(staffId, staffVo);
   }
 }

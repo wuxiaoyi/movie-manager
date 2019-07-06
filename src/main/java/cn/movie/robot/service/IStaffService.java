@@ -23,11 +23,11 @@ public interface IStaffService {
   Result queryNormal(Integer ascription);
 
   /**
-   * 禁用员工
+   * 更新状态
    * @param staffId
    * @return
    */
-  Result forbiddenStaff(Integer staffId);
+  Result updateState(Integer staffId, int state);
 
   /**
    * 创建员工

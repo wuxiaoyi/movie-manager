@@ -4,6 +4,7 @@ import cn.movie.robot.common.Constants;
 import cn.movie.robot.service.IRoleService;
 import cn.movie.robot.service.IUserService;
 import cn.movie.robot.vo.common.Result;
+import cn.movie.robot.vo.req.ResetPwdVo;
 import cn.movie.robot.vo.req.SignUpVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -49,9 +50,9 @@ public class UserController {
     return userService.signUpKey();
   }
 
-  @GetMapping("/{user_id}/reset_pwd")
-  public Result resetPwd(@PathVariable("user_id") Integer userId, @RequestParam("password") String password){
-    return userService.resetPwd(userId, password);
+  @PutMapping("/{user_id}/reset_pwd")
+  public Result resetPwd(@PathVariable("user_id") Integer userId, @RequestBody ResetPwdVo resetPwdVo){
+    return userService.resetPwd(userId, resetPwdVo.getPassword());
   }
 
   @PostMapping("")
@@ -60,8 +61,13 @@ public class UserController {
   }
 
   @DeleteMapping("/{user_id}")
-  public Result forbiddenUser(@PathVariable("user_id") Integer userId){
-    return userService.forbiddenUser(userId);
+  public Result forbidden(@PathVariable("user_id") Integer userId){
+    return userService.updateState(userId, Constants.COMMON_STATE_FORBIDDEN);
+  }
+
+  @PutMapping("/{user_id}/recover")
+  public Result recover(@PathVariable("user_id") Integer userId){
+    return userService.updateState(userId, Constants.COMMON_STATE_NORMAL);
   }
 
 }

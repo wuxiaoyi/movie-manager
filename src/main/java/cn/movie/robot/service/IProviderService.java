@@ -27,7 +27,7 @@ public interface IProviderService {
    * @param providerId
    * @return
    */
-  Result forbiddenProvider(Integer providerId);
+  Result updateState(Integer providerId, int state);
 
   /**
    * 创建供应商

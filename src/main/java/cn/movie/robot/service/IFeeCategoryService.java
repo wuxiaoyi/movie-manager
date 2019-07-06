@@ -23,11 +23,11 @@ public interface IFeeCategoryService {
   Result queryNormal();
 
   /**
-   * 禁用
+   * 修改状态
    * @param id
    * @return
    */
-  Result forbidden(Integer id);
+  Result updateState(Integer id, int state);
 
   /**
    * 保存

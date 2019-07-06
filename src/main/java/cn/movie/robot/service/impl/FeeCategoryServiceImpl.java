@@ -44,12 +44,12 @@ public class FeeCategoryServiceImpl implements IFeeCategoryService {
   }
 
   @Override
-  public Result forbidden(Integer id) {
+  public Result updateState(Integer id, int state) {
     FeeCategory feeCategory = feeCategoryRepository.getOne(id);
     if (Objects.isNull(feeCategory)){
       return Result.error("该费用项不存在");
     }
-    feeCategory.setStage(Constants.COMMON_STATE_FORBIDDEN);
+    feeCategory.setStage(state);
     feeCategoryRepository.save(feeCategory);
     return Result.succ();
   }
