@@ -13,6 +13,10 @@ import java.util.List;
  */
 @Data
 public class ProjectSearchVo {
+  private int page;
+
+  private int pageSize;
+
   private String sid;
 
   private String name;
