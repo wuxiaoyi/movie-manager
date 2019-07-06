@@ -13,6 +13,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.domain.Specification;
 
 import javax.annotation.Resource;
+import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import java.math.BigDecimal;
 import java.util.*;
@@ -94,28 +95,33 @@ public class ProjectSearchServiceImpl implements IProjectSearchService {
 //        predicates.add(criteriaBuilder.like(root.<String>get("company_name"), projectSearchVo.getCompanyName()));
 //      }
 
+
+      if (Objects.nonNull(projectIds)){
+        predicates.add(root.get("id").in(projectIds));
+      }
+
       /**
        * 金额start
        */
       if (Objects.nonNull(projectSearchVo.getBudgetCostStart())){
-        predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.<BigDecimal>get("budget_cost"), projectSearchVo.getBudgetCostStart()));
+        predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("budget_cost"), projectSearchVo.getBudgetCostStart()));
       }
       if (Objects.nonNull(projectSearchVo.getBudgetCostEnd())){
-        predicates.add(criteriaBuilder.lessThanOrEqualTo(root.<BigDecimal>get("budget_cost"), projectSearchVo.getBudgetCostEnd()));
+        predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("budget_cost"), projectSearchVo.getBudgetCostEnd()));
       }
 
       if (Objects.nonNull(projectSearchVo.getRealCostStart())){
-        predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.<BigDecimal>get("real_cost"), projectSearchVo.getRealCostStart()));
+        predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("real_cost"), projectSearchVo.getRealCostStart()));
       }
       if (Objects.nonNull(projectSearchVo.getRealCostEnd())){
-        predicates.add(criteriaBuilder.lessThanOrEqualTo(root.<BigDecimal>get("real_cost"), projectSearchVo.getRealCostEnd()));
+        predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("real_cost"), projectSearchVo.getRealCostEnd()));
       }
 
       if (Objects.nonNull(projectSearchVo.getContractAmountStart())){
-        predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.<BigDecimal>get("contract_amount"), projectSearchVo.getContractAmountStart()));
+        predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("contract_amount"), projectSearchVo.getContractAmountStart()));
       }
       if (Objects.nonNull(projectSearchVo.getContractAmountEnd())){
-        predicates.add(criteriaBuilder.lessThanOrEqualTo(root.<BigDecimal>get("contract_amount"), projectSearchVo.getContractAmountEnd()));
+        predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("contract_amount"), projectSearchVo.getContractAmountEnd()));
       }
       /**
        * 金额end
@@ -124,24 +130,24 @@ public class ProjectSearchServiceImpl implements IProjectSearchService {
        * 成片，拍摄start
        */
       if (Objects.nonNull(projectSearchVo.getFilmDurationStart())){
-        predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.<Integer>get("film_duration"), projectSearchVo.getFilmDurationStart()));
+        predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("film_duration"), projectSearchVo.getFilmDurationStart()));
       }
       if (Objects.nonNull(projectSearchVo.getFilmDurationEnd())){
-        predicates.add(criteriaBuilder.lessThanOrEqualTo(root.<Integer>get("film_duration"), projectSearchVo.getFilmDurationEnd()));
+        predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("film_duration"), projectSearchVo.getFilmDurationEnd()));
       }
 
       if (Objects.nonNull(projectSearchVo.getShootingDurationStart())){
-        predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.<Integer>get("shooting_duration"), projectSearchVo.getShootingDurationStart()));
+        predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("shooting_duration"), projectSearchVo.getShootingDurationStart()));
       }
       if (Objects.nonNull(projectSearchVo.getShootingDurationEnd())){
-        predicates.add(criteriaBuilder.lessThanOrEqualTo(root.<Integer>get("shooting_duration"), projectSearchVo.getShootingDurationEnd()));
+        predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("shooting_duration"), projectSearchVo.getShootingDurationEnd()));
       }
 
       if (Objects.nonNull(projectSearchVo.getShootingStartAtStart())){
-        predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.<Date>get("shooting_duration"), projectSearchVo.getShootingStartAtStart()));
+        predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("shooting_duration"), projectSearchVo.getShootingStartAtStart()));
       }
       if (Objects.nonNull(projectSearchVo.getShootingStartAtEnd())){
-        predicates.add(criteriaBuilder.lessThanOrEqualTo(root.<Date>get("shooting_duration"), projectSearchVo.getShootingStartAtEnd()));
+        predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("shooting_duration"), projectSearchVo.getShootingStartAtEnd()));
       }
       /**
        * 成片，拍摄end
