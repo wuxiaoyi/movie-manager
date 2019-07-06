@@ -50,7 +50,7 @@ public class ContractSubjectServiceImpl implements IContractSubjectService {
     }
     contractSubject.setState(state);
     contractSubjectRepository.save(contractSubject);
-    return null;
+    return Result.succ();
   }
 
   @Override
@@ -58,7 +58,7 @@ public class ContractSubjectServiceImpl implements IContractSubjectService {
     ContractSubject contractSubject = new ContractSubject();
     contractSubject.setName(name);
     contractSubjectRepository.save(contractSubject);
-    return null;
+    return Result.succ();
   }
 
   @Override

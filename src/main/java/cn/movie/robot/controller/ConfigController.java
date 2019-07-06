@@ -1,9 +1,6 @@
 package cn.movie.robot.controller;
 
-import cn.movie.robot.service.IContractSubjectService;
-import cn.movie.robot.service.IFeeCategoryService;
-import cn.movie.robot.service.IProviderService;
-import cn.movie.robot.service.IStaffService;
+import cn.movie.robot.service.*;
 import cn.movie.robot.vo.common.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -32,6 +29,9 @@ public class ConfigController {
   @Autowired
   private IFeeCategoryService feeCategoryService;
 
+  @Autowired
+  private IConfigService configService;
+
   @GetMapping("/contract_subjects")
   public Result contractSubjects(){
     return contractSubjectService.queryNormal();
@@ -48,7 +48,17 @@ public class ConfigController {
   }
 
   @GetMapping("/fee_categories")
-  public Result fee_categories(){
+  public Result feeCategories(){
     return feeCategoryService.queryNormal();
+  }
+
+  @GetMapping("/member_types")
+  public Result memberTypes(){
+    return configService.memberTypes();
+  }
+
+  @GetMapping("/project_states")
+  public Result projectStates(){
+    return configService.projectStates();
   }
 }

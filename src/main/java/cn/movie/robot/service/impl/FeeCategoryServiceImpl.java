@@ -80,7 +80,7 @@ public class FeeCategoryServiceImpl implements IFeeCategoryService {
     feeCategory.setName(feeCategoryVo.getName());
     feeCategory.setParentCategoryId(feeCategory.getParentCategoryId());
     feeCategoryRepository.save(feeCategory);
-    return null;
+    return Result.succ();
   }
 
   private FeeCategory findExistFeeCategory(FeeCategoryVo feeCategoryVo){
