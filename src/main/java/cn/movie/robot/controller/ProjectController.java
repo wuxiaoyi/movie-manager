@@ -53,17 +53,17 @@ public class ProjectController {
 
   @GetMapping("/{id}/base_info")
   public Result baseInfo(@PathVariable("id") Integer id){
-    return Result.succ();
+    return projectService.detail(id);
   }
 
   @GetMapping("/{id}/shooting_info")
   public Result shootingInfo(@PathVariable("id") Integer id){
-    return Result.succ();
+    return projectDetailService.shootingDetail(id);
   }
 
   @GetMapping("/{id}/last_state_info")
   public Result lastStateInfo(@PathVariable("id") Integer id){
-    return Result.succ();
+    return projectDetailService.lastStateDetail(id);
   }
 
   @PutMapping("/{id}/base_info")

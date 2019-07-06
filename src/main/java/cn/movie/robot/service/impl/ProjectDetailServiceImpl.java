@@ -10,6 +10,8 @@ import cn.movie.robot.model.ProjectDetail;
 import cn.movie.robot.service.IProjectDetailService;
 import cn.movie.robot.vo.common.Result;
 import cn.movie.robot.vo.req.project.ProjectFeeDetailVo;
+import cn.movie.robot.vo.resp.ProjectDetailRespVo;
+import cn.movie.robot.vo.resp.ProjectFeeRespVo;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -34,6 +36,30 @@ public class ProjectDetailServiceImpl implements IProjectDetailService {
 
   @Resource
   ProjectDetailRepository projectDetailRepository;
+
+  @Override
+  public Result shootingDetail(Integer projectId) {
+    Project project = projectRepository.getOne(projectId);
+    if (Objects.isNull(project)){
+      return Result.error("该项目不存在");
+    }
+
+    List<ProjectDetail> projectDetailList = projectDetailRepository.queryByProjectIdAndStage(projectId, Constants.PROJECT_DETAIL_STATG_SHOOTING);
+
+    return Result.succ(buildProjectDetailResp(project, projectDetailList));
+  }
+
+  @Override
+  public Result lastStateDetail(Integer projectId) {
+    Project project = projectRepository.getOne(projectId);
+    if (Objects.isNull(project)){
+      return Result.error("该项目不存在");
+    }
+
+    List<ProjectDetail> projectDetailList = projectDetailRepository.queryByProjectIdAndStage(projectId, Constants.PROJECT_DETAIL_STATG_LAST_STATE);
+
+    return Result.succ(buildProjectDetailResp(project, projectDetailList));
+  }
 
   @Override
   @Transactional
@@ -70,6 +96,29 @@ public class ProjectDetailServiceImpl implements IProjectDetailService {
   @Override
   public List<ProjectDetail> initLastStateInfo(Integer projectId) {
     return initByProjectIdAndStage(projectId, Constants.PROJECT_DETAIL_STATG_LAST_STATE);
+  }
+
+  private ProjectDetailRespVo buildProjectDetailResp(Project project, List<ProjectDetail> projectDetailList){
+    ProjectDetailRespVo projectDetailRespVo = new ProjectDetailRespVo();
+    projectDetailRespVo.setProjectId(project.getId());
+    projectDetailRespVo.setProjectName(project.getName());
+
+    List<ProjectFeeRespVo> projectFeeRespVos = new ArrayList<>();
+    for (ProjectDetail projectDetail : projectDetailList){
+      ProjectFeeRespVo projectFeeRespVo = new ProjectFeeRespVo();
+      projectFeeRespVo.setId(projectDetail.getId());
+      projectFeeRespVo.setBudgetAmount(projectDetail.getBudgetAmount());
+      projectFeeRespVo.setRealAmount(projectDetail.getRealAmount());
+      projectFeeRespVo.setFeeCategoryId(projectDetail.getFeeCategoryId());
+      projectFeeRespVo.setFeeChildCategoryId(projectDetail.getFeeChildCategoryId());
+      projectFeeRespVo.setProviderId(projectDetail.getProviderId());
+      projectFeeRespVo.setRankScore(projectDetail.getRankScore());
+      projectFeeRespVo.setRemark(projectDetail.getRemark());
+      projectFeeRespVo.setStage(projectDetail.getStage());
+      projectFeeRespVos.add(projectFeeRespVo);
+    }
+    projectDetailRespVo.setProjectFees(projectFeeRespVos);
+    return projectDetailRespVo;
   }
 
   private List<ProjectDetail> initByProjectIdAndStage(Integer projectId, Integer stage){

@@ -1,7 +1,9 @@
 package cn.movie.robot.service.impl;
 
+import cn.movie.robot.dao.ProjectMemberRepository;
 import cn.movie.robot.dao.ProjectRepository;
 import cn.movie.robot.model.Project;
+import cn.movie.robot.model.ProjectMember;
 import cn.movie.robot.model.Provider;
 import cn.movie.robot.service.IOplogService;
 import cn.movie.robot.service.IProjectDetailService;
@@ -10,6 +12,8 @@ import cn.movie.robot.service.IProjectService;
 import cn.movie.robot.vo.common.Result;
 import cn.movie.robot.vo.req.project.ProjectBaseInfoVo;
 import cn.movie.robot.vo.resp.PageBean;
+import cn.movie.robot.vo.resp.ProjectMemberRespVo;
+import cn.movie.robot.vo.resp.ProjectRespVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -17,6 +21,8 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import javax.transaction.Transactional;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -37,6 +43,9 @@ public class ProjectServiceImpl implements IProjectService {
 
   @Autowired
   IOplogService oplogService;
+
+  @Resource
+  ProjectMemberRepository projectMemberRepository;
 
   @Override
   public Result queryAll(Pageable pageable) {
@@ -92,7 +101,36 @@ public class ProjectServiceImpl implements IProjectService {
     if (Objects.isNull(project)){
       return Result.error("项目不存在");
     }
+    List<ProjectMember> projectMemberList = projectMemberRepository.queryByProjectId(projectId);
 
-    return null;
+    ProjectRespVo projectRespVo = new ProjectRespVo();
+    projectRespVo.setId(project.getId());
+    projectRespVo.setName(project.getName());
+    projectRespVo.setSid(project.getSid());
+    projectRespVo.setBudgetCost(project.getBudgetCost());
+    projectRespVo.setContractAmount(project.getContractAmount());
+    projectRespVo.setRealCost(project.getRealCost());
+    projectRespVo.setReturnAmount(project.getReturnAmount());
+    projectRespVo.setContractSubjectId(project.getContractSubjectId());
+    projectRespVo.setFilmDuration(project.getFilmDuration());
+    projectRespVo.setShootingBudget(project.getShootingBudget());
+    projectRespVo.setShootingCost(project.getShootingCost());
+    projectRespVo.setShootingDuration(project.getShootingDuration());
+    projectRespVo.setShootingStartAt(project.getShootingStartAt());
+    projectRespVo.setLateStateBudget(project.getLateStateBudget());
+    projectRespVo.setLateStateCost(project.getLateStateCost());
+    projectRespVo.setState(project.getState());
+    projectRespVo.setCreatedAt(project.getCreatedAt());
+    projectRespVo.setUpdatedAt(project.getUpdatedAt());
+
+    List<ProjectMemberRespVo> projectMemberRespVos = new ArrayList<>();
+    for (ProjectMember projectMember : projectMemberList){
+      ProjectMemberRespVo projectMemberRespVo = new ProjectMemberRespVo();
+      projectMemberRespVo.setMemberType(projectMember.getMemberType());
+      projectMemberRespVo.setStaffId(projectMember.getStaffId());
+      projectMemberRespVos.add(projectMemberRespVo);
+    }
+    projectRespVo.setProjectMembers(projectMemberRespVos);
+    return Result.succ(projectRespVo);
   }
 }

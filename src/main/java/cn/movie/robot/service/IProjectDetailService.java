@@ -43,4 +43,18 @@ public interface IProjectDetailService {
    * @return
    */
   List<ProjectDetail> initLastStateInfo(Integer projectId);
+
+  /**
+   * 拍摄费用明细
+   * @param projectId
+   * @return
+   */
+  Result shootingDetail(Integer projectId);
+
+  /**
+   * 后期费用明细
+   * @param projectId
+   * @return
+   */
+  Result lastStateDetail(Integer projectId);
 }
