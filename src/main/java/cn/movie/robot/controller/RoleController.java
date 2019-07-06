@@ -34,14 +34,18 @@ public class RoleController {
     return roleService.queryAll(pageable);
   }
 
+  @GetMapping("/normal_all")
+  public Result normalAll(){
+    return roleService.normalAll();
+  }
+
   @PostMapping("")
   public Result save(@RequestBody RoleVo roleVo){
     return roleService.save(roleVo.getName());
   }
 
   @PutMapping("/{role_id}/update_permission")
-  public Result updatePermission(@PathVariable("role_id") Integer roleId, @RequestParam("permission_ids") String permissionIds){
-    List<Integer> permissionIdList = Arrays.asList(permissionIds.split(",")).stream().map(Integer::parseInt).collect(Collectors.toList());
+  public Result updatePermission(@PathVariable("role_id") Integer roleId, @RequestBody List<Integer> permissionIdList){
     return roleService.updatePermission(roleId, permissionIdList);
   }
 

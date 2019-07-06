@@ -16,4 +16,6 @@ public interface ProjectMemberRepository extends JpaRepository<ProjectMember, In
   ProjectMember findByProjectIdAndStaffIdAndMemberType(int projectId, int staffId, int memberType);
 
   Integer deleteByIdIn(List<Integer> ids);
+
+  List<ProjectMember> queryByMemberTypeAndStaffIdIn(int type, List<Integer> staffIds);
 }

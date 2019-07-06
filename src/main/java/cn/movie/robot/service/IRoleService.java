@@ -12,6 +12,8 @@ import java.util.List;
 public interface IRoleService {
   Result queryAll(Pageable pageable);
 
+  Result normalAll();
+
   Result save(String roleName);
 
   Result updateUser(Integer userId, List<Integer> roleIds);
@@ -19,4 +21,6 @@ public interface IRoleService {
   Result updatePermission(Integer rolId, List<Integer> permissionIds);
 
   Result delete(Integer roleId);
+
+  Result queryByUserId(Integer userId);
 }

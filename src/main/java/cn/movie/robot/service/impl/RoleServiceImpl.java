@@ -52,6 +52,11 @@ public class RoleServiceImpl implements IRoleService {
   }
 
   @Override
+  public Result normalAll() {
+    return Result.succ(roleRepository.findAll());
+  }
+
+  @Override
   public Result save(String roleName) {
     Role existRole = roleRepository.findByName(roleName);
     if (Objects.nonNull(existRole)){
@@ -60,7 +65,7 @@ public class RoleServiceImpl implements IRoleService {
     Role role = new Role();
     role.setName(roleName);
     roleRepository.save(role);
-    return Result.succ();
+    return Result.succ(role.getId());
   }
 
   @Transactional
@@ -155,5 +160,16 @@ public class RoleServiceImpl implements IRoleService {
     }
 
     return Result.succ();
+  }
+
+  @Override
+  public Result queryByUserId(Integer userId) {
+    User user = userRepository.getOne(userId);
+    if (Objects.isNull(user)){
+      return Result.error("该用户不存在");
+    }
+
+    List<UserRole> userRoleList = userRoleRepository.findAllByUserId(userId);
+    return Result.succ(userRoleList);
   }
 }

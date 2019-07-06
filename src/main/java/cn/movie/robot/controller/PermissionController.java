@@ -33,4 +33,8 @@ public class PermissionController {
     return permissionService.queryAll(pageable);
   }
 
+  @GetMapping("/normal_all")
+  public Result all(){
+    return permissionService.queryAll();
+  }
 }

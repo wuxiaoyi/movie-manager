@@ -63,4 +63,9 @@ public class PermissionServiceImpl implements IPermissionService {
     );
     return Result.succ(permissionPageBean);
   }
+
+  @Override
+  public Result queryAll() {
+    return Result.succ(permissionRepository.findAll());
+  }
 }

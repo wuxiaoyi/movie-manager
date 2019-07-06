@@ -18,4 +18,6 @@ public interface IPermissionService {
   List<Role> queryRoleByUser(User user);
 
   Result queryAll(Pageable pageable);
+
+  Result queryAll();
 }

@@ -40,8 +40,7 @@ public class UserController {
   }
 
   @PutMapping("/{user_id}/update_role")
-  public Result updatePermission(@PathVariable("user_id") Integer userId, @RequestParam("role_ids") String roldIds){
-    List<Integer> roleIdList = Arrays.asList(roldIds.split(",")).stream().map(Integer::parseInt).collect(Collectors.toList());
+  public Result updatePermission(@PathVariable("user_id") Integer userId, @RequestBody List<Integer> roleIdList){
     return roleService.updateUser(userId, roleIdList);
   }
 
@@ -68,6 +67,11 @@ public class UserController {
   @PutMapping("/{user_id}/recover")
   public Result recover(@PathVariable("user_id") Integer userId){
     return userService.updateState(userId, Constants.COMMON_STATE_NORMAL);
+  }
+
+  @GetMapping("/{user_id}/roles")
+  public Result userRoles(@PathVariable("user_id") Integer userId){
+    return roleService.queryByUserId(userId);
   }
 
 }
