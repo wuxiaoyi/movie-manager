@@ -13,6 +13,9 @@ import cn.movie.robot.vo.common.Result;
 import cn.movie.robot.vo.req.search.FeeSearchVo;
 import cn.movie.robot.vo.req.search.ProjectSearchVo;
 import cn.movie.robot.vo.resp.PageBean;
+import cn.movie.robot.vo.resp.search.ProjectSearchChildFeeRespVo;
+import cn.movie.robot.vo.resp.search.ProjectSearchParentFeeRespVo;
+import cn.movie.robot.vo.resp.search.ProjectSearchRespVo;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -75,13 +78,74 @@ public class ProjectSearchServiceImpl implements IProjectSearchService {
     Pageable pageable = PageRequest.of(projectSearchVo.getPage()-1, projectSearchVo.getPageSize(), Sort.by(ASC, Constants.COMMON_FIELD_NAME_ID));
 
     Page<Project> projectPage = projectRepository.findAll(specification, pageable);
-    PageBean<Project> projectPageBean = new PageBean<>(
+    PageBean<ProjectSearchRespVo> projectPageBean = new PageBean<>(
         projectPage.getTotalElements(),
         projectPage.getTotalPages(),
-        projectPage.getContent()
+        dealSearchResultWithoutFee(projectPage.getContent(), projectSearchVo)
     );
-
     return Result.succ(projectPageBean);
+  }
+
+  private List<ProjectSearchRespVo> dealSearchResultWithoutFee(List<Project> projects, ProjectSearchVo projectSearchVo){
+    if (CollectionUtils.isEmpty(projectSearchVo.getFeeList())){
+      return dealSearchResultWithoutFee(projects);
+    }else {
+      return dealSearchResultWithFee(projects, projectSearchVo);
+    }
+  }
+
+  /**
+   * 搜索条件不带费用项时，不用出费用项结果
+   * @param projects
+   * @return
+   */
+  private List<ProjectSearchRespVo> dealSearchResultWithoutFee(List<Project> projects){
+    List<ProjectSearchRespVo> projectSearchRespVoList = new ArrayList<>();
+    for (Project project : projects) {
+      ProjectSearchRespVo projectSearchRespVo = new ProjectSearchRespVo();
+      projectSearchRespVo.setId(project.getId());
+      projectSearchRespVo.setName(project.getName());
+      projectSearchRespVo.setSid(project.getSid());
+      projectSearchRespVoList.add(projectSearchRespVo);
+    }
+    return projectSearchRespVoList;
+  }
+
+  /**
+   * 搜索条件带费用项时，需要出费用项结果
+   * @param projects
+   * @param projectSearchVo
+   * @return
+   */
+  private List<ProjectSearchRespVo> dealSearchResultWithFee(List<Project> projects, ProjectSearchVo projectSearchVo){
+    List<ProjectSearchRespVo> projectSearchRespVoList = new ArrayList<>();
+
+    List<FeeSearchVo> feeList = projectSearchVo.getFeeList();
+    List<Integer> parentFeeCatogoryIds = parseParentFeeCatgoryIds(feeList);
+    HashMap<Integer, List<ProjectSearchParentFeeRespVo>> parentFeeRespVoHashMap = buildParentFeeVo(parentFeeCatogoryIds);
+    List<Integer> childFeeCatogoryIds = parseChildFeeCatgoryIds(feeList);
+    HashMap<Integer, List<ProjectSearchParentFeeRespVo>> childFeeRespVoHashMap = buildChildFeeVo(childFeeCatogoryIds);
+
+
+    for (Project project : projects){
+      ProjectSearchRespVo projectSearchRespVo = new ProjectSearchRespVo();
+      projectSearchRespVo.setId(project.getId());
+      projectSearchRespVo.setName(project.getName());
+      projectSearchRespVo.setSid(project.getSid());
+      List<ProjectSearchParentFeeRespVo> parentFeeList = parentFeeRespVoHashMap.get(project.getId());
+      List<ProjectSearchParentFeeRespVo> childFeeList = childFeeRespVoHashMap.get(project.getId());
+      if (Objects.isNull(parentFeeList)){
+        parentFeeList = new ArrayList<>();
+      }
+      if (Objects.isNull(childFeeList)){
+        childFeeList = new ArrayList<>();
+      }
+      parentFeeList.addAll(childFeeList);
+      projectSearchRespVo.setProjectDetailList(parentFeeList);
+      projectSearchRespVoList.add(projectSearchRespVo);
+    }
+
+    return projectSearchRespVoList;
   }
 
   /**
@@ -102,9 +166,7 @@ public class ProjectSearchServiceImpl implements IProjectSearchService {
     boolean searchParentCategory = false;
     boolean searchChildCategory = false;
 
-    List<Integer> parentFeeCatogoryIds = feeList.stream()
-        .filter(feeSearchVo -> feeSearchVo.getCategoryType() == Constants.FEE_CATEGORY_TYPE_PARENT)
-        .map(FeeSearchVo::getCategoryId).collect(Collectors.toList());
+    List<Integer> parentFeeCatogoryIds = parseParentFeeCatgoryIds(feeList);
 
     if (parentFeeCatogoryIds.size() > 0){
       searchParentCategory = true;
@@ -114,13 +176,7 @@ public class ProjectSearchServiceImpl implements IProjectSearchService {
       );
     }
 
-    List<List<Integer>> childFeeCategoryIdsList = feeList.stream()
-        .filter(feeSearchVo -> feeSearchVo.getCategoryType() == Constants.FEE_CATEGORY_TYPE_CHILD)
-        .map(FeeSearchVo::getChildFeeCategoryList).collect(Collectors.toList());
-    List<Integer> childFeeCategoryIds = new ArrayList<>();
-    for (List<Integer> ids : childFeeCategoryIdsList){
-      childFeeCategoryIds.addAll(ids);
-    }
+    List<Integer> childFeeCategoryIds = parseChildFeeCatgoryIds(feeList);
     if (childFeeCategoryIds.size() > 0){
       searchChildCategory = true;
       childDetails = projectDetailRepository.queryByFeeChildCategoryIdInAndRealAmountGreaterThan(
@@ -262,5 +318,112 @@ public class ProjectSearchServiceImpl implements IProjectSearchService {
         null
     );
     return Result.succ(projectPageBean);
+  }
+
+  private List<Integer> parseParentFeeCatgoryIds(List<FeeSearchVo> feeList){
+    return feeList.stream()
+        .filter(feeSearchVo -> feeSearchVo.getCategoryType() == Constants.FEE_CATEGORY_TYPE_PARENT)
+        .map(FeeSearchVo::getCategoryId).collect(Collectors.toList());
+
+  }
+
+  private List<Integer> parseChildFeeCatgoryIds(List<FeeSearchVo> feeList){
+    List<List<Integer>> childFeeCategoryIdsList = feeList.stream()
+        .filter(feeSearchVo -> feeSearchVo.getCategoryType() == Constants.FEE_CATEGORY_TYPE_CHILD)
+        .map(FeeSearchVo::getChildFeeCategoryList).collect(Collectors.toList());
+    List<Integer> childFeeCategoryIds = new ArrayList<>();
+    for (List<Integer> ids : childFeeCategoryIdsList){
+      childFeeCategoryIds.addAll(ids);
+    }
+    return childFeeCategoryIds;
+  }
+
+  /**
+   * 根据一级费用id构建出所有项目的一级费用项结果，减少数据库查询
+   * @param feeCategoryIds
+   * @return
+   */
+  private HashMap<Integer, List<ProjectSearchParentFeeRespVo>> buildParentFeeVo(List<Integer> feeCategoryIds){
+    HashMap<Integer, List<ProjectSearchParentFeeRespVo>> result = new HashMap<>(feeCategoryIds.size());
+    List<ProjectDetail> projectDetailList = projectDetailRepository.queryByFeeCategoryIdInAndFeeChildCategoryIdIsNull(feeCategoryIds);
+    if (projectDetailList.size() == 0){
+      return result;
+    }
+
+    for (ProjectDetail projectDetail : projectDetailList){
+      ProjectSearchParentFeeRespVo parentFeeRespVo = new ProjectSearchParentFeeRespVo();
+      parentFeeRespVo.setId(projectDetail.getId());
+      parentFeeRespVo.setRealAmount(projectDetail.getRealAmount());
+      parentFeeRespVo.setBudgetAmount(projectDetail.getBudgetAmount());
+      parentFeeRespVo.setCategoryId(projectDetail.getFeeCategoryId());
+
+      /**
+       * 一级费用项搜索结果，只显示一级费用，构建一个空的二级费用便于前端处理
+       */
+      List<ProjectSearchChildFeeRespVo> childFeeList = new ArrayList<>();
+      ProjectSearchChildFeeRespVo emptyVo = new ProjectSearchChildFeeRespVo();
+      emptyVo.setId(0);
+      childFeeList.add(emptyVo);
+      parentFeeRespVo.setChildFeeList(childFeeList);
+
+      List<ProjectSearchParentFeeRespVo> feeRespVos = result.get(projectDetail.getProjectId());
+      if (Objects.isNull(feeRespVos)){
+        feeRespVos = new ArrayList<>();
+      }
+      feeRespVos.add(parentFeeRespVo);
+      result.put(projectDetail.getProjectId(), feeRespVos);
+    }
+    return result;
+  }
+
+  /**
+   * 根据二级费用id构建出所有项目的二级费用项结果，减少数据库查询
+   * 二级费用项也要带上一级费用项总和
+   * @param feeCategoryIds
+   * @return
+   */
+  private HashMap<Integer, List<ProjectSearchParentFeeRespVo>> buildChildFeeVo(List<Integer> feeCategoryIds){
+    HashMap<Integer, List<ProjectSearchParentFeeRespVo>> result = new HashMap<>(feeCategoryIds.size());
+    List<ProjectDetail> projectDetailList = projectDetailRepository.queryByFeeChildCategoryIdIn(feeCategoryIds);
+    if (projectDetailList.size() == 0){
+      return result;
+    }
+
+    List<ProjectDetail> projectDetailParentList = projectDetailRepository.queryByFeeCategoryIdInAndFeeChildCategoryIdIsNull(
+        projectDetailList.stream().map(ProjectDetail::getFeeCategoryId).collect(Collectors.toList())
+    );
+
+    for (ProjectDetail parentFeeDetail : projectDetailParentList){
+      ProjectSearchParentFeeRespVo parentFeeRespVo = new ProjectSearchParentFeeRespVo();
+      parentFeeRespVo.setId(parentFeeDetail.getId());
+      parentFeeRespVo.setRealAmount(parentFeeDetail.getRealAmount());
+      parentFeeRespVo.setBudgetAmount(parentFeeDetail.getBudgetAmount());
+      parentFeeRespVo.setCategoryId(parentFeeDetail.getFeeCategoryId());
+
+      List<ProjectSearchChildFeeRespVo> childFeeList = new ArrayList<>();
+      List<ProjectDetail> projectDetailChildList = projectDetailList.stream()
+          .filter(projectDetail ->
+              projectDetail.getFeeCategoryId().equals(parentFeeDetail.getFeeCategoryId()) && projectDetail.getProjectId().equals(parentFeeDetail.getProjectId()))
+          .collect(Collectors.toList());
+
+      for (ProjectDetail childFeeDetail : projectDetailChildList){
+        ProjectSearchChildFeeRespVo childFeeRespVo = new ProjectSearchChildFeeRespVo();
+        childFeeRespVo.setId(childFeeDetail.getId());
+        childFeeRespVo.setRealAmount(childFeeDetail.getRealAmount());
+        childFeeRespVo.setBudgetAmount(childFeeDetail.getBudgetAmount());
+        childFeeRespVo.setCategoryId(childFeeDetail.getFeeChildCategoryId());
+        childFeeRespVo.setProviderId(childFeeDetail.getProviderId());
+        childFeeList.add(childFeeRespVo);
+      }
+      parentFeeRespVo.setChildFeeList(childFeeList);
+      List<ProjectSearchParentFeeRespVo> feeRespVos = result.get(parentFeeDetail.getProjectId());
+      if (Objects.isNull(feeRespVos)){
+        feeRespVos = new ArrayList<>();
+      }
+      feeRespVos.add(parentFeeRespVo);
+      result.put(parentFeeDetail.getProjectId(), feeRespVos);
+    }
+
+    return result;
   }
 }

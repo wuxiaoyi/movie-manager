@@ -17,10 +17,10 @@ public interface IStaffService {
   Result queryAll(Pageable pageable);
 
   /**
-   * 根据状态查询员工
+   * 查询所有员工
    * @return
    */
-  Result queryNormal(Integer ascription);
+  Result queryAll();
 
   /**
    * 更新状态

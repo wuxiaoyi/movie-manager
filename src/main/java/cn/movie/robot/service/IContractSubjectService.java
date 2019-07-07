@@ -9,17 +9,17 @@ import org.springframework.data.domain.Pageable;
  */
 public interface IContractSubjectService {
   /**
-   * 查询所有合同主体
+   * 查询所有合同主体-分页
    * @param pageable
    * @return
    */
   Result queryAll(Pageable pageable);
 
   /**
-   * 查询生效的合同主体
+   * 查询所有合同主体
    * @return
    */
-  Result queryNormal();
+  Result queryAll();
 
   /**
    * 更新状态

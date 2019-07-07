@@ -37,8 +37,8 @@ public class ContractSubjectServiceImpl implements IContractSubjectService {
   }
 
   @Override
-  public Result queryNormal() {
-    List<ContractSubject> contractSubjects = contractSubjectRepository.queryByState(Constants.COMMON_STATE_NORMAL);
+  public Result queryAll() {
+    List<ContractSubject> contractSubjects = contractSubjectRepository.findAll();
     return Result.succ(contractSubjects);
   }
 

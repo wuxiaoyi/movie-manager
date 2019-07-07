@@ -20,7 +20,7 @@ public interface IProviderService {
    * 根据状态查询供应商
    * @return
    */
-  Result queryNormal();
+  Result queryAll();
 
   /**
    * 禁用供应商

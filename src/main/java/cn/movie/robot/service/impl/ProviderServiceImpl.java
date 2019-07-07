@@ -37,8 +37,8 @@ public class ProviderServiceImpl implements IProviderService {
   }
 
   @Override
-  public Result queryNormal() {
-    List<Provider> providers = providerRepository.queryByState(Constants.COMMON_STATE_NORMAL);
+  public Result queryAll() {
+    List<Provider> providers = providerRepository.findAll();
     return Result.succ(providers);
   }
 

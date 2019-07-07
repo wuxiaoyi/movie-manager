@@ -34,22 +34,22 @@ public class ConfigController {
 
   @GetMapping("/contract_subjects")
   public Result contractSubjects(){
-    return contractSubjectService.queryNormal();
+    return contractSubjectService.queryAll();
   }
 
   @GetMapping("/providers")
   public Result providers(){
-    return providerService.queryNormal();
+    return providerService.queryAll();
   }
 
   @GetMapping("/staffs")
-  public Result staffs(@RequestParam("ascription") Integer ascription){
-    return staffService.queryNormal(ascription);
+  public Result staffs(){
+    return staffService.queryAll();
   }
 
   @GetMapping("/fee_categories")
-  public Result feeCategories(@RequestParam("category_type") int categoryType, @RequestParam("state") int state){
-    return feeCategoryService.queryByTypeAndState(categoryType, state);
+  public Result feeCategories(@RequestParam("category_type") int categoryType){
+    return feeCategoryService.queryByType(categoryType);
   }
 
   @GetMapping("/member_types")

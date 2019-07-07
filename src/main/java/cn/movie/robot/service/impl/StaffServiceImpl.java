@@ -38,16 +38,8 @@ public class StaffServiceImpl implements IStaffService {
   }
 
   @Override
-  public Result queryNormal(Integer ascription) {
-    List<Staff> staffList;
-    if (ascription == Constants.STAFF_ASCRIPTION_INTERNAL){
-      staffList = staffRepository.queryByStateAndAscription(Constants.COMMON_STATE_NORMAL, ascription);
-    }else if (ascription == Constants.STAFF_ASCRIPTION_EXTERNAL){
-      staffList = staffRepository.queryByStateAndAscription(Constants.COMMON_STATE_NORMAL, ascription);
-    }else {
-      staffList = staffRepository.queryByState(Constants.COMMON_STATE_NORMAL);
-    }
-    return Result.succ(staffList);
+  public Result queryAll() {
+    return Result.succ(staffRepository.findAll());
   }
 
   @Override
