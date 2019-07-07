@@ -1,18 +1,18 @@
 package cn.movie.robot.service.impl;
 
 import cn.movie.robot.common.Constants;
+import cn.movie.robot.dao.ProjectDetailRepository;
 import cn.movie.robot.dao.ProjectMemberRepository;
 import cn.movie.robot.dao.ProjectRepository;
 import cn.movie.robot.enums.ProjectMemberTypeEnum;
 import cn.movie.robot.model.Project;
+import cn.movie.robot.model.ProjectDetail;
 import cn.movie.robot.model.ProjectMember;
-import cn.movie.robot.model.User;
 import cn.movie.robot.service.IProjectSearchService;
 import cn.movie.robot.vo.common.Result;
+import cn.movie.robot.vo.req.search.FeeSearchVo;
 import cn.movie.robot.vo.req.search.ProjectSearchVo;
 import cn.movie.robot.vo.resp.PageBean;
-import com.google.common.collect.Lists;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -23,6 +23,7 @@ import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
 import javax.persistence.criteria.Predicate;
+import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -41,9 +42,14 @@ public class ProjectSearchServiceImpl implements IProjectSearchService {
   @Resource
   ProjectRepository projectRepository;
 
+  @Resource
+  ProjectDetailRepository projectDetailRepository;
+
   @Override
   public Result search(ProjectSearchVo projectSearchVo) {
     List<Integer> projectIds = null;
+
+    // 处理项目成员搜索
     List<Integer> memberProjectIds = queryProjectIdByMember(projectSearchVo);
     if (Objects.nonNull(memberProjectIds)){
       if (memberProjectIds.size() == 0){
@@ -51,6 +57,18 @@ public class ProjectSearchServiceImpl implements IProjectSearchService {
       }
       projectIds = new ArrayList<>();
       projectIds.addAll(memberProjectIds);
+    }
+
+    // 处理费用项搜索
+    List<Integer> feeProjectIds = queryProjectIdByFee(projectSearchVo);
+    if (Objects.nonNull(feeProjectIds)){
+      if (feeProjectIds.size() == 0){
+        return emptyResult();
+      }
+      if (Objects.isNull(projectIds)){
+        projectIds = new ArrayList<>();
+      }
+      projectIds.addAll(feeProjectIds);
     }
 
     Specification<Project> specification = buildBaseQuery(projectSearchVo, projectIds);
@@ -66,7 +84,63 @@ public class ProjectSearchServiceImpl implements IProjectSearchService {
     return Result.succ(projectPageBean);
   }
 
+  /**
+   * 构建费用项搜索
+   * @param projectSearchVo
+   * @return
+   */
 
+  private List<Integer> queryProjectIdByFee(ProjectSearchVo projectSearchVo){
+    List<FeeSearchVo> feeList = projectSearchVo.getFeeList();
+
+    if (CollectionUtils.isEmpty(feeList)){
+      return null;
+    }
+
+    List<ProjectDetail> parentDetails = new ArrayList<>();
+    List<ProjectDetail> childDetails = new ArrayList<>();
+    boolean searchParentCategory = false;
+    boolean searchChildCategory = false;
+
+    List<Integer> parentFeeCatogoryIds = feeList.stream()
+        .filter(feeSearchVo -> feeSearchVo.getCategoryType() == Constants.FEE_CATEGORY_TYPE_PARENT)
+        .map(FeeSearchVo::getCategoryId).collect(Collectors.toList());
+
+    if (parentFeeCatogoryIds.size() > 0){
+      searchParentCategory = true;
+      parentDetails = projectDetailRepository.queryByFeeCategoryIdInAndRealAmountGreaterThanAndFeeChildCategoryIdIsNull(
+          parentFeeCatogoryIds,
+          BigDecimal.ZERO
+      );
+    }
+
+    List<List<Integer>> childFeeCategoryIdsList = feeList.stream()
+        .filter(feeSearchVo -> feeSearchVo.getCategoryType() == Constants.FEE_CATEGORY_TYPE_CHILD)
+        .map(FeeSearchVo::getChildFeeCategoryList).collect(Collectors.toList());
+    List<Integer> childFeeCategoryIds = new ArrayList<>();
+    for (List<Integer> ids : childFeeCategoryIdsList){
+      childFeeCategoryIds.addAll(ids);
+    }
+    if (childFeeCategoryIds.size() > 0){
+      searchChildCategory = true;
+      childDetails = projectDetailRepository.queryByFeeChildCategoryIdInAndRealAmountGreaterThan(
+          childFeeCategoryIds,
+          BigDecimal.ZERO
+      );
+    }
+
+    List<Integer> parentProjectIds = parentDetails.stream().map(ProjectDetail::getProjectId).collect(Collectors.toList());
+    List<Integer> childProjectIds = childDetails.stream().map(ProjectDetail::getProjectId).collect(Collectors.toList());
+    if (searchParentCategory && searchChildCategory){
+      return parentProjectIds.stream().filter(item -> childProjectIds.contains(item)).collect(Collectors.toList());
+    }else if (searchParentCategory){
+      return parentProjectIds;
+    }else if (searchChildCategory){
+      return childProjectIds;
+    }
+
+    return null;
+  }
 
   /**
    * 构建项目成员搜索
@@ -104,6 +178,8 @@ public class ProjectSearchServiceImpl implements IProjectSearchService {
     }
     return null;
   }
+
+
 
   /**
    * 构建项目基本信息搜索

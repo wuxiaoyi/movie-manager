@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import javax.transaction.Transactional;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -50,7 +51,7 @@ public class ProjectDetailServiceImpl implements IProjectDetailService {
       return Result.error("该项目不存在");
     }
 
-    List<ProjectDetail> projectDetailList = projectDetailRepository.queryByProjectIdAndStage(projectId, Constants.PROJECT_DETAIL_STATG_SHOOTING);
+    List<ProjectDetail> projectDetailList = projectDetailRepository.queryByProjectIdAndStageAndFeeChildCategoryIdIsNotNull(projectId, Constants.PROJECT_DETAIL_STATG_SHOOTING);
 
     return Result.succ(buildProjectDetailResp(project, projectDetailList));
   }
@@ -62,7 +63,7 @@ public class ProjectDetailServiceImpl implements IProjectDetailService {
       return Result.error("该项目不存在");
     }
 
-    List<ProjectDetail> projectDetailList = projectDetailRepository.queryByProjectIdAndStage(projectId, Constants.PROJECT_DETAIL_STATG_LAST_STATE);
+    List<ProjectDetail> projectDetailList = projectDetailRepository.queryByProjectIdAndStageAndFeeChildCategoryIdIsNotNull(projectId, Constants.PROJECT_DETAIL_STATG_LAST_STATE);
 
     return Result.succ(buildProjectDetailResp(project, projectDetailList));
   }
@@ -78,6 +79,7 @@ public class ProjectDetailServiceImpl implements IProjectDetailService {
     int projectStage = Constants.PROJECT_DETAIL_STATG_SHOOTING;
     updateDetails(projectId, projectFeeDetailVoList, projectStage);
     projectAmountService.refreshAmount(projectId);
+    refreshAmount(projectId);
     return Result.succ();
   }
 
@@ -91,6 +93,7 @@ public class ProjectDetailServiceImpl implements IProjectDetailService {
     int projectStage = Constants.PROJECT_DETAIL_STATG_LAST_STATE;
     updateDetails(projectId, projectFeeDetailVoList, projectStage);
     projectAmountService.refreshAmount(projectId);
+    refreshAmount(projectId);
 
     return Result.succ();
   }
@@ -145,11 +148,46 @@ public class ProjectDetailServiceImpl implements IProjectDetailService {
       projectDetailRepository.save(projectDetail);
       projectDetailList.add(projectDetail);
     }
+
+    List<FeeCategory> parentFeeCategoryList = feeCategoryRepository.queryByStageAndStateAndCategoryType(
+        stage,
+        Constants.COMMON_STATE_NORMAL,
+        Constants.FEE_CATEGORY_TYPE_PARENT
+    );
+    for (FeeCategory feeCategory : parentFeeCategoryList){
+      ProjectDetail projectDetail = new ProjectDetail();
+      projectDetail.setProjectId(projectId);
+      projectDetail.setFeeCategoryId(feeCategory.getId());
+      projectDetail.setStage(feeCategory.getStage());
+      projectDetailRepository.save(projectDetail);
+      projectDetailList.add(projectDetail);
+    }
+
     return projectDetailList;
   }
 
+  private void refreshAmount(int projectId){
+    List<ProjectDetail> projectDetailList = projectDetailRepository.queryByProjectId(projectId);
+    List<ProjectDetail> parentCategoryDetailList = projectDetailList.stream()
+        .filter(projectDetail -> Objects.isNull(projectDetail.getFeeChildCategoryId()))
+        .collect(Collectors.toList());
+    for (ProjectDetail parentCategoryDetail : parentCategoryDetailList){
+      BigDecimal budgetAmount = new BigDecimal(0);
+      BigDecimal realAmount = new BigDecimal(0);
+      for (ProjectDetail childDetail : projectDetailList){
+        if (childDetail.getFeeCategoryId().equals(parentCategoryDetail.getFeeCategoryId())){
+          budgetAmount = budgetAmount.add(childDetail.getBudgetAmount());
+          realAmount = realAmount.add(childDetail.getRealAmount());
+        }
+      }
+      parentCategoryDetail.setRealAmount(realAmount);
+      parentCategoryDetail.setBudgetAmount(budgetAmount);
+      projectDetailRepository.save(parentCategoryDetail);
+    }
+  }
+
   private void updateDetails(int projectId, List<ProjectFeeDetailVo> projectFeeDetailVoList, int projectStage){
-    List<ProjectDetail> existDetails = projectDetailRepository.queryByProjectIdAndStage(projectId, projectStage);
+    List<ProjectDetail> existDetails = projectDetailRepository.queryByProjectIdAndStageAndFeeChildCategoryIdIsNotNull(projectId, projectStage);
     List<Integer> existDetailIds = existDetails.stream()
         .map(ProjectDetail::getId).collect(Collectors.toList());
     List<Integer> updateDetailIds = projectFeeDetailVoList.stream()

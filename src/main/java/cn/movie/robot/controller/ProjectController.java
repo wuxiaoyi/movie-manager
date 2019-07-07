@@ -9,10 +9,7 @@ import cn.movie.robot.vo.oplog.ProjectBaseInfoOplog;
 import cn.movie.robot.vo.oplog.ProjectLastStateDetailOplog;
 import cn.movie.robot.vo.oplog.ProjectShootingDetailOplog;
 import cn.movie.robot.vo.req.ProjectStateVo;
-import cn.movie.robot.vo.req.project.ProjectBaseInfoVo;
-import cn.movie.robot.vo.req.project.ProjectFeeDetailVo;
-import cn.movie.robot.vo.req.project.ProjectLastStateInfoVo;
-import cn.movie.robot.vo.req.project.ProjectShottingInfoVo;
+import cn.movie.robot.vo.req.project.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -42,8 +39,8 @@ public class ProjectController {
   IOplogService oplogService;
 
   @PostMapping("")
-  public Result create(@RequestParam("name") String name){
-    return projectService.create(name);
+  public Result create(@RequestBody ProjectCreateVo projectCreateVo){
+    return projectService.create(projectCreateVo.getName());
   }
 
   @GetMapping("")

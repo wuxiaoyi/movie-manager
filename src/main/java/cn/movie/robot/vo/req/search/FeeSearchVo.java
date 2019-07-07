@@ -10,6 +10,16 @@ import java.util.List;
  */
 @Data
 public class FeeSearchVo {
+  /**
+   * 费用类别
+   */
   private int categoryType;
-  private List<Integer> feeCategoryList;
+  /**
+   * 一级费用id
+   */
+  private int categoryId;
+  /**
+   * 二级费用ids
+   */
+  private List<Integer> childFeeCategoryList;
 }

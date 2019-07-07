@@ -49,7 +49,7 @@ CREATE TABLE `project_detail` (
   `project_id`        INT(11)     NOT NULL COMMENT '项目id',
   `stage`             INT(3)      NOT NULL COMMENT '费用阶段',
   `fee_category_id`          INT(8) NOT NULL COMMENT '费用大类',
-  `fee_child_category_id`    INT(8) NOT NULL COMMENT '费用子类',
+  `fee_child_category_id`    INT(8) COMMENT '费用子类',
   `desc`              VARCHAR(500)         COMMENT '定义',
   `budget_amount`     DECIMAL(15, 2) default 0 COMMENT '预算金额',
   `real_amount`       DECIMAL(15, 2) default 0 COMMENT '实际金额',

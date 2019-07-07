@@ -198,7 +198,7 @@ public class OplogServiceImpl implements IOplogService {
   @Override
   public ProjectShootingDetailOplog buildShootingOplog(int projectId) {
     Project project = projectRepository.getOne(projectId);
-    List<ProjectDetail> projectDetailList = projectDetailRepository.queryByProjectIdAndStage(projectId, Constants.PROJECT_DETAIL_STATG_SHOOTING);
+    List<ProjectDetail> projectDetailList = projectDetailRepository.queryByProjectIdAndStageAndFeeChildCategoryIdIsNotNull(projectId, Constants.PROJECT_DETAIL_STATG_SHOOTING);
 
     ProjectShootingDetailOplog oplog = new ProjectShootingDetailOplog();
     oplog.setProjectId(projectId);
@@ -209,7 +209,7 @@ public class OplogServiceImpl implements IOplogService {
   @Override
   public ProjectLastStateDetailOplog buildLastStateOplog(int projectId) {
     Project project = projectRepository.getOne(projectId);
-    List<ProjectDetail> projectDetailList = projectDetailRepository.queryByProjectIdAndStage(projectId, Constants.PROJECT_DETAIL_STATG_LAST_STATE);
+    List<ProjectDetail> projectDetailList = projectDetailRepository.queryByProjectIdAndStageAndFeeChildCategoryIdIsNotNull(projectId, Constants.PROJECT_DETAIL_STATG_LAST_STATE);
 
     ProjectLastStateDetailOplog oplog = new ProjectLastStateDetailOplog();
     oplog.setProjectId(projectId);
