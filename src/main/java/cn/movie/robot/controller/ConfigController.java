@@ -48,8 +48,8 @@ public class ConfigController {
   }
 
   @GetMapping("/fee_categories")
-  public Result feeCategories(@RequestParam("category_type") int categoryType){
-    return feeCategoryService.queryByType(categoryType);
+  public Result feeCategories(){
+    return feeCategoryService.queryAll();
   }
 
   @GetMapping("/member_types")

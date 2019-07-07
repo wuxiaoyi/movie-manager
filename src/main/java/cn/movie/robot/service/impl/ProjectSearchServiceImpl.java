@@ -119,12 +119,13 @@ public class ProjectSearchServiceImpl implements IProjectSearchService {
    */
   private List<ProjectSearchRespVo> dealSearchResultWithFee(List<Project> projects, ProjectSearchVo projectSearchVo){
     List<ProjectSearchRespVo> projectSearchRespVoList = new ArrayList<>();
+    List<Integer> projectIds = projects.stream().map(Project::getId).collect(Collectors.toList());
 
     List<FeeSearchVo> feeList = projectSearchVo.getFeeList();
     List<Integer> parentFeeCatogoryIds = parseParentFeeCatgoryIds(feeList);
-    HashMap<Integer, List<ProjectSearchParentFeeRespVo>> parentFeeRespVoHashMap = buildParentFeeVo(parentFeeCatogoryIds);
+    HashMap<Integer, List<ProjectSearchParentFeeRespVo>> parentFeeRespVoHashMap = buildParentFeeVo(projectIds, parentFeeCatogoryIds);
     List<Integer> childFeeCatogoryIds = parseChildFeeCatgoryIds(feeList);
-    HashMap<Integer, List<ProjectSearchParentFeeRespVo>> childFeeRespVoHashMap = buildChildFeeVo(childFeeCatogoryIds);
+    HashMap<Integer, List<ProjectSearchParentFeeRespVo>> childFeeRespVoHashMap = buildChildFeeVo(projectIds, childFeeCatogoryIds);
 
 
     for (Project project : projects){
@@ -343,9 +344,12 @@ public class ProjectSearchServiceImpl implements IProjectSearchService {
    * @param feeCategoryIds
    * @return
    */
-  private HashMap<Integer, List<ProjectSearchParentFeeRespVo>> buildParentFeeVo(List<Integer> feeCategoryIds){
+  private HashMap<Integer, List<ProjectSearchParentFeeRespVo>> buildParentFeeVo(List<Integer> projectIds, List<Integer> feeCategoryIds){
     HashMap<Integer, List<ProjectSearchParentFeeRespVo>> result = new HashMap<>(feeCategoryIds.size());
-    List<ProjectDetail> projectDetailList = projectDetailRepository.queryByFeeCategoryIdInAndFeeChildCategoryIdIsNull(feeCategoryIds);
+    List<ProjectDetail> projectDetailList = projectDetailRepository.queryByProjectIdInAndFeeCategoryIdInAndFeeChildCategoryIdIsNull(
+        projectIds,
+        feeCategoryIds
+    );
     if (projectDetailList.size() == 0){
       return result;
     }
@@ -382,14 +386,15 @@ public class ProjectSearchServiceImpl implements IProjectSearchService {
    * @param feeCategoryIds
    * @return
    */
-  private HashMap<Integer, List<ProjectSearchParentFeeRespVo>> buildChildFeeVo(List<Integer> feeCategoryIds){
+  private HashMap<Integer, List<ProjectSearchParentFeeRespVo>> buildChildFeeVo(List<Integer> projectIds, List<Integer> feeCategoryIds){
     HashMap<Integer, List<ProjectSearchParentFeeRespVo>> result = new HashMap<>(feeCategoryIds.size());
-    List<ProjectDetail> projectDetailList = projectDetailRepository.queryByFeeChildCategoryIdIn(feeCategoryIds);
+    List<ProjectDetail> projectDetailList = projectDetailRepository.queryByProjectIdInAndFeeChildCategoryIdIn(projectIds, feeCategoryIds);
     if (projectDetailList.size() == 0){
       return result;
     }
 
-    List<ProjectDetail> projectDetailParentList = projectDetailRepository.queryByFeeCategoryIdInAndFeeChildCategoryIdIsNull(
+    List<ProjectDetail> projectDetailParentList = projectDetailRepository.queryByProjectIdInAndFeeCategoryIdInAndFeeChildCategoryIdIsNull(
+        projectIds,
         projectDetailList.stream().map(ProjectDetail::getFeeCategoryId).collect(Collectors.toList())
     );
 

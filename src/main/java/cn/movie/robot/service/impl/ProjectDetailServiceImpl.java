@@ -9,7 +9,6 @@ import cn.movie.robot.model.Project;
 import cn.movie.robot.model.ProjectDetail;
 import cn.movie.robot.service.IProjectAmountService;
 import cn.movie.robot.service.IProjectDetailService;
-import cn.movie.robot.service.IProjectService;
 import cn.movie.robot.vo.common.Result;
 import cn.movie.robot.vo.req.project.ProjectFeeDetailVo;
 import cn.movie.robot.vo.resp.ProjectDetailRespVo;

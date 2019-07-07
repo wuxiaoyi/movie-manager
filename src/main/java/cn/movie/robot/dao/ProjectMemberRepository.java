@@ -13,6 +13,8 @@ public interface ProjectMemberRepository extends JpaRepository<ProjectMember, In
 
   List<ProjectMember> queryByProjectId(int projectId);
 
+  List<ProjectMember> queryByProjectIdIn(List<Integer> projectIds);
+
   ProjectMember findByProjectIdAndStaffIdAndMemberType(int projectId, int staffId, int memberType);
 
   Integer deleteByIdIn(List<Integer> ids);

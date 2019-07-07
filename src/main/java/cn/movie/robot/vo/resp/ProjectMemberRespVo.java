@@ -8,6 +8,8 @@ import lombok.Data;
  */
 @Data
 public class ProjectMemberRespVo {
+  private int id;
+  private int projectId;
   private int memberType;
   private int staffId;
 }

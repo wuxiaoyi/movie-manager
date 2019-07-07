@@ -59,6 +59,7 @@ CREATE TABLE `project_detail` (
   `created_at`        DATETIME    NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `updated_at`        DATETIME    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   PRIMARY KEY (`id`),
+  KEY `ix_project_id` (`project_id`),
   KEY `ix_fee_category_id` (`fee_category_id`),
   KEY `ix_fee_child_category_id` (`fee_child_category_id`),
   KEY `ix_budget_amount` (`budget_amount`),

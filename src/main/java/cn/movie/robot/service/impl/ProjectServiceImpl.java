@@ -133,6 +133,8 @@ public class ProjectServiceImpl implements IProjectService {
     List<ProjectMemberRespVo> projectMemberRespVos = new ArrayList<>();
     for (ProjectMember projectMember : projectMemberList){
       ProjectMemberRespVo projectMemberRespVo = new ProjectMemberRespVo();
+      projectMemberRespVo.setId(projectMember.getId());
+      projectMemberRespVo.setProjectId(project.getId());
       projectMemberRespVo.setMemberType(projectMember.getMemberType());
       projectMemberRespVo.setStaffId(projectMember.getStaffId());
       projectMemberRespVos.add(projectMemberRespVo);

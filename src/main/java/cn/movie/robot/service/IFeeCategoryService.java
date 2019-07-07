@@ -17,10 +17,10 @@ public interface IFeeCategoryService {
   Result queryAll(Pageable pageable);
 
   /**
-   * 根据type查询费用类别
+   * 查询所有费用类别
    * @return
    */
-  Result queryByType(int type);
+  Result queryAll();
 
   /**
    * 修改状态

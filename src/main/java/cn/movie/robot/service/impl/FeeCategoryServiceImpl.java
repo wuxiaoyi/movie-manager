@@ -38,8 +38,8 @@ public class FeeCategoryServiceImpl implements IFeeCategoryService {
   }
 
   @Override
-  public Result queryByType(int type) {
-    return Result.succ(feeCategoryRepository.queryByCategoryType(type));
+  public Result queryAll() {
+    return Result.succ(feeCategoryRepository.findAll());
   }
 
   @Override
