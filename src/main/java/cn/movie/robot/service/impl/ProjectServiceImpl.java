@@ -88,6 +88,9 @@ public class ProjectServiceImpl implements IProjectService {
     if (Objects.isNull(project)){
       return Result.error("该项目不存在");
     }
+    if (ProjectStateEnum.isCancel(project.getState()) || ProjectStateEnum.isPause(project.getState())){
+      return Result.error("该项目不可编辑");
+    }
 
     project.setSid(projectBaseInfoVo.getSid());
     project.setName(projectBaseInfoVo.getName());

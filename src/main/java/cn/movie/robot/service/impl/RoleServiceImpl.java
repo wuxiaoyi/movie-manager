@@ -7,6 +7,7 @@ import cn.movie.robot.dao.UserRoleRepository;
 import cn.movie.robot.model.*;
 import cn.movie.robot.service.IRoleService;
 import cn.movie.robot.vo.common.Result;
+import cn.movie.robot.vo.req.RoleVo;
 import cn.movie.robot.vo.resp.PageBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -66,6 +67,17 @@ public class RoleServiceImpl implements IRoleService {
     role.setName(roleName);
     roleRepository.save(role);
     return Result.succ(role.getId());
+  }
+
+  @Override
+  public Result update(Integer roleId, RoleVo roleVo) {
+    Role role = roleRepository.getOne(roleId);
+    if (Objects.isNull(role)){
+      return Result.error("该角色不存在");
+    }
+    role.setName(roleVo.getName());
+    roleRepository.save(role);
+    return Result.succ();
   }
 
   @Transactional

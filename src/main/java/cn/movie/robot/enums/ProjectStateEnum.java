@@ -10,8 +10,18 @@ import java.util.stream.Collectors;
  */
 public enum ProjectStateEnum {
 
-  PAUSE(1, "暂停"),
-  CANCEL(2, "取消");
+  PLAN_STATE(10, "策划阶段"),
+  DIFF_STATE(20, "比稿阶段"),
+  SHOOTING_STATE(30, "拍摄阶段"),
+  POST_EDIT_STATE(40, "后期阶段"),
+  SUBMIT_STATE(50, "已交片"),
+  INVOICE_STATE(60, "已开票"),
+  PART_PAY_STATE(70, "部分回款"),
+  ALL_PAY_STATE(80, "全部回款"),
+  FINISH_STATE(90, "完成"),
+  PAUSE_STATE(100, "暂停"),
+  CANCEL_STATE(110, "取消");
+
 
   ProjectStateEnum(int state, String name){
     this.state = state;
@@ -28,6 +38,14 @@ public enum ProjectStateEnum {
         .findFirst()
         .map(ProjectStateEnum::getName)
         .orElse(null);
+  }
+
+  public static boolean isCancel(int state){
+    return state == CANCEL_STATE.getState();
+  }
+
+  public static boolean isPause(int state){
+    return state == PAUSE_STATE.getState();
   }
 
   private int state;

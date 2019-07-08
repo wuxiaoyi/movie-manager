@@ -4,6 +4,7 @@ import cn.movie.robot.common.Constants;
 import cn.movie.robot.dao.FeeCategoryRepository;
 import cn.movie.robot.dao.ProjectDetailRepository;
 import cn.movie.robot.dao.ProjectRepository;
+import cn.movie.robot.enums.ProjectStateEnum;
 import cn.movie.robot.model.FeeCategory;
 import cn.movie.robot.model.Project;
 import cn.movie.robot.model.ProjectDetail;
@@ -74,6 +75,9 @@ public class ProjectDetailServiceImpl implements IProjectDetailService {
     if (Objects.isNull(project)){
       return Result.error("该项目不存在");
     }
+    if (ProjectStateEnum.isCancel(project.getState()) || ProjectStateEnum.isPause(project.getState())){
+      return Result.error("该项目不可编辑");
+    }
 
     int projectStage = Constants.PROJECT_DETAIL_STATG_SHOOTING;
     updateDetails(projectId, projectFeeDetailVoList, projectStage);
@@ -87,6 +91,9 @@ public class ProjectDetailServiceImpl implements IProjectDetailService {
     Project project = projectRepository.getOne(projectId);
     if (Objects.isNull(project)){
       return Result.error("该项目不存在");
+    }
+    if (ProjectStateEnum.isCancel(project.getState()) || ProjectStateEnum.isPause(project.getState())){
+      return Result.error("该项目不可编辑");
     }
 
     int projectStage = Constants.PROJECT_DETAIL_STATG_LAST_STATE;

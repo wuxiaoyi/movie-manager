@@ -41,6 +41,7 @@ CREATE TABLE `project_members` (
   `updated_at`        DATETIME    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   PRIMARY KEY (`id`),
   KEY `ix_staff_id` (`staff_id`),
+  KEY `ix_member_type` (`member_type`),
   KEY `ix_project_id` (`project_id`)
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8 COMMENT = '项目成员表';
 

@@ -44,6 +44,11 @@ public class RoleController {
     return roleService.save(roleVo.getName());
   }
 
+  @PostMapping("/{role_id}")
+  public Result update(@PathVariable("role_id") Integer roleId, @RequestBody RoleVo roleVo){
+    return roleService.update(roleId, roleVo);
+  }
+
   @PutMapping("/{role_id}/update_permission")
   public Result updatePermission(@PathVariable("role_id") Integer roleId, @RequestBody List<Integer> permissionIdList){
     return roleService.updatePermission(roleId, permissionIdList);
