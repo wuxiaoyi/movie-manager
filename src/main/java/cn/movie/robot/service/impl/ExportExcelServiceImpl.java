@@ -67,18 +67,17 @@ public class ExportExcelServiceImpl implements IExportExcelService {
 
     for (Project project : projectList){
       List<ProjectMember> members = projectMemberList.stream().filter(projectMember -> projectMember.getProjectId().equals(project.getId())).collect(Collectors.toList());
-      Stream<ProjectMember> memberStream = members.stream();
-      String projectLeader = buildMemberNames(memberStream, staffNameHash, ProjectMemberTypeEnum.PROJECT_LEADER.getType());
-      String customerManager = buildMemberNames(memberStream, staffNameHash, ProjectMemberTypeEnum.CUSTOMER_MANAGER.getType());
-      String director = buildMemberNames(memberStream, staffNameHash, ProjectMemberTypeEnum.DIRECTOR.getType());
-      String executiveDirector = buildMemberNames(memberStream, staffNameHash, ProjectMemberTypeEnum.EXECUTIVE_DIRECTOR.getType());
-      String copywriting = buildMemberNames(memberStream, staffNameHash, ProjectMemberTypeEnum.COPYWRITING.getType());
-      String producer = buildMemberNames(memberStream, staffNameHash, ProjectMemberTypeEnum.PRODUCER.getType());
-      String postEditing = buildMemberNames(memberStream, staffNameHash, ProjectMemberTypeEnum.POST_EDITING.getType());
-      String compositing = buildMemberNames(memberStream, staffNameHash, ProjectMemberTypeEnum.COMPOSITING.getType());
-      String art = buildMemberNames(memberStream, staffNameHash, ProjectMemberTypeEnum.ART.getType());
-      String music = buildMemberNames(memberStream, staffNameHash, ProjectMemberTypeEnum.MUSIC.getType());
-      String storyBoard = buildMemberNames(memberStream, staffNameHash, ProjectMemberTypeEnum.STORY_BOARD.getType());
+      String projectLeader = buildMemberNames(members, staffNameHash, ProjectMemberTypeEnum.PROJECT_LEADER.getType());
+      String customerManager = buildMemberNames(members, staffNameHash, ProjectMemberTypeEnum.CUSTOMER_MANAGER.getType());
+      String director = buildMemberNames(members, staffNameHash, ProjectMemberTypeEnum.DIRECTOR.getType());
+      String executiveDirector = buildMemberNames(members, staffNameHash, ProjectMemberTypeEnum.EXECUTIVE_DIRECTOR.getType());
+      String copywriting = buildMemberNames(members, staffNameHash, ProjectMemberTypeEnum.COPYWRITING.getType());
+      String producer = buildMemberNames(members, staffNameHash, ProjectMemberTypeEnum.PRODUCER.getType());
+      String postEditing = buildMemberNames(members, staffNameHash, ProjectMemberTypeEnum.POST_EDITING.getType());
+      String compositing = buildMemberNames(members, staffNameHash, ProjectMemberTypeEnum.COMPOSITING.getType());
+      String art = buildMemberNames(members, staffNameHash, ProjectMemberTypeEnum.ART.getType());
+      String music = buildMemberNames(members, staffNameHash, ProjectMemberTypeEnum.MUSIC.getType());
+      String storyBoard = buildMemberNames(members, staffNameHash, ProjectMemberTypeEnum.STORY_BOARD.getType());
 
       String[] projectInfo = {
           project.getId().toString(), project.getSid(), project.getName(), ProjectStateEnum.getStateName(project.getState()),
@@ -97,7 +96,8 @@ public class ExportExcelServiceImpl implements IExportExcelService {
     return null;
   }
 
-  private String buildMemberNames(Stream<ProjectMember> memberStream, HashMap<Integer, String> staffNameHash, int memberType){
+  private String buildMemberNames(List<ProjectMember> members, HashMap<Integer, String> staffNameHash, int memberType){
+    Stream<ProjectMember> memberStream = members.stream();
     return memberStream.filter(projectMember -> projectMember.getMemberType().equals(memberType))
         .map(projectMember -> staffNameHash.get(projectMember.getStaffId()))
         .collect(Collectors.joining(","));

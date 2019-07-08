@@ -21,6 +21,7 @@ insert into `permissions` (name, `desc`) values ("project:view", "项目简要�
 insert into `permissions` (name, `desc`) values ("project_search:view", "项目简要列表查看权限");
 insert into `permissions` (name, `desc`) values ("project:manage", "项目创建权限");
 insert into `permissions` (name, `desc`) values ("project_state:manage", "项目状态修改权限");
+insert into `permissions` (name, `desc`) values ("project:export", "项目导出excel权限");
 
 insert into `permissions` (name, `desc`) values ("project_base_info:view", "项目基本信息查看权限");
 insert into `permissions` (name, `desc`) values ("project_base_info:manage", "项目基本信息编辑权限");

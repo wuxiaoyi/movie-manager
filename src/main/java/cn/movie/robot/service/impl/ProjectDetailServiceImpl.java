@@ -193,22 +193,33 @@ public class ProjectDetailServiceImpl implements IProjectDetailService {
   }
 
   private void updateDetails(int projectId, List<ProjectFeeDetailVo> projectFeeDetailVoList, int projectStage){
-    List<ProjectDetail> existDetails = projectDetailRepository.queryByProjectIdAndStageAndFeeChildCategoryIdIsNotNull(projectId, projectStage);
-    List<Integer> existDetailIds = existDetails.stream()
+    List<ProjectDetail> existDetails = projectDetailRepository.queryByProjectIdAndStage(projectId, projectStage);
+
+    List<ProjectDetail> existChildFeeDetails = existDetails.stream()
+        .filter(projectDetail -> Objects.nonNull(projectDetail.getFeeChildCategoryId()))
+        .collect(Collectors.toList());
+    List<Integer> existChildDetailIds = existChildFeeDetails.stream()
         .map(ProjectDetail::getId).collect(Collectors.toList());
+
+    List<ProjectDetail> existParentFeeDetails = existDetails.stream()
+        .filter(projectDetail -> Objects.isNull(projectDetail.getFeeChildCategoryId()))
+        .collect(Collectors.toList());
+    List<Integer> existParentFeeCategoryIds = existParentFeeDetails.stream()
+        .map(ProjectDetail::getFeeCategoryId).distinct().collect(Collectors.toList());
+
     List<Integer> updateDetailIds = projectFeeDetailVoList.stream()
         .filter(projectFeeDetailVo -> Objects.nonNull(projectFeeDetailVo.getId()))
         .map(ProjectFeeDetailVo::getId).collect(Collectors.toList());
 
-    existDetailIds.removeAll(updateDetailIds);
     // 删除
-    if (existDetailIds.size() > 0){
-      projectDetailRepository.deleteByIdIn(existDetailIds);
+    existChildDetailIds.removeAll(updateDetailIds);
+    if (existChildDetailIds.size() > 0){
+      projectDetailRepository.deleteByIdIn(existChildDetailIds);
     }
 
+    // 更新 or 新增
     for (ProjectFeeDetailVo projectFeeDetailVo : projectFeeDetailVoList){
       ProjectDetail projectDetail;
-      // 更新 or 新增
       if (Objects.nonNull(projectFeeDetailVo.getId())){
         projectDetail = projectDetailRepository.getOne(projectFeeDetailVo.getId());
       }else {
@@ -228,5 +239,21 @@ public class ProjectDetailServiceImpl implements IProjectDetailService {
       projectDetail.setRemark(projectFeeDetailVo.getRemark());
       projectDetailRepository.save(projectDetail);
     }
+
+    // 新增parent fee detail，因为编辑时可能新增了该项目不存在的新二级费用项
+    List<Integer> requestParentFeeCategoryIds = projectFeeDetailVoList.stream().map(ProjectFeeDetailVo::getFeeCategoryId).distinct().collect(Collectors.toList());
+    requestParentFeeCategoryIds.removeAll(existParentFeeCategoryIds);
+    if (requestParentFeeCategoryIds.size() > 0){
+      for (Integer feeCategoryId : requestParentFeeCategoryIds){
+        ProjectDetail projectDetail = new ProjectDetail();
+        projectDetail.setStage(projectStage);
+        projectDetail.setProjectId(projectId);
+        projectDetail.setFeeCategoryId(feeCategoryId);
+        projectDetail.setBudgetAmount(BigDecimal.ZERO);
+        projectDetail.setRealAmount(BigDecimal.ZERO);
+        projectDetailRepository.save(projectDetail);
+      }
+    }
+
   }
 }
