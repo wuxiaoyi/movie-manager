@@ -19,6 +19,27 @@ import java.util.List;
  * 
  */
 public class ExcelUtils {
+
+  /**
+   * 传入二维数组生成 Excel，第一列默认为表头
+   * @param rows
+   * @return InputStream
+   */
+  public static XSSFWorkbook generateWorkbook(List<String[]> rows){
+    XSSFWorkbook wb =  new XSSFWorkbook();
+    XSSFSheet sheet = wb.createSheet();
+
+    for (int i = 0; i < rows.size(); i++) {
+      String[] rowItem = rows.get(i);
+      XSSFRow row = sheet.createRow(i);
+
+      for (int j = 0; j < rowItem.length; j++) {
+        XSSFCell cell = row.createCell(j);
+        cell.setCellValue(rowItem[j]);
+      }
+    }
+    return wb;
+  }
   
   /**
    * 传入二维数组生成 Excel，第一列默认为表头

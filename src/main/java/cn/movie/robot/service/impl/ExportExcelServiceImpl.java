@@ -9,6 +9,9 @@ import cn.movie.robot.model.ProjectMember;
 import cn.movie.robot.model.Staff;
 import cn.movie.robot.service.IExportExcelService;
 import cn.movie.robot.service.IProjectService;
+import cn.movie.robot.utils.ExcelUtils;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -45,7 +48,7 @@ public class ExportExcelServiceImpl implements IExportExcelService {
   private FeeCategoryRepository feeCategoryRepository;
 
   @Override
-  public InputStream exportProjects(List<Integer> projectIds) {
+  public XSSFWorkbook exportProjects(List<Integer> projectIds) {
     List<String[]> projectExcelList = new ArrayList<>();
     String[] title = {
         "项目id", "项目编号", "项目名称", "项目执行状态",
@@ -92,8 +95,7 @@ public class ExportExcelServiceImpl implements IExportExcelService {
       projectExcelList.add(projectInfo);
     }
 
-
-    return null;
+    return ExcelUtils.generateWorkbook(projectExcelList);
   }
 
   private String buildMemberNames(List<ProjectMember> members, HashMap<Integer, String> staffNameHash, int memberType){
