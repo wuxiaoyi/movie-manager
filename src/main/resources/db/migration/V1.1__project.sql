@@ -25,7 +25,7 @@ CREATE TABLE `projects` (
   `late_state_budget` DECIMAL(15, 2) COMMENT '项目后期预算',
   `shooting_cost`     DECIMAL(15, 2) COMMENT '项目拍摄成本',
   `late_state_cost`   DECIMAL(15, 2) COMMENT '项目后期成本',
-  `state`             INT(3)          DEFAULT 0 COMMENT '项目状态',
+  `state`             INT(3)          DEFAULT 10 COMMENT '项目状态',
   `created_at`        DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `updated_at`        DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   PRIMARY KEY (`id`),
@@ -113,3 +113,14 @@ CREATE TABLE `fee_category` (
   `updated_at`          DATETIME    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   PRIMARY KEY (`id`)
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8 COMMENT = '费用配置表';
+
+CREATE TABLE `customer_company` (
+  `id`                  INT(11)     NOT NULL  AUTO_INCREMENT COMMENT '自增主键',
+  `name`                VARCHAR(50) NOT NULL  COMMENT '名称',
+  `company_type`        INT(3)      NOT NULL  COMMENT '公司类别，1：一级，2：二级',
+  `parent_company_id`   INT(11)     COMMENT '公司id',
+  `state`               INT(3)      DEFAULT 0 COMMENT '状态，0正常，1禁用',
+  `created_at`          DATETIME    NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `updated_at`          DATETIME    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  PRIMARY KEY (`id`)
+) ENGINE = InnoDB DEFAULT CHARSET = utf8 COMMENT = '客户公司表';

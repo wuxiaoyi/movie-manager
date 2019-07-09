@@ -8,14 +8,11 @@ import cn.movie.robot.model.ProjectDetail;
 import cn.movie.robot.model.ProjectMember;
 import cn.movie.robot.model.Staff;
 import cn.movie.robot.service.IExportExcelService;
-import cn.movie.robot.service.IProjectService;
 import cn.movie.robot.utils.ExcelUtils;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
