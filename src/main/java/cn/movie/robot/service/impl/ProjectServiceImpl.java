@@ -1,14 +1,10 @@
 package cn.movie.robot.service.impl;
 
-import cn.movie.robot.common.Constants;
-import cn.movie.robot.dao.ProjectDetailRepository;
 import cn.movie.robot.dao.ProjectMemberRepository;
 import cn.movie.robot.dao.ProjectRepository;
 import cn.movie.robot.enums.ProjectStateEnum;
 import cn.movie.robot.model.Project;
-import cn.movie.robot.model.ProjectDetail;
 import cn.movie.robot.model.ProjectMember;
-import cn.movie.robot.model.Provider;
 import cn.movie.robot.service.IOplogService;
 import cn.movie.robot.service.IProjectDetailService;
 import cn.movie.robot.service.IProjectMemberService;
@@ -50,9 +46,6 @@ public class ProjectServiceImpl implements IProjectService {
 
   @Resource
   ProjectMemberRepository projectMemberRepository;
-
-  @Resource
-  ProjectDetailRepository projectDetailRepository;
 
   @Override
   public Result queryAll(Pageable pageable) {
@@ -96,6 +89,8 @@ public class ProjectServiceImpl implements IProjectService {
     project.setName(projectBaseInfoVo.getName());
     project.setFilmDuration(projectBaseInfoVo.getFilmDuration());
     project.setContractSubjectId(projectBaseInfoVo.getContractSubjectId());
+    project.setCompanyId(projectBaseInfoVo.getCompanyId());
+    project.setChildCompanyId(projectBaseInfoVo.getChildCompanyId());
     project.setShootingStartAt(projectBaseInfoVo.getShootingStartAt());
     project.setShootingDuration(projectBaseInfoVo.getShootingDuration());
     projectRepository.save(project);
@@ -122,6 +117,8 @@ public class ProjectServiceImpl implements IProjectService {
     projectRespVo.setRealCost(project.getRealCost());
     projectRespVo.setReturnAmount(project.getReturnAmount());
     projectRespVo.setContractSubjectId(project.getContractSubjectId());
+    projectRespVo.setCompanyId(project.getCompanyId());
+    projectRespVo.setChildCompanyId(project.getChildCompanyId());
     projectRespVo.setFilmDuration(project.getFilmDuration());
     projectRespVo.setShootingBudget(project.getShootingBudget());
     projectRespVo.setShootingCost(project.getShootingCost());

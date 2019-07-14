@@ -23,9 +23,9 @@ public class ProjectSearchVo {
 
   private List<Integer> states;
 
-  private String companyName;
+  private Integer companyId;
 
-  private String companyGroup;
+  private Integer childCompanyId;
 
   private BigDecimal contractAmountStart;
 

@@ -22,6 +22,10 @@ public class ProjectRespVo {
 
   private Integer contractSubjectId;
 
+  private Integer companyId;
+
+  private Integer childCompanyId;
+
   private Integer filmDuration;
 
   @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "GMT+8")

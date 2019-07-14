@@ -37,6 +37,16 @@ public class Project {
   private Integer contractSubjectId;
 
   /**
+   * 客户公司（一级）
+   */
+  private Integer companyId;
+  
+  /**
+   * 客户公司（二级）
+   */
+  private Integer childCompanyId;
+
+  /**
    * 成片时长
    */
   private Integer filmDuration;

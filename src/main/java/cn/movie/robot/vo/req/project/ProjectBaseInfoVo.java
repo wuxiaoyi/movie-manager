@@ -17,6 +17,10 @@ public class ProjectBaseInfoVo {
 
   private Integer contractSubjectId;
 
+  private Integer companyId;
+
+  private Integer childCompanyId;
+
   private Integer filmDuration;
 
   private Date shootingStartAt;

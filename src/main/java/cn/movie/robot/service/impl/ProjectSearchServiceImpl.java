@@ -246,13 +246,17 @@ public class ProjectSearchServiceImpl implements IProjectSearchService {
   private Specification<Project> buildBaseQuery(ProjectSearchVo projectSearchVo, List<Integer> projectIds){
     return (root, criteriaQuery, criteriaBuilder) -> {
       List<Predicate> predicates = new ArrayList<>();
-//      if (StringUtils.isNoneEmpty(projectSearchVo.getCompanyName())){
-//        predicates.add(criteriaBuilder.like(root.<String>get("company_name"), projectSearchVo.getCompanyName()));
-//      }
-
 
       if (Objects.nonNull(projectIds)){
         predicates.add(root.<Integer>get("id").in(projectIds));
+      }
+
+      if (Objects.nonNull(projectSearchVo.getCompanyId())){
+        predicates.add(criteriaBuilder.equal(root.get("companyId"), projectSearchVo.getCompanyId()));
+      }
+
+      if (Objects.nonNull(projectSearchVo.getChildCompanyId())){
+        predicates.add(criteriaBuilder.equal(root.get("childCompanyId"), projectSearchVo.getChildCompanyId()));
       }
 
       /**
