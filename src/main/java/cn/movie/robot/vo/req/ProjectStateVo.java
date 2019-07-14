@@ -8,5 +8,5 @@ import lombok.Data;
  */
 @Data
 public class ProjectStateVo {
-  private int state;
+  private Integer state;
 }

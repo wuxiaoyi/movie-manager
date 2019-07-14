@@ -39,6 +39,6 @@ public interface IProjectService {
    * @param state
    * @return
    */
-  Result updateState(int projectId, int state);
+  Result updateState(int projectId, Integer state);
 
 }

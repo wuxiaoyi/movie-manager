@@ -144,12 +144,12 @@ public class ProjectServiceImpl implements IProjectService {
   }
 
   @Override
-  public Result updateState(int projectId, int state) {
+  public Result updateState(int projectId, Integer state) {
     Project project = projectRepository.getOne(projectId);
     if (Objects.isNull(project)){
       return Result.error("项目不存在");
     }
-    if (ProjectStateEnum.getStates().contains(state)){
+    if (!ProjectStateEnum.getStates().contains(state)){
       return Result.error("状态不存在");
     }
     project.setState(state);
