@@ -32,6 +32,9 @@ public class ConfigController {
   @Autowired
   private IConfigService configService;
 
+  @Autowired
+  private ICustomerCompanyService customerCompanyService;
+
   @GetMapping("/contract_subjects")
   public Result contractSubjects(){
     return contractSubjectService.queryAll();
@@ -60,5 +63,10 @@ public class ConfigController {
   @GetMapping("/project_states")
   public Result projectStates(){
     return configService.projectStates();
+  }
+
+  @GetMapping("/customer_companies")
+  public Result customerCompanies(){
+    return customerCompanyService.queryAll();
   }
 }

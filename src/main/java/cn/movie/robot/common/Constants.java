@@ -77,6 +77,15 @@ public class Constants {
    * 项目相关 end
    */
 
+  /**
+   * 客户公司类型
+   */
+  public static final int CUSTOMER_COMPANY_PARENT = 1;
+  public static final int CUSTOMER_COMPANY_CHILD = 2;
+
+  /**
+   * 操作记录类型
+   */
   public static final int OPERATION_LOG_TYPE_BASE_INFO = 1;
   public static final int OPERATION_LOG_TYPE_SHOOTING = 2;
   public static final int OPERATION_LOG_TYPE_LAST_STATE = 3;
