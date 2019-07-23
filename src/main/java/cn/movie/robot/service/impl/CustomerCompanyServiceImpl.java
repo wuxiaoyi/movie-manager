@@ -47,7 +47,7 @@ public class CustomerCompanyServiceImpl implements ICustomerCompanyService {
     if (Objects.isNull(customerCompany)){
       return Result.error("该客户公司不存在");
     }
-    customerCompany.setState(Constants.COMMON_STATE_FORBIDDEN);
+    customerCompany.setState(state);
     customerCompanyRepository.save(customerCompany);
     return Result.succ();
   }
