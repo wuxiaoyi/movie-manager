@@ -59,7 +59,7 @@ public class CustomerCompanyServiceImpl implements ICustomerCompanyService {
     company.setParentCompanyId(customerCompanyVo.getParentCompanyId());
     company.setCompanyType(customerCompanyVo.getCompanyType());
     customerCompanyRepository.save(company);
-    return null;
+    return Result.succ();
   }
 
   @Override
