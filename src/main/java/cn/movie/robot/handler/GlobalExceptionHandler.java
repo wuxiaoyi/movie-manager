@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.ConstraintViolationException;
 
 /**
  * @author Wuxiaoyi
@@ -25,6 +26,14 @@ public class GlobalExceptionHandler {
     return new Result(Constants.NO_PERMISSION_ERROR_CODE, Constants.NO_PERMISSION_ERROR_MSG);
   }
 
+  @ExceptionHandler({
+      ConstraintViolationException.class
+  })
+  public Object handleConstraintViolationException(Exception e, HttpServletRequest request){
+    return Result.error(e.getMessage());
+  }
+
+  @ExceptionHandler(Exception.class)
   public Object handleErrorException(Exception e, HttpServletRequest request){
     String method = StringUtils.EMPTY;
     String url = StringUtils.EMPTY;
