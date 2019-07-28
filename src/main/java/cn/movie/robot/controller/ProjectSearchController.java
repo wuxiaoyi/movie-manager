@@ -40,7 +40,7 @@ public class ProjectSearchController {
     return projectSearchService.search(projectSearchVo);
   }
 
-  @GetMapping("/export")
+  @PostMapping("/export")
   public void export(@RequestBody ProjectSearchVo projectSearchVo){
     ServletRequestAttributes servletRequestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
     HttpServletResponse response = servletRequestAttributes.getResponse();

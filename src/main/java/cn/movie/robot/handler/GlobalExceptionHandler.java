@@ -30,7 +30,7 @@ public class GlobalExceptionHandler {
       ConstraintViolationException.class
   })
   public Object handleConstraintViolationException(Exception e, HttpServletRequest request){
-    return Result.error(e.getMessage());
+    return Result.error(e.getLocalizedMessage());
   }
 
   @ExceptionHandler(Exception.class)
