@@ -57,11 +57,9 @@ public class UserServiceImpl implements IUserService {
 
   @Override
   public Result signUp(SignUpVo signUpVo) {
-    String signUpUuid = signUpVo.getSignUpKey();
-    String key = Constants.USER_SIGN_UP_KEY_PREFIX + signUpUuid;
-
-    if (Objects.isNull(redisTemplate.opsForValue().get(key))){
-      return Result.error("注册码20分钟有效,已过期");
+    User existUser = userRepository.findByEmail(signUpVo.getEmail());
+    if (Objects.nonNull(existUser)){
+      return Result.succ("此邮箱已存在");
     }
 
     User user = new User();
@@ -76,8 +74,6 @@ public class UserServiceImpl implements IUserService {
     user.setPasswordSlat(slat);
 
     userRepository.save(user);
-
-    redisTemplate.delete(key);
 
     return Result.succ();
   }

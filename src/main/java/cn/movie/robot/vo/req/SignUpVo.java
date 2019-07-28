@@ -22,8 +22,4 @@ public class SignUpVo {
 
   @NotNull(message = "密码不能为空")
   private String password;
-
-  @NotNull(message = "注册码不能为空")
-  @JsonProperty("sign_up_key")
-  private String signUpKey;
 }
