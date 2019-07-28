@@ -4,10 +4,12 @@ import cn.movie.robot.common.Constants;
 import cn.movie.robot.dao.ProjectDetailRepository;
 import cn.movie.robot.dao.ProjectMemberRepository;
 import cn.movie.robot.dao.ProjectRepository;
+import cn.movie.robot.dao.ProviderRepository;
 import cn.movie.robot.enums.ProjectMemberTypeEnum;
 import cn.movie.robot.model.Project;
 import cn.movie.robot.model.ProjectDetail;
 import cn.movie.robot.model.ProjectMember;
+import cn.movie.robot.model.Provider;
 import cn.movie.robot.service.IProjectSearchService;
 import cn.movie.robot.vo.common.Result;
 import cn.movie.robot.vo.req.search.FeeSearchVo;
@@ -16,6 +18,7 @@ import cn.movie.robot.vo.resp.PageBean;
 import cn.movie.robot.vo.resp.search.ProjectSearchChildFeeRespVo;
 import cn.movie.robot.vo.resp.search.ProjectSearchParentFeeRespVo;
 import cn.movie.robot.vo.resp.search.ProjectSearchRespVo;
+import org.apache.shiro.crypto.hash.Hash;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -47,6 +50,9 @@ public class ProjectSearchServiceImpl implements IProjectSearchService {
 
   @Resource
   ProjectDetailRepository projectDetailRepository;
+
+  @Resource
+  ProviderRepository providerRepository;
 
   @Override
   public Result search(ProjectSearchVo projectSearchVo) {
@@ -81,12 +87,45 @@ public class ProjectSearchServiceImpl implements IProjectSearchService {
     PageBean<ProjectSearchRespVo> projectPageBean = new PageBean<>(
         projectPage.getTotalElements(),
         projectPage.getTotalPages(),
-        dealSearchResultWithoutFee(projectPage.getContent(), projectSearchVo)
+        dealSearchResult(projectPage.getContent(), projectSearchVo)
     );
     return Result.succ(projectPageBean);
   }
 
-  private List<ProjectSearchRespVo> dealSearchResultWithoutFee(List<Project> projects, ProjectSearchVo projectSearchVo){
+  @Override
+  public List<Integer> searchForExport(ProjectSearchVo projectSearchVo) {
+    List<Integer> result = new ArrayList<>();
+    List<Integer> projectIds = null;
+
+    // 处理项目成员搜索
+    List<Integer> memberProjectIds = queryProjectIdByMember(projectSearchVo);
+    if (Objects.nonNull(memberProjectIds)){
+      if (memberProjectIds.size() == 0){
+        return result;
+      }
+      projectIds = new ArrayList<>();
+      projectIds.addAll(memberProjectIds);
+    }
+
+    // 处理费用项搜索
+    List<Integer> feeProjectIds = queryProjectIdByFee(projectSearchVo);
+    if (Objects.nonNull(feeProjectIds)){
+      if (feeProjectIds.size() == 0){
+        return result;
+      }
+      if (Objects.isNull(projectIds)){
+        projectIds = new ArrayList<>();
+      }
+      projectIds.addAll(feeProjectIds);
+    }
+
+    Specification<Project> specification = buildBaseQuery(projectSearchVo, projectIds);
+    List<Project> projects = projectRepository.findAll(specification);
+    result = projects.stream().map(Project::getId).collect(Collectors.toList());
+    return result;
+  }
+
+  private List<ProjectSearchRespVo> dealSearchResult(List<Project> projects, ProjectSearchVo projectSearchVo){
     if (CollectionUtils.isEmpty(projectSearchVo.getFeeList())){
       return dealSearchResultWithoutFee(projects);
     }else {
@@ -396,6 +435,9 @@ public class ProjectSearchServiceImpl implements IProjectSearchService {
     if (projectDetailList.size() == 0){
       return result;
     }
+    HashMap<Integer, String> providerNameHash = genProviderNameHash(
+      projectDetailList.stream().map(ProjectDetail::getProviderId).collect(Collectors.toList())
+    );
 
     List<ProjectDetail> projectDetailParentList = projectDetailRepository.queryByProjectIdInAndFeeCategoryIdInAndFeeChildCategoryIdIsNull(
         projectIds,
@@ -422,6 +464,7 @@ public class ProjectSearchServiceImpl implements IProjectSearchService {
         childFeeRespVo.setBudgetAmount(childFeeDetail.getBudgetAmount());
         childFeeRespVo.setCategoryId(childFeeDetail.getFeeChildCategoryId());
         childFeeRespVo.setProviderId(childFeeDetail.getProviderId());
+        childFeeRespVo.setProviderName(providerNameHash.get(childFeeDetail.getProviderId()));
         childFeeList.add(childFeeRespVo);
       }
       parentFeeRespVo.setChildFeeList(childFeeList);
@@ -434,5 +477,17 @@ public class ProjectSearchServiceImpl implements IProjectSearchService {
     }
 
     return result;
+  }
+
+  private HashMap<Integer, String> genProviderNameHash(List<Integer> providerIds){
+    HashMap<Integer, String> nameHash = new HashMap<>();
+    if (providerIds.size() == 0){
+      return nameHash;
+    }
+    List<Provider> providers = providerRepository.queryByIdIn(providerIds);
+    for (Provider provider : providers){
+      nameHash.put(provider.getId(), provider.getName());
+    }
+    return nameHash;
   }
 }

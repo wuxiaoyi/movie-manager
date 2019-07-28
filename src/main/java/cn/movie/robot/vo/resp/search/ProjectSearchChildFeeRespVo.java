@@ -15,4 +15,5 @@ public class ProjectSearchChildFeeRespVo {
   private BigDecimal budgetAmount;
   private BigDecimal realAmount;
   private Integer providerId;
+  private String providerName;
 }

@@ -4,6 +4,7 @@ import cn.movie.robot.service.IExportExcelService;
 import cn.movie.robot.service.IProjectSearchService;
 import cn.movie.robot.vo.common.Result;
 import cn.movie.robot.vo.req.search.ProjectSearchVo;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +24,7 @@ import java.util.List;
  * @author Wuxiaoyi
  * @date 2019/7/6
  */
+@Slf4j
 @RestController
 @RequestMapping(value = "/api/v1/project_search", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 public class ProjectSearchController {
@@ -39,19 +41,23 @@ public class ProjectSearchController {
   }
 
   @GetMapping("/export")
-  public void export(){
+  public void export(@RequestBody ProjectSearchVo projectSearchVo){
     ServletRequestAttributes servletRequestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
     HttpServletResponse response = servletRequestAttributes.getResponse();
 
-    List<Integer> pids = new ArrayList<>();
-    pids.add(1);
-    XSSFWorkbook excel = exportExcelService.exportProjects(pids);
+    List<Integer> projectIds = projectSearchService.searchForExport(projectSearchVo);
+
+    if (projectIds.size() == 0 ){
+      return;
+    }
+
+    XSSFWorkbook excel = exportExcelService.exportProjects(projectIds);
 
     try {
       //清空response
       response.reset();
       //设置response的Header
-      response.addHeader("Content-Disposition", "attachment;filename=tete.xlsx");
+      response.addHeader("Content-Disposition", "attachment;filename=projects.xlsx");
       OutputStream os = new BufferedOutputStream(response.getOutputStream());
       response.setContentType("application/vnd.ms-excel;charset=gb2312");
       //将excel写入到输出流中
@@ -59,7 +65,7 @@ public class ProjectSearchController {
       os.flush();
       os.close();
     } catch (Exception e) {
-      e.printStackTrace();
+      logger.error("ProjectSearchController export error, e: {}", e);
     }
   }
 
