@@ -114,8 +114,8 @@ public class ShiroConfig {
     RedisSessionDAO redisSessionDAO = new RedisSessionDAO();
     redisSessionDAO.setRedisManager(redisManager());
     redisSessionDAO.setKeyPrefix("shiro:user:");
-    redisSessionDAO.setSessionInMemoryTimeout(300000);
-    redisSessionDAO.setExpire(300000);
+    redisSessionDAO.setSessionInMemoryTimeout(3000000);
+    redisSessionDAO.setExpire(3000000);
     return redisSessionDAO;
   }
 
@@ -127,10 +127,6 @@ public class ShiroConfig {
     return redisCacheManager;
   }
 
-  /**
-   * 3.此处对应前端“记住我”的功能，获取用户关联信息而无需登录
-   * @return
-   */
   @Bean
   public SimpleCookie rememberMeCookie(){
     //这个参数是cookie的名称，对应前端的checkbox的name = remember

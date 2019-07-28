@@ -26,4 +26,6 @@ public interface IRoleService {
   Result delete(Integer roleId);
 
   Result queryByUserId(Integer userId);
+
+  Result queryPermissionsByRoleId(Integer userId);
 }

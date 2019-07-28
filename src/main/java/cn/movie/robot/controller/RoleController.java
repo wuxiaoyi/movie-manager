@@ -54,5 +54,9 @@ public class RoleController {
     return roleService.updatePermission(roleId, permissionIdList);
   }
 
+  @GetMapping("/{role_id}/permissions")
+  public Result rolePermissions(@PathVariable("role_id") Integer roldId){
+    return roleService.queryPermissionsByRoleId(roldId);
+  }
 
 }

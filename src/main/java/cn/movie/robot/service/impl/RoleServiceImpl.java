@@ -1,9 +1,6 @@
 package cn.movie.robot.service.impl;
 
-import cn.movie.robot.dao.PermissionRoleRepository;
-import cn.movie.robot.dao.RoleRepository;
-import cn.movie.robot.dao.UserRepository;
-import cn.movie.robot.dao.UserRoleRepository;
+import cn.movie.robot.dao.*;
 import cn.movie.robot.model.*;
 import cn.movie.robot.service.IRoleService;
 import cn.movie.robot.vo.common.Result;
@@ -40,6 +37,9 @@ public class RoleServiceImpl implements IRoleService {
 
   @Resource
   UserRepository userRepository;
+
+  @Resource
+  PermissionRepository permissionRepository;
 
   @Override
   public Result queryAll(Pageable pageable) {
@@ -183,5 +183,13 @@ public class RoleServiceImpl implements IRoleService {
 
     List<UserRole> userRoleList = userRoleRepository.findAllByUserId(userId);
     return Result.succ(userRoleList);
+  }
+
+  @Override
+  public Result queryPermissionsByRoleId(Integer roleId) {
+    List<PermissionRole> permissionRoleList = permissionRoleRepository.findAllByRoleId(roleId);
+    List<Integer> permissionIds = permissionRoleList.stream().map(PermissionRole::getPermissionId).distinct().collect(Collectors.toList());
+    List<Permission> permissionList = permissionRepository.findAllByIdIn(permissionIds);
+    return Result.succ(permissionList);
   }
 }
