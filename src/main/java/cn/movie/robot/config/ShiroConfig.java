@@ -68,6 +68,8 @@ public class ShiroConfig {
   @Bean
   public SessionManager sessionManager() {
     SessionManager mySessionManager = new SessionManager();
+    mySessionManager.setGlobalSessionTimeout(3600000*24);
+    mySessionManager.setSessionValidationInterval(3600000*24);
     mySessionManager.setSessionDAO(redisSessionDAO());
     return mySessionManager;
   }
@@ -102,9 +104,7 @@ public class ShiroConfig {
   public RedisManager redisManager() {
     RedisManager redisManager = new RedisManager();
     redisManager.setHost(this.redisHost);
-//    redisManager.setPort(this.redisPort);
     redisManager.setTimeout(this.redisTimeout);
-//    redisManager.setPassword(this.redisPassword);
     redisManager.setDatabase(this.redisDatebase);
     return redisManager;
   }
@@ -114,8 +114,8 @@ public class ShiroConfig {
     RedisSessionDAO redisSessionDAO = new RedisSessionDAO();
     redisSessionDAO.setRedisManager(redisManager());
     redisSessionDAO.setKeyPrefix("shiro:user:");
-    redisSessionDAO.setSessionInMemoryTimeout(3000000);
-    redisSessionDAO.setExpire(3000000);
+    redisSessionDAO.setSessionInMemoryTimeout(3600000*24);
+    redisSessionDAO.setExpire(3600000*24);
     return redisSessionDAO;
   }
 
