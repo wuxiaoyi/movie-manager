@@ -16,6 +16,7 @@ import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -82,10 +83,10 @@ public class ExportExcelServiceImpl implements IExportExcelService {
       String[] projectInfo = {
           project.getId().toString(), project.getSid(), project.getName(), ProjectStateEnum.getStateName(project.getState()),
           "", "", "",
-          project.getShootingStartAt().toString(), project.getShootingDuration().toString(), project.getFilmDuration().toString(),
-          project.getContractAmount().toString(), project.getReturnAmount().toString(), project.getBudgetCost().toString(),
-          project.getRealCost().toString(), project.getBudgetCost().toString(), project.getShootingBudget().toString(),
-          project.getBudgetCost().toString(), project.getLateStateBudget().toString(), project.getLateStateCost().toString(),
+          objectToString(project.getShootingStartAt()), objectToString(project.getShootingDuration()), objectToString(project.getFilmDuration()),
+          objectToString(project.getContractAmount()), project.getReturnAmount().toString(), objectToString(project.getBudgetCost()),
+          objectToString(project.getRealCost()), objectToString(project.getBudgetCost()), objectToString(project.getShootingBudget()),
+          objectToString(project.getBudgetCost()), objectToString(project.getLateStateBudget()), objectToString(project.getLateStateCost()),
           projectLeader, customerManager, director, executiveDirector, copywriting, producer,
           postEditing, compositing, art, music, storyBoard
       };
@@ -108,5 +109,12 @@ public class ExportExcelServiceImpl implements IExportExcelService {
       staffNameHash.put(staff.getId(), staff.getName());
     }
     return staffNameHash;
+  }
+
+  private String objectToString(Object object){
+    if (Objects.isNull(object)){
+      return "";
+    }
+    return object.toString();
   }
 }
