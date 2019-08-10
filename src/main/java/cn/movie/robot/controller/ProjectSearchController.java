@@ -57,8 +57,8 @@ public class ProjectSearchController {
       //清空response
       response.reset();
       //设置response的Header
-      response.addHeader("Content-Disposition", "attachment;filename=projects.xlsx");
       OutputStream os = new BufferedOutputStream(response.getOutputStream());
+      response.addHeader("Content-Disposition", "attachment;filename=projects.xlsx");
       response.setContentType("application/vnd.ms-excel;charset=gb2312");
       //将excel写入到输出流中
       excel.write(os);

@@ -73,6 +73,6 @@ public class StaffServiceImpl implements IStaffService {
     staff.setAscription(staffVo.getAscription());
     staff.setCellphone(staffVo.getCellphone());
     staffRepository.save(staff);
-    return null;
+    return Result.succ();
   }
 }

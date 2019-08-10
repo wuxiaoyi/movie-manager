@@ -3,13 +3,11 @@ package cn.movie.robot.service.impl;
 import cn.movie.robot.dao.*;
 import cn.movie.robot.enums.ProjectMemberTypeEnum;
 import cn.movie.robot.enums.ProjectStateEnum;
-import cn.movie.robot.model.Project;
-import cn.movie.robot.model.ProjectDetail;
-import cn.movie.robot.model.ProjectMember;
-import cn.movie.robot.model.Staff;
+import cn.movie.robot.model.*;
 import cn.movie.robot.service.IExportExcelService;
 import cn.movie.robot.utils.ExcelUtils;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.apache.shiro.crypto.hash.Hash;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -45,6 +43,12 @@ public class ExportExcelServiceImpl implements IExportExcelService {
   @Resource
   private FeeCategoryRepository feeCategoryRepository;
 
+  @Resource
+  private CustomerCompanyRepository customerCompanyRepository;
+
+  @Resource
+  private ContractSubjectRepository contractSubjectRepository;
+
   @Override
   public XSSFWorkbook exportProjects(List<Integer> projectIds) {
     List<String[]> projectExcelList = new ArrayList<>();
@@ -63,8 +67,15 @@ public class ExportExcelServiceImpl implements IExportExcelService {
     List<Project> projectList = projectRepository.queryByIdIn(projectIds);
     List<ProjectMember> projectMemberList = projectMemberRepository.queryByProjectIdIn(projectIds);
     List<ProjectDetail> projectDetailList = projectDetailRepository.queryByProjectIdInAndFeeCategoryIdIsNull(projectIds);
+
     List<Staff> staffList = staffRepository.findAll();
     HashMap<Integer, String> staffNameHash = buildStaffNameHash(staffList);
+
+    List<CustomerCompany> companyList = customerCompanyRepository.findAll();
+    HashMap<Integer, String> companyNameHash = buildCompanyNameHash(companyList);
+
+    List<ContractSubject> contractSubjectList = contractSubjectRepository.findAll();
+    HashMap<Integer, String> contractNameHash = buildContractNameHash(contractSubjectList);
 
     for (Project project : projectList){
       List<ProjectMember> members = projectMemberList.stream().filter(projectMember -> projectMember.getProjectId().equals(project.getId())).collect(Collectors.toList());
@@ -82,7 +93,7 @@ public class ExportExcelServiceImpl implements IExportExcelService {
 
       String[] projectInfo = {
           project.getId().toString(), project.getSid(), project.getName(), ProjectStateEnum.getStateName(project.getState()),
-          "", "", "",
+          companyNameHash.get(project.getCompanyId()), companyNameHash.get(project.getChildCompanyId()), contractNameHash.get(project.getContractSubjectId()),
           objectToString(project.getShootingStartAt()), objectToString(project.getShootingDuration()), objectToString(project.getFilmDuration()),
           objectToString(project.getContractAmount()), project.getReturnAmount().toString(), objectToString(project.getBudgetCost()),
           objectToString(project.getRealCost()), objectToString(project.getBudgetCost()), objectToString(project.getShootingBudget()),
@@ -109,6 +120,22 @@ public class ExportExcelServiceImpl implements IExportExcelService {
       staffNameHash.put(staff.getId(), staff.getName());
     }
     return staffNameHash;
+  }
+
+  private HashMap<Integer, String> buildCompanyNameHash(List<CustomerCompany> companyList){
+    HashMap<Integer, String> companyNameHash = new HashMap<>(companyList.size());
+    for (CustomerCompany company : companyList){
+      companyNameHash.put(company.getId(), company.getName());
+    }
+    return companyNameHash;
+  }
+
+  private HashMap<Integer, String> buildContractNameHash(List<ContractSubject> contractSubjectList){
+    HashMap<Integer, String> contractSubjectNameHash = new HashMap<>(contractSubjectList.size());
+    for (ContractSubject subject : contractSubjectList){
+      contractSubjectNameHash.put(subject.getId(), subject.getName());
+    }
+    return contractSubjectNameHash;
   }
 
   private String objectToString(Object object){
