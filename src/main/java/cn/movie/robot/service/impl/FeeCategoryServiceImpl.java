@@ -48,7 +48,7 @@ public class FeeCategoryServiceImpl implements IFeeCategoryService {
     if (Objects.isNull(feeCategory)){
       return Result.error("该费用项不存在");
     }
-    feeCategory.setStage(state);
+    feeCategory.setState(state);
     feeCategoryRepository.save(feeCategory);
     return Result.succ();
   }

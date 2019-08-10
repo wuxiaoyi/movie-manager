@@ -7,7 +7,6 @@ import cn.movie.robot.model.*;
 import cn.movie.robot.service.IExportExcelService;
 import cn.movie.robot.utils.ExcelUtils;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.apache.shiro.crypto.hash.Hash;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
