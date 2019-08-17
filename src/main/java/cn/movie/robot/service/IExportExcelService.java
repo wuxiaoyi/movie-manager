@@ -12,4 +12,6 @@ import java.util.List;
  */
 public interface IExportExcelService {
   XSSFWorkbook exportProjects(List<Integer> projectIds);
+
+  XSSFWorkbook exportDetail(Integer projectId);
 }

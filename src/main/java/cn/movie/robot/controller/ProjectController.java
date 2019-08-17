@@ -1,6 +1,5 @@
 package cn.movie.robot.controller;
 
-import cn.movie.robot.common.Constants;
 import cn.movie.robot.service.IOplogService;
 import cn.movie.robot.service.IProjectDetailService;
 import cn.movie.robot.service.IProjectService;
@@ -10,16 +9,13 @@ import cn.movie.robot.vo.oplog.ProjectLastStateDetailOplog;
 import cn.movie.robot.vo.oplog.ProjectShootingDetailOplog;
 import cn.movie.robot.vo.req.ProjectStateVo;
 import cn.movie.robot.vo.req.project.*;
+import cn.movie.robot.vo.req.search.BaseSearchVo;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-import static org.springframework.data.domain.Sort.Direction.ASC;
 
 /**
  * @author Wuxiaoyi
@@ -44,9 +40,8 @@ public class ProjectController {
   }
 
   @GetMapping("")
-  public Result list(@RequestParam("page") int page, @RequestParam("page_size") int pageSize){
-    Pageable pageable = PageRequest.of(page-1, pageSize, Sort.by(ASC, Constants.COMMON_FIELD_NAME_ID));
-    return projectService.queryAll(pageable);
+  public Result list(@RequestBody BaseSearchVo baseSearchVo){
+    return projectService.queryAll(baseSearchVo);
   }
 
   @GetMapping("/{id}/base_info")
@@ -94,5 +89,10 @@ public class ProjectController {
   @PutMapping("/{id}/update_state")
   public Result updateState(@PathVariable("id") Integer id, @RequestBody ProjectStateVo projectStateVo){
     return projectService.updateState(id, projectStateVo.getState());
+  }
+
+  @GetMapping("/{id}/export_detail")
+  public void exportDetail(@PathVariable("id") Integer id){
+
   }
 }

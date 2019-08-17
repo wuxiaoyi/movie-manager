@@ -1,5 +1,6 @@
 package cn.movie.robot.service.impl;
 
+import cn.movie.robot.common.Constants;
 import cn.movie.robot.dao.*;
 import cn.movie.robot.enums.ProjectMemberTypeEnum;
 import cn.movie.robot.enums.ProjectStateEnum;
@@ -10,10 +11,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -67,14 +65,9 @@ public class ExportExcelServiceImpl implements IExportExcelService {
     List<ProjectMember> projectMemberList = projectMemberRepository.queryByProjectIdIn(projectIds);
     List<ProjectDetail> projectDetailList = projectDetailRepository.queryByProjectIdInAndFeeCategoryIdIsNull(projectIds);
 
-    List<Staff> staffList = staffRepository.findAll();
-    HashMap<Integer, String> staffNameHash = buildStaffNameHash(staffList);
-
-    List<CustomerCompany> companyList = customerCompanyRepository.findAll();
-    HashMap<Integer, String> companyNameHash = buildCompanyNameHash(companyList);
-
-    List<ContractSubject> contractSubjectList = contractSubjectRepository.findAll();
-    HashMap<Integer, String> contractNameHash = buildContractNameHash(contractSubjectList);
+    HashMap<Integer, String> staffNameHash = buildStaffNameHash();
+    HashMap<Integer, String> companyNameHash = buildCompanyNameHash();
+    HashMap<Integer, String> contractNameHash = buildContractNameHash();
 
     for (Project project : projectList){
       List<ProjectMember> members = projectMemberList.stream().filter(projectMember -> projectMember.getProjectId().equals(project.getId())).collect(Collectors.toList());
@@ -106,6 +99,74 @@ public class ExportExcelServiceImpl implements IExportExcelService {
     return ExcelUtils.generateWorkbook(projectExcelList);
   }
 
+  @Override
+  public XSSFWorkbook exportDetail(Integer projectId) {
+    List<String[]> projectExcelList = new ArrayList<>();
+
+    Project project = projectRepository.getOne(projectId);
+    List<ProjectMember> projectMembers = projectMemberRepository.queryByProjectId(projectId);
+    List<ProjectDetail> projectDetails = projectDetailRepository.queryByProjectId(projectId);
+
+
+    HashMap<Integer, String> staffNameHash = buildStaffNameHash();
+    HashMap<Integer, String> companyNameHash = buildCompanyNameHash();
+    HashMap<Integer, String> contractNameHash = buildContractNameHash();
+
+    /**
+     * 基本信息
+     */
+    projectExcelList.add(new String[]{"项目基本信息", ""});
+    projectExcelList.add(new String[]{"合同签署主体", contractNameHash.get(project.getContractSubjectId())});
+    projectExcelList.add(new String[]{"项目编号", project.getSid()});
+    projectExcelList.add(new String[]{"项目名称", project.getName()});
+    projectExcelList.add(new String[]{"客户公司-一级", companyNameHash.get(project.getCompanyId())});
+    projectExcelList.add(new String[]{"客户公司-二级", companyNameHash.get(project.getChildCompanyId())});
+    projectExcelList.add(new String[]{"项目执行状态", ProjectStateEnum.getStateName(project.getState())});
+    projectExcelList.add(new String[]{"成片时长", objectToString(project.getFilmDuration())});
+    projectExcelList.add(new String[]{"拍摄周期", objectToString(project.getShootingDuration())});
+    projectExcelList.add(new String[]{"拍摄日期", objectToString(project.getShootingStartAt())});
+    for (ProjectMemberTypeEnum memberTypeEnum : ProjectMemberTypeEnum.values()){
+      projectExcelList.add(new String[]{
+          memberTypeEnum.getName(),
+          buildMemberNames(projectMembers, staffNameHash, memberTypeEnum.getType())
+      });
+    }
+    projectExcelList.add(new String[]{"项目合同金额", objectToString(project.getContractAmount())});
+    projectExcelList.add(new String[]{"项目回款金额", objectToString(project.getReturnAmount())});
+    projectExcelList.add(new String[]{"项目预算金额", objectToString(project.getBudgetCost())});
+    projectExcelList.add(new String[]{"项目实际总成本", objectToString(project.getRealCost())});
+    projectExcelList.add(new String[]{"项目预算总成本", objectToString(project.getBudgetCost())});
+    projectExcelList.add(new String[]{"项目拍摄预算", objectToString(project.getShootingBudget())});
+    projectExcelList.add(new String[]{"项目拍摄成本", objectToString(project.getShootingCost())});
+    projectExcelList.add(new String[]{"项目后期预算", objectToString(project.getLateStateBudget())});
+    projectExcelList.add(new String[]{"项目后期成本", objectToString(project.getLateStateCost())});
+
+    /**
+     * 拍摄费用
+     */
+    projectExcelList.add(new String[]{
+        "项目明细-拍摄费用"
+    });
+    projectExcelList.add(new String[]{
+        "一级费用项", "二级费用项", "预算金额", "实际金额", "供应商"
+    });
+
+    List<ProjectDetail> shootingDetail = projectDetails.stream()
+        .filter(projectDetail -> projectDetail.getStage().equals(Constants.PROJECT_DETAIL_STATG_SHOOTING)).collect(Collectors.toList());
+
+    genFeeInfo(projectExcelList, shootingDetail);
+
+    /**
+     * 后期费用
+     */
+    List<ProjectDetail> lateStateDetail = projectDetails.stream()
+        .filter(projectDetail -> projectDetail.getStage().equals(Constants.PROJECT_DETAIL_STATG_LAST_STATE)).collect(Collectors.toList());
+
+    genFeeInfo(projectExcelList, lateStateDetail);
+
+    return null;
+  }
+
   private String buildMemberNames(List<ProjectMember> members, HashMap<Integer, String> staffNameHash, int memberType){
     Stream<ProjectMember> memberStream = members.stream();
     return memberStream.filter(projectMember -> projectMember.getMemberType().equals(memberType))
@@ -113,7 +174,8 @@ public class ExportExcelServiceImpl implements IExportExcelService {
         .collect(Collectors.joining(","));
   }
 
-  private HashMap<Integer, String> buildStaffNameHash(List<Staff> staffList){
+  private HashMap<Integer, String> buildStaffNameHash(){
+    List<Staff> staffList = staffRepository.findAll();
     HashMap<Integer, String> staffNameHash = new HashMap<>(staffList.size());
     for (Staff staff : staffList){
       staffNameHash.put(staff.getId(), staff.getName());
@@ -121,7 +183,8 @@ public class ExportExcelServiceImpl implements IExportExcelService {
     return staffNameHash;
   }
 
-  private HashMap<Integer, String> buildCompanyNameHash(List<CustomerCompany> companyList){
+  private HashMap<Integer, String> buildCompanyNameHash(){
+    List<CustomerCompany> companyList = customerCompanyRepository.findAll();
     HashMap<Integer, String> companyNameHash = new HashMap<>(companyList.size());
     for (CustomerCompany company : companyList){
       companyNameHash.put(company.getId(), company.getName());
@@ -129,12 +192,71 @@ public class ExportExcelServiceImpl implements IExportExcelService {
     return companyNameHash;
   }
 
-  private HashMap<Integer, String> buildContractNameHash(List<ContractSubject> contractSubjectList){
+  private HashMap<Integer, String> buildContractNameHash(){
+    List<ContractSubject> contractSubjectList = contractSubjectRepository.findAll();
     HashMap<Integer, String> contractSubjectNameHash = new HashMap<>(contractSubjectList.size());
     for (ContractSubject subject : contractSubjectList){
       contractSubjectNameHash.put(subject.getId(), subject.getName());
     }
     return contractSubjectNameHash;
+  }
+
+  private HashMap<Integer, String> buildFeeCategoryNameHash(){
+    List<FeeCategory> feeCategories = feeCategoryRepository.findAll();
+    HashMap<Integer, String> feeCategoryNameHash = new HashMap<>(feeCategories.size());
+    for (FeeCategory feeCategory : feeCategories){
+      feeCategoryNameHash.put(feeCategory.getId(), feeCategory.getName());
+    }
+    return feeCategoryNameHash;
+  }
+
+  private HashMap<Integer, String> buildProviderNameHash(){
+    List<Provider> providers = providerRepository.findAll();
+    HashMap<Integer, String> providerNameHash = new HashMap<>(providers.size());
+    for (Provider provider : providers){
+      providerNameHash.put(provider.getId(), provider.getName());
+    }
+    return providerNameHash;
+  }
+
+  private void genFeeInfo(List<String[]> projectExcelList, List<ProjectDetail> detailList){
+    HashMap<Integer, String> feeCategoryNameHash = buildFeeCategoryNameHash();
+    HashMap<Integer, String> providerNameHash = buildProviderNameHash();
+
+    projectExcelList.add(new String[]{
+        "一级费用项", "二级费用项", "预算金额", "实际金额", "供应商"
+    });
+
+    Map<Integer, List<ProjectDetail>> detailMap = detailList.stream().collect(Collectors.groupingBy(ProjectDetail::getFeeCategoryId));
+
+    for (Map.Entry<Integer, List<ProjectDetail>> entry : detailMap.entrySet()){
+      String parentCategoryName = feeCategoryNameHash.get(entry.getKey());
+
+      List<ProjectDetail> projectDetailList = entry.getValue();
+      for (ProjectDetail projectDetail : projectDetailList){
+        if (Objects.isNull(projectDetail.getFeeChildCategoryId())){
+          continue;
+        }
+
+        String providerName = "";
+        if (Objects.nonNull(projectDetail.getProviderId())){
+          providerName = providerNameHash.get(projectDetail.getProviderId());
+        }
+
+        projectExcelList.add(new String[]{
+            parentCategoryName, feeCategoryNameHash.get(projectDetail.getFeeChildCategoryId()),
+            objectToString(projectDetail.getBudgetAmount()), objectToString(projectDetail.getRealAmount()),
+            providerName
+        });
+      }
+
+      ProjectDetail parentDetail = projectDetailList.stream()
+          .filter(projectDetail -> Objects.isNull(projectDetail.getFeeChildCategoryId())).findFirst().orElse(null);
+
+      projectExcelList.add(new String[]{
+          parentCategoryName + "总费用", "", objectToString(parentDetail.getBudgetAmount()), objectToString(parentDetail.getRealAmount()), ""
+      });
+    }
   }
 
   private String objectToString(Object object){

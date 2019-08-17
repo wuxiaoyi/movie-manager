@@ -2,6 +2,7 @@ package cn.movie.robot.service;
 
 import cn.movie.robot.vo.common.Result;
 import cn.movie.robot.vo.req.project.ProjectBaseInfoVo;
+import cn.movie.robot.vo.req.search.BaseSearchVo;
 import org.springframework.data.domain.Pageable;
 
 /**
@@ -10,7 +11,7 @@ import org.springframework.data.domain.Pageable;
  */
 public interface IProjectService {
 
-  Result queryAll(Pageable pageable);
+  Result queryAll(BaseSearchVo baseSearchVo);
   /**
    * 创建项目
    * @param name
