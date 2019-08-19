@@ -145,6 +145,8 @@ public class ProjectSearchServiceImpl implements IProjectSearchService {
       projectSearchRespVo.setId(project.getId());
       projectSearchRespVo.setName(project.getName());
       projectSearchRespVo.setSid(project.getSid());
+      projectSearchRespVo.setState(project.getState());
+      projectSearchRespVo.setContractSubjectId(project.getContractSubjectId());
       projectSearchRespVoList.add(projectSearchRespVo);
     }
     return projectSearchRespVoList;
@@ -172,6 +174,8 @@ public class ProjectSearchServiceImpl implements IProjectSearchService {
       projectSearchRespVo.setId(project.getId());
       projectSearchRespVo.setName(project.getName());
       projectSearchRespVo.setSid(project.getSid());
+      projectSearchRespVo.setState(project.getState());
+      projectSearchRespVo.setContractSubjectId(project.getContractSubjectId());
       List<ProjectSearchParentFeeRespVo> parentFeeList = parentFeeRespVoHashMap.get(project.getId());
       List<ProjectSearchParentFeeRespVo> childFeeList = childFeeRespVoHashMap.get(project.getId());
       if (Objects.isNull(parentFeeList)){

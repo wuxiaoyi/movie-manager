@@ -1,5 +1,6 @@
 package cn.movie.robot.controller;
 
+import cn.movie.robot.service.IExportExcelService;
 import cn.movie.robot.service.IOplogService;
 import cn.movie.robot.service.IProjectDetailService;
 import cn.movie.robot.service.IProjectService;
@@ -10,10 +11,17 @@ import cn.movie.robot.vo.oplog.ProjectShootingDetailOplog;
 import cn.movie.robot.vo.req.ProjectStateVo;
 import cn.movie.robot.vo.req.project.*;
 import cn.movie.robot.vo.req.search.BaseSearchVo;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.BufferedOutputStream;
+import java.io.OutputStream;
 import java.util.List;
 
 
@@ -21,6 +29,7 @@ import java.util.List;
  * @author Wuxiaoyi
  * @date 2019/7/2
  */
+@Slf4j
 @RestController
 @RequestMapping(value = "/api/v1/projects", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 public class ProjectController {
@@ -33,6 +42,9 @@ public class ProjectController {
 
   @Autowired
   IOplogService oplogService;
+
+  @Autowired
+  IExportExcelService exportExcelService;
 
   @PostMapping("")
   public Result create(@RequestBody ProjectCreateVo projectCreateVo){
@@ -93,6 +105,21 @@ public class ProjectController {
 
   @GetMapping("/{id}/export_detail")
   public void exportDetail(@PathVariable("id") Integer id){
+    ServletRequestAttributes servletRequestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+    HttpServletResponse response = servletRequestAttributes.getResponse();
 
+    XSSFWorkbook excel = exportExcelService.exportDetail(id);
+
+    try {
+      response.reset();
+      OutputStream os = new BufferedOutputStream(response.getOutputStream());
+      response.addHeader("Content-Disposition", "attachment;filename=projects.xlsx");
+      response.setContentType(MediaType.APPLICATION_OCTET_STREAM_VALUE);
+      excel.write(os);
+      os.flush();
+      os.close();
+    } catch (Exception e) {
+      logger.error("ProjectSearchController export error, e: {}", e);
+    }
   }
 }

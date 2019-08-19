@@ -13,5 +13,7 @@ public class ProjectSearchRespVo {
   private int id;
   private String sid;
   private String name;
+  private Integer contractSubjectId;
+  private Integer state;
   private List<ProjectSearchParentFeeRespVo> projectDetailList;
 }
