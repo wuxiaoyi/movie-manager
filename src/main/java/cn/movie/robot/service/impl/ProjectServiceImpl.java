@@ -17,6 +17,7 @@ import cn.movie.robot.vo.req.search.ProjectSearchVo;
 import cn.movie.robot.vo.resp.PageBean;
 import cn.movie.robot.vo.resp.ProjectMemberRespVo;
 import cn.movie.robot.vo.resp.ProjectRespVo;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -173,10 +174,10 @@ public class ProjectServiceImpl implements IProjectService {
     return (root, criteriaQuery, criteriaBuilder) -> {
       List<Predicate> predicates = new ArrayList<>();
 
-      if (Objects.nonNull(baseSearchVo.getSid())){
+      if (StringUtils.isNoneEmpty(baseSearchVo.getSid())){
         predicates.add(criteriaBuilder.equal(root.get("sid"), baseSearchVo.getSid()));
       }
-      if (Objects.nonNull(baseSearchVo.getProjectName())){
+      if (StringUtils.isNoneEmpty(baseSearchVo.getProjectName())){
         predicates.add(criteriaBuilder.like(root.get("name"), "%" + baseSearchVo.getProjectName() + "%"));
       }
       if (Objects.nonNull(baseSearchVo.getContractId())){
