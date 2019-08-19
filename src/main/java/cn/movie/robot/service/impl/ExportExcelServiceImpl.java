@@ -141,20 +141,21 @@ public class ExportExcelServiceImpl implements IExportExcelService {
     projectExcelList.add(new String[]{"项目后期预算", objectToString(project.getLateStateBudget())});
     projectExcelList.add(new String[]{"项目后期成本", objectToString(project.getLateStateCost())});
 
+    projectExcelList.add(new String[]{""});
+
     /**
      * 拍摄费用
      */
     projectExcelList.add(new String[]{
         "项目明细-拍摄费用"
     });
-    projectExcelList.add(new String[]{
-        "一级费用项", "二级费用项", "预算金额", "实际金额", "供应商"
-    });
 
     List<ProjectDetail> shootingDetail = projectDetails.stream()
         .filter(projectDetail -> projectDetail.getStage().equals(Constants.PROJECT_DETAIL_STATG_SHOOTING)).collect(Collectors.toList());
 
     genFeeInfo(projectExcelList, shootingDetail);
+
+    projectExcelList.add(new String[]{""});
 
     /**
      * 后期费用
@@ -164,7 +165,7 @@ public class ExportExcelServiceImpl implements IExportExcelService {
 
     genFeeInfo(projectExcelList, lateStateDetail);
 
-    return null;
+    return ExcelUtils.generateWorkbook(projectExcelList);
   }
 
   private String buildMemberNames(List<ProjectMember> members, HashMap<Integer, String> staffNameHash, int memberType){
@@ -256,6 +257,8 @@ public class ExportExcelServiceImpl implements IExportExcelService {
       projectExcelList.add(new String[]{
           parentCategoryName + "总费用", "", objectToString(parentDetail.getBudgetAmount()), objectToString(parentDetail.getRealAmount()), ""
       });
+
+      projectExcelList.add(new String[]{""});
     }
   }
 
