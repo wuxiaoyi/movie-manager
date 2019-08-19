@@ -93,8 +93,8 @@ public class ProjectSearchServiceImpl implements IProjectSearchService {
   }
 
   @Override
-  public List<Integer> searchForExport(ProjectSearchVo projectSearchVo) {
-    List<Integer> result = new ArrayList<>();
+  public List<ProjectSearchRespVo> searchForExport(ProjectSearchVo projectSearchVo) {
+    List<ProjectSearchRespVo> result = new ArrayList<>();
     List<Integer> projectIds = null;
 
     // 处理项目成员搜索
@@ -120,9 +120,10 @@ public class ProjectSearchServiceImpl implements IProjectSearchService {
     }
 
     Specification<Project> specification = buildBaseQuery(projectSearchVo, projectIds);
-    List<Project> projects = projectRepository.findAll(specification);
-    result = projects.stream().map(Project::getId).collect(Collectors.toList());
-    return result;
+    Pageable pageable = PageRequest.of(projectSearchVo.getPage()-1, projectSearchVo.getPageSize(), Sort.by(ASC, Constants.COMMON_FIELD_NAME_ID));
+
+    Page<Project> projectPage = projectRepository.findAll(specification, pageable);
+    return dealSearchResult(projectPage.getContent(), projectSearchVo);
   }
 
   private List<ProjectSearchRespVo> dealSearchResult(List<Project> projects, ProjectSearchVo projectSearchVo){

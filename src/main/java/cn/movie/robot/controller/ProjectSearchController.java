@@ -4,6 +4,7 @@ import cn.movie.robot.service.IExportExcelService;
 import cn.movie.robot.service.IProjectSearchService;
 import cn.movie.robot.vo.common.Result;
 import cn.movie.robot.vo.req.search.ProjectSearchVo;
+import cn.movie.robot.vo.resp.search.ProjectSearchRespVo;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -45,22 +46,13 @@ public class ProjectSearchController {
     ServletRequestAttributes servletRequestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
     HttpServletResponse response = servletRequestAttributes.getResponse();
 
-    List<Integer> projectIds = projectSearchService.searchForExport(projectSearchVo);
-
-    if (projectIds.size() == 0 ){
-      return;
-    }
-
-    XSSFWorkbook excel = exportExcelService.exportProjects(projectIds);
-
+    List<ProjectSearchRespVo> projectSearchRespVos = projectSearchService.searchForExport(projectSearchVo);
+    XSSFWorkbook excel = exportExcelService.exportProjects(projectSearchRespVos);
     try {
-      //清空response
       response.reset();
-      //设置response的Header
       OutputStream os = new BufferedOutputStream(response.getOutputStream());
       response.addHeader("Content-Disposition", "attachment;filename=projects.xlsx");
       response.setContentType(MediaType.APPLICATION_OCTET_STREAM_VALUE);
-      //将excel写入到输出流中
       excel.write(os);
       os.flush();
       os.close();

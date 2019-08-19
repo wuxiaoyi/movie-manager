@@ -29,11 +29,9 @@ public class ExcelUtils {
     XSSFWorkbook wb =  new XSSFWorkbook();
     XSSFSheet sheet = wb.createSheet();
 
-    sheet.setColumnWidth(0, 30*256);
-    sheet.setColumnWidth(1, 30*256);
-    sheet.setColumnWidth(2, 30*256);
-    sheet.setColumnWidth(3, 30*256);
-    sheet.setColumnWidth(4, 30*256);
+    for (int i = 0; i < rows.get(0).length; i++){
+      sheet.setColumnWidth(i, 30*256);
+    }
 
     for (int i = 0; i < rows.size(); i++) {
       String[] rowItem = rows.get(i);
