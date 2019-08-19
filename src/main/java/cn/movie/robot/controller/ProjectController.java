@@ -103,7 +103,7 @@ public class ProjectController {
     return projectService.updateState(id, projectStateVo.getState());
   }
 
-  @GetMapping("/{id}/export_detail")
+  @PostMapping("/{id}/export_detail")
   public void exportDetail(@PathVariable("id") Integer id){
     ServletRequestAttributes servletRequestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
     HttpServletResponse response = servletRequestAttributes.getResponse();
