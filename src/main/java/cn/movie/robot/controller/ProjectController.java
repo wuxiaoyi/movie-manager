@@ -51,7 +51,7 @@ public class ProjectController {
     return projectService.create(projectCreateVo.getName());
   }
 
-  @GetMapping("")
+  @PostMapping("")
   public Result list(@RequestBody BaseSearchVo baseSearchVo){
     return projectService.queryAll(baseSearchVo);
   }
