@@ -18,6 +18,7 @@ import cn.movie.robot.vo.resp.PageBean;
 import cn.movie.robot.vo.resp.search.ProjectSearchChildFeeRespVo;
 import cn.movie.robot.vo.resp.search.ProjectSearchParentFeeRespVo;
 import cn.movie.robot.vo.resp.search.ProjectSearchRespVo;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.crypto.hash.Hash;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -301,6 +302,18 @@ public class ProjectSearchServiceImpl implements IProjectSearchService {
 
       if (Objects.nonNull(projectSearchVo.getChildCompanyId())){
         predicates.add(criteriaBuilder.equal(root.get("childCompanyId"), projectSearchVo.getChildCompanyId()));
+      }
+
+      if (StringUtils.isNoneEmpty(projectSearchVo.getName())){
+        predicates.add(criteriaBuilder.like(root.get("name"), "%" + projectSearchVo.getName() + "%"));
+      }
+
+      if (StringUtils.isNoneEmpty(projectSearchVo.getSid())){
+        predicates.add(criteriaBuilder.equal(root.get("sid"), projectSearchVo.getSid()));
+      }
+
+      if (!CollectionUtils.isEmpty(projectSearchVo.getStates())){
+        predicates.add(root.<Integer>get("state").in(projectSearchVo.getStates()));
       }
 
       /**
