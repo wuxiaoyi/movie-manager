@@ -124,7 +124,7 @@ public class ExportExcelServiceImpl implements IExportExcelService {
     projectExcelList.add(new String[]{"客户公司-二级", companyNameHash.get(project.getChildCompanyId())});
     projectExcelList.add(new String[]{"项目执行状态", ProjectStateEnum.getStateName(project.getState())});
     projectExcelList.add(new String[]{"成片时长", filmDuration(project.getFilmDuration())});
-    projectExcelList.add(new String[]{"拍摄周期", objectToString(project.getShootingDuration())});
+    projectExcelList.add(new String[]{"拍摄周期", shootingDuration(project.getShootingDuration())});
     projectExcelList.add(new String[]{"拍摄日期", objectToString(project.getShootingStartAt())});
 
     for (ProjectMemberTypeEnum memberTypeEnum : ProjectMemberTypeEnum.values()){
@@ -282,6 +282,13 @@ public class ExportExcelServiceImpl implements IExportExcelService {
       result += minute + "分钟";
     }
     return result;
+  }
+
+  private String shootingDuration(Integer duration){
+    if (Objects.isNull(duration)){
+      return "";
+    }
+    return duration.toString() + "天";
   }
 
   private String objectToString(Object object){
