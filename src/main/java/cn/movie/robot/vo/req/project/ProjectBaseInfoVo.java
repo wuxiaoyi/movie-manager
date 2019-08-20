@@ -2,6 +2,7 @@ package cn.movie.robot.vo.req.project;
 
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
@@ -26,6 +27,10 @@ public class ProjectBaseInfoVo {
   private Date shootingStartAt;
 
   private Integer shootingDuration;
+
+  private BigDecimal contractAmount;
+
+  private BigDecimal returnAmount;
 
   private List<ProjectMemberVo> projectMembers;
 }

@@ -106,6 +106,8 @@ public class ProjectServiceImpl implements IProjectService {
     project.setChildCompanyId(projectBaseInfoVo.getChildCompanyId());
     project.setShootingStartAt(projectBaseInfoVo.getShootingStartAt());
     project.setShootingDuration(projectBaseInfoVo.getShootingDuration());
+    project.setContractAmount(projectBaseInfoVo.getContractAmount());
+    project.setReturnAmount(projectBaseInfoVo.getReturnAmount());
     projectRepository.save(project);
 
     projectMemberService.saveProjectMembers(projectId, projectBaseInfoVo.getProjectMembers());
