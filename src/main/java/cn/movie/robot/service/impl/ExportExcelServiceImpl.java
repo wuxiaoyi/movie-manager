@@ -123,15 +123,17 @@ public class ExportExcelServiceImpl implements IExportExcelService {
     projectExcelList.add(new String[]{"客户公司-一级", companyNameHash.get(project.getCompanyId())});
     projectExcelList.add(new String[]{"客户公司-二级", companyNameHash.get(project.getChildCompanyId())});
     projectExcelList.add(new String[]{"项目执行状态", ProjectStateEnum.getStateName(project.getState())});
-    projectExcelList.add(new String[]{"成片时长", objectToString(project.getFilmDuration())});
+    projectExcelList.add(new String[]{"成片时长", filmDuration(project.getFilmDuration())});
     projectExcelList.add(new String[]{"拍摄周期", objectToString(project.getShootingDuration())});
     projectExcelList.add(new String[]{"拍摄日期", objectToString(project.getShootingStartAt())});
+
     for (ProjectMemberTypeEnum memberTypeEnum : ProjectMemberTypeEnum.values()){
       projectExcelList.add(new String[]{
           memberTypeEnum.getName(),
           buildMemberNames(projectMembers, staffNameHash, memberTypeEnum.getType())
       });
     }
+
     projectExcelList.add(new String[]{"项目合同金额", objectToString(project.getContractAmount())});
     projectExcelList.add(new String[]{"项目回款金额", objectToString(project.getReturnAmount())});
     projectExcelList.add(new String[]{"项目预算金额", objectToString(project.getBudgetCost())});
@@ -264,6 +266,22 @@ public class ExportExcelServiceImpl implements IExportExcelService {
 
       projectExcelList.add(new String[]{""});
     }
+  }
+
+  private String filmDuration(Integer duration){
+    if (Objects.isNull(duration)){
+      return "";
+    }
+    int hour = duration / 60;
+    int minute = duration % 60;
+    String result = "";
+    if (hour != 0){
+      result += hour + "小时";
+    }
+    if (minute != 0){
+      result += minute + "分钟";
+    }
+    return result;
   }
 
   private String objectToString(Object object){
