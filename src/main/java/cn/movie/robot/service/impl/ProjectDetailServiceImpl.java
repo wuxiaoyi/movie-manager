@@ -139,21 +139,6 @@ public class ProjectDetailServiceImpl implements IProjectDetailService {
 
   private List<ProjectDetail> initByProjectIdAndStage(Integer projectId, Integer stage){
     List<ProjectDetail> projectDetailList = new ArrayList<>();
-    List<FeeCategory> feeCategoryList = feeCategoryRepository.queryByStageAndStateAndCategoryType(
-        stage,
-        Constants.COMMON_STATE_NORMAL,
-        Constants.FEE_CATEGORY_TYPE_CHILD
-    );
-
-    for (FeeCategory feeCategory : feeCategoryList){
-      ProjectDetail projectDetail = new ProjectDetail();
-      projectDetail.setProjectId(projectId);
-      projectDetail.setFeeCategoryId(feeCategory.getParentCategoryId());
-      projectDetail.setFeeChildCategoryId(feeCategory.getId());
-      projectDetail.setStage(feeCategory.getStage());
-      projectDetailRepository.save(projectDetail);
-      projectDetailList.add(projectDetail);
-    }
 
     List<FeeCategory> parentFeeCategoryList = feeCategoryRepository.queryByStageAndStateAndCategoryType(
         stage,
@@ -167,6 +152,26 @@ public class ProjectDetailServiceImpl implements IProjectDetailService {
       projectDetail.setStage(feeCategory.getStage());
       projectDetailRepository.save(projectDetail);
       projectDetailList.add(projectDetail);
+    }
+
+    List<Integer> validParentCategoryIds = parentFeeCategoryList.stream().map(FeeCategory::getId).collect(Collectors.toList());
+
+    List<FeeCategory> feeCategoryList = feeCategoryRepository.queryByStageAndStateAndCategoryType(
+        stage,
+        Constants.COMMON_STATE_NORMAL,
+        Constants.FEE_CATEGORY_TYPE_CHILD
+    );
+
+    for (FeeCategory feeCategory : feeCategoryList){
+      if (validParentCategoryIds.contains(feeCategory.getParentCategoryId())){
+        ProjectDetail projectDetail = new ProjectDetail();
+        projectDetail.setProjectId(projectId);
+        projectDetail.setFeeCategoryId(feeCategory.getParentCategoryId());
+        projectDetail.setFeeChildCategoryId(feeCategory.getId());
+        projectDetail.setStage(feeCategory.getStage());
+        projectDetailRepository.save(projectDetail);
+        projectDetailList.add(projectDetail);
+      }
     }
 
     return projectDetailList;
