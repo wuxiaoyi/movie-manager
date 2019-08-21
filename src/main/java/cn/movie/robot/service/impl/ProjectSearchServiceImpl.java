@@ -121,7 +121,7 @@ public class ProjectSearchServiceImpl implements IProjectSearchService {
     }
 
     Specification<Project> specification = buildBaseQuery(projectSearchVo, projectIds);
-    Pageable pageable = PageRequest.of(projectSearchVo.getPage()-1, projectSearchVo.getPageSize(), Sort.by(ASC, Constants.COMMON_FIELD_NAME_ID));
+    Pageable pageable = PageRequest.of(0, 100, Sort.by(ASC, Constants.COMMON_FIELD_NAME_ID));
 
     Page<Project> projectPage = projectRepository.findAll(specification, pageable);
     return dealSearchResult(projectPage.getContent(), projectSearchVo);
@@ -149,6 +149,8 @@ public class ProjectSearchServiceImpl implements IProjectSearchService {
       projectSearchRespVo.setSid(project.getSid());
       projectSearchRespVo.setState(project.getState());
       projectSearchRespVo.setContractSubjectId(project.getContractSubjectId());
+      projectSearchRespVo.setContractAmount(project.getContractAmount());
+      projectSearchRespVo.setRealCost(project.getRealCost());
       projectSearchRespVoList.add(projectSearchRespVo);
     }
     return projectSearchRespVoList;
@@ -178,6 +180,8 @@ public class ProjectSearchServiceImpl implements IProjectSearchService {
       projectSearchRespVo.setSid(project.getSid());
       projectSearchRespVo.setState(project.getState());
       projectSearchRespVo.setContractSubjectId(project.getContractSubjectId());
+      projectSearchRespVo.setContractAmount(project.getContractAmount());
+      projectSearchRespVo.setRealCost(project.getRealCost());
       List<ProjectSearchParentFeeRespVo> parentFeeList = parentFeeRespVoHashMap.get(project.getId());
       List<ProjectSearchParentFeeRespVo> childFeeList = childFeeRespVoHashMap.get(project.getId());
       if (Objects.isNull(parentFeeList)){

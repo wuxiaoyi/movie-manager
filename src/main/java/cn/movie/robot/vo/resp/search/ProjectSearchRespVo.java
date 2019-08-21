@@ -2,6 +2,7 @@ package cn.movie.robot.vo.resp.search;
 
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -15,5 +16,7 @@ public class ProjectSearchRespVo {
   private String name;
   private Integer contractSubjectId;
   private Integer state;
+  private BigDecimal contractAmount;
+  private BigDecimal realCost;
   private List<ProjectSearchParentFeeRespVo> projectDetailList;
 }

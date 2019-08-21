@@ -55,6 +55,7 @@ public class ExportExcelServiceImpl implements IExportExcelService {
     List<String[]> projectExcelList = new ArrayList<>();
     String[] title = {
         "项目id", "项目编号", "项目名称", "项目执行状态", "合同签署主体",
+        "项目合同金额", "项目实际总成本",
         "一级费用名称", "预算金额", "实际金额",
         "二级费用名称", "预算金额", "实际金额", "供应商"
     };
@@ -65,34 +66,51 @@ public class ExportExcelServiceImpl implements IExportExcelService {
     HashMap<Integer, String> providerNameHash = buildProviderNameHash();
 
     for (ProjectSearchRespVo projectVo : projectSearchRespVos){
-      for (ProjectSearchParentFeeRespVo parentFeeRespVo : projectVo.getProjectDetailList()){
-        if (!CollectionUtils.isEmpty(parentFeeRespVo.getChildFeeList())){
-          for (ProjectSearchChildFeeRespVo childFeeRespVo : parentFeeRespVo.getChildFeeList()){
+      if (CollectionUtils.isEmpty(projectVo.getProjectDetailList())){
+        String[] info = {
+            objectToString(projectVo.getId()), projectVo.getSid(),
+            projectVo.getName(), ProjectStateEnum.getStateName(projectVo.getState()),
+            contractNameHash.get(projectVo.getContractSubjectId()),
+            objectToString(projectVo.getContractAmount()),
+            objectToString(projectVo.getRealCost()),
+            "", "", "",
+            "", "", "", ""
+        };
+        projectExcelList.add(info);
+      }else {
+        for (ProjectSearchParentFeeRespVo parentFeeRespVo : projectVo.getProjectDetailList()){
+          if (!CollectionUtils.isEmpty(parentFeeRespVo.getChildFeeList())){
+            for (ProjectSearchChildFeeRespVo childFeeRespVo : parentFeeRespVo.getChildFeeList()){
+              String[] info = {
+                  objectToString(projectVo.getId()), projectVo.getSid(),
+                  projectVo.getName(), ProjectStateEnum.getStateName(projectVo.getState()),
+                  contractNameHash.get(projectVo.getContractSubjectId()),
+                  objectToString(projectVo.getContractAmount()),
+                  objectToString(projectVo.getRealCost()),
+                  feeCategoryNameHash.get(parentFeeRespVo.getCategoryId()),
+                  objectToString(parentFeeRespVo.getBudgetAmount()),
+                  objectToString(parentFeeRespVo.getRealAmount()),
+                  feeCategoryNameHash.get(childFeeRespVo.getCategoryId()),
+                  objectToString(childFeeRespVo.getBudgetAmount()),
+                  objectToString(childFeeRespVo.getRealAmount()),
+                  providerNameHash.get(childFeeRespVo.getProviderId())
+              };
+              projectExcelList.add(info);
+            }
+          }else {
             String[] info = {
                 objectToString(projectVo.getId()), projectVo.getSid(),
                 projectVo.getName(), ProjectStateEnum.getStateName(projectVo.getState()),
                 contractNameHash.get(projectVo.getContractSubjectId()),
+                objectToString(projectVo.getContractAmount()),
+                objectToString(projectVo.getRealCost()),
                 feeCategoryNameHash.get(parentFeeRespVo.getCategoryId()),
                 objectToString(parentFeeRespVo.getBudgetAmount()),
                 objectToString(parentFeeRespVo.getRealAmount()),
-                feeCategoryNameHash.get(childFeeRespVo.getCategoryId()),
-                objectToString(childFeeRespVo.getBudgetAmount()),
-                objectToString(childFeeRespVo.getRealAmount()),
-                providerNameHash.get(childFeeRespVo.getProviderId())
+                "", "", "", ""
             };
             projectExcelList.add(info);
           }
-        }else {
-          String[] info = {
-              objectToString(projectVo.getId()), projectVo.getSid(),
-              projectVo.getName(), ProjectStateEnum.getStateName(projectVo.getState()),
-              contractNameHash.get(projectVo.getContractSubjectId()),
-              feeCategoryNameHash.get(parentFeeRespVo.getCategoryId()),
-              objectToString(parentFeeRespVo.getBudgetAmount()),
-              objectToString(parentFeeRespVo.getRealAmount()),
-              "", "", "", ""
-          };
-          projectExcelList.add(info);
         }
       }
     }
