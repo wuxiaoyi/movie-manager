@@ -254,35 +254,86 @@ public class ProjectSearchServiceImpl implements IProjectSearchService {
    * @return
    */
   private List<Integer> queryProjectIdByMember(ProjectSearchVo projectSearchVo){
-    List<ProjectMember> producerList = new ArrayList<>();
-    List<ProjectMember> directorList = new ArrayList<>();
-    boolean searchProducer = false;
-    boolean searchDirector = false;
+    List<Integer> projectIds = null;
+
     if (!CollectionUtils.isEmpty(projectSearchVo.getProducerList())){
-      producerList = projectMemberRepository.queryByMemberTypeAndStaffIdIn(
+      List<ProjectMember> members = projectMemberRepository.queryByMemberTypeAndStaffIdIn(
           ProjectMemberTypeEnum.PRODUCER.getType(),
           projectSearchVo.getProducerList()
       );
-      searchProducer = true;
+      mergeProjectId(projectIds, members.stream().map(ProjectMember::getProjectId).collect(Collectors.toList()));
     }
     if (!CollectionUtils.isEmpty(projectSearchVo.getDirectorList())){
-      directorList = projectMemberRepository.queryByMemberTypeAndStaffIdIn(
+      List<ProjectMember> members = projectMemberRepository.queryByMemberTypeAndStaffIdIn(
           ProjectMemberTypeEnum.DIRECTOR.getType(),
           projectSearchVo.getDirectorList()
       );
-      searchDirector = true;
+      mergeProjectId(projectIds, members.stream().map(ProjectMember::getProjectId).collect(Collectors.toList()));
     }
-
-    if (searchProducer && searchDirector){
-      List<Integer> producerProjectIds = producerList.stream().map(ProjectMember::getProjectId).collect(Collectors.toList());
-      List<Integer> directorProjectIds = directorList.stream().map(ProjectMember::getProjectId).collect(Collectors.toList());
-      return producerProjectIds.stream().filter(item -> directorProjectIds.contains(item)).collect(Collectors.toList());
-    } else if (searchProducer){
-      return producerList.stream().map(ProjectMember::getProjectId).collect(Collectors.toList());
-    } else if (searchDirector){
-      return directorList.stream().map(ProjectMember::getProjectId).collect(Collectors.toList());
+    if (!CollectionUtils.isEmpty(projectSearchVo.getProjectLeaderList())){
+      List<ProjectMember> members = projectMemberRepository.queryByMemberTypeAndStaffIdIn(
+          ProjectMemberTypeEnum.PROJECT_LEADER.getType(),
+          projectSearchVo.getProjectLeaderList()
+      );
+      mergeProjectId(projectIds, members.stream().map(ProjectMember::getProjectId).collect(Collectors.toList()));
     }
-    return null;
+    if (!CollectionUtils.isEmpty(projectSearchVo.getCustomerManagerList())){
+      List<ProjectMember> members = projectMemberRepository.queryByMemberTypeAndStaffIdIn(
+          ProjectMemberTypeEnum.CUSTOMER_MANAGER.getType(),
+          projectSearchVo.getCustomerManagerList()
+      );
+      mergeProjectId(projectIds, members.stream().map(ProjectMember::getProjectId).collect(Collectors.toList()));
+    }
+    if (!CollectionUtils.isEmpty(projectSearchVo.getArtList())){
+      List<ProjectMember> members = projectMemberRepository.queryByMemberTypeAndStaffIdIn(
+          ProjectMemberTypeEnum.ART.getType(),
+          projectSearchVo.getArtList()
+      );
+      mergeProjectId(projectIds, members.stream().map(ProjectMember::getProjectId).collect(Collectors.toList()));
+    }
+    if (!CollectionUtils.isEmpty(projectSearchVo.getCompositingList())){
+      List<ProjectMember> members = projectMemberRepository.queryByMemberTypeAndStaffIdIn(
+          ProjectMemberTypeEnum.COMPOSITING.getType(),
+          projectSearchVo.getCompositingList()
+      );
+      mergeProjectId(projectIds, members.stream().map(ProjectMember::getProjectId).collect(Collectors.toList()));
+    }
+    if (!CollectionUtils.isEmpty(projectSearchVo.getCopyWritingList())){
+      List<ProjectMember> members = projectMemberRepository.queryByMemberTypeAndStaffIdIn(
+          ProjectMemberTypeEnum.COPYWRITING.getType(),
+          projectSearchVo.getCopyWritingList()
+      );
+      mergeProjectId(projectIds, members.stream().map(ProjectMember::getProjectId).collect(Collectors.toList()));
+    }
+    if (!CollectionUtils.isEmpty(projectSearchVo.getExecutiveDirecrotList())){
+      List<ProjectMember> members = projectMemberRepository.queryByMemberTypeAndStaffIdIn(
+          ProjectMemberTypeEnum.EXECUTIVE_DIRECTOR.getType(),
+          projectSearchVo.getExecutiveDirecrotList()
+      );
+      mergeProjectId(projectIds, members.stream().map(ProjectMember::getProjectId).collect(Collectors.toList()));
+    }
+    if (!CollectionUtils.isEmpty(projectSearchVo.getMusicList())){
+      List<ProjectMember> members = projectMemberRepository.queryByMemberTypeAndStaffIdIn(
+          ProjectMemberTypeEnum.MUSIC.getType(),
+          projectSearchVo.getMusicList()
+      );
+      mergeProjectId(projectIds, members.stream().map(ProjectMember::getProjectId).collect(Collectors.toList()));
+    }
+    if (!CollectionUtils.isEmpty(projectSearchVo.getPostEditingList())){
+      List<ProjectMember> members = projectMemberRepository.queryByMemberTypeAndStaffIdIn(
+          ProjectMemberTypeEnum.POST_EDITING.getType(),
+          projectSearchVo.getPostEditingList()
+      );
+      mergeProjectId(projectIds, members.stream().map(ProjectMember::getProjectId).collect(Collectors.toList()));
+    }
+    if (!CollectionUtils.isEmpty(projectSearchVo.getStoryBoardList())){
+      List<ProjectMember> members = projectMemberRepository.queryByMemberTypeAndStaffIdIn(
+          ProjectMemberTypeEnum.STORY_BOARD.getType(),
+          projectSearchVo.getStoryBoardList()
+      );
+      mergeProjectId(projectIds, members.stream().map(ProjectMember::getProjectId).collect(Collectors.toList()));
+    }
+    return projectIds;
   }
 
 
@@ -343,6 +394,41 @@ public class ProjectSearchServiceImpl implements IProjectSearchService {
       if (Objects.nonNull(projectSearchVo.getContractAmountEnd())){
         predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("contractAmount"), projectSearchVo.getContractAmountEnd()));
       }
+
+      if (Objects.nonNull(projectSearchVo.getReturnAmountStart())){
+        predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("returnAmount"), projectSearchVo.getReturnAmountStart()));
+      }
+      if (Objects.nonNull(projectSearchVo.getReturnAmountEnd())){
+        predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("returnAmount"), projectSearchVo.getReturnAmountEnd()));
+      }
+
+      if (Objects.nonNull(projectSearchVo.getShootingBudgetCostStart())){
+        predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("shootingBudget"), projectSearchVo.getShootingBudgetCostStart()));
+      }
+      if (Objects.nonNull(projectSearchVo.getShootingBudgetCostEnd())){
+        predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("shootingBudget"), projectSearchVo.getShootingBudgetCostEnd()));
+      }
+
+      if (Objects.nonNull(projectSearchVo.getLateStateBudgetCostStart())){
+        predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("lateStateBudget"), projectSearchVo.getLateStateBudgetCostStart()));
+      }
+      if (Objects.nonNull(projectSearchVo.getLateStateBudgetCostEnd())){
+        predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("lateStateBudget"), projectSearchVo.getLateStateBudgetCostEnd()));
+      }
+
+      if (Objects.nonNull(projectSearchVo.getShootingRealCostStart())){
+        predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("shootingCost"), projectSearchVo.getShootingRealCostStart()));
+      }
+      if (Objects.nonNull(projectSearchVo.getShootingRealCostEnd())){
+        predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("shootingCost"), projectSearchVo.getShootingRealCostEnd()));
+      }
+
+      if (Objects.nonNull(projectSearchVo.getLateStateRealCostStart())){
+        predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("lateStateCost"), projectSearchVo.getLateStateBudgetCostStart()));
+      }
+      if (Objects.nonNull(projectSearchVo.getLateStateRealCostEnd())){
+        predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("lateStateCost"), projectSearchVo.getLateStateBudgetCostEnd()));
+      }
       /**
        * 金额end
        */
@@ -361,6 +447,13 @@ public class ProjectSearchServiceImpl implements IProjectSearchService {
       }
       if (Objects.nonNull(projectSearchVo.getShootingDurationEnd())){
         predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("shootingDuration"), projectSearchVo.getShootingDurationEnd()));
+      }
+
+      if (Objects.nonNull(projectSearchVo.getShootingStartAtStart())){
+        predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("shootingStartAt"), projectSearchVo.getShootingStartAtStart()));
+      }
+      if (Objects.nonNull(projectSearchVo.getShootingStartAtEnd())){
+        predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("shootingStartAt"), projectSearchVo.getShootingStartAtEnd()));
       }
 
       if (Objects.nonNull(projectSearchVo.getShootingStartAtStart())){
@@ -511,5 +604,12 @@ public class ProjectSearchServiceImpl implements IProjectSearchService {
       nameHash.put(provider.getId(), provider.getName());
     }
     return nameHash;
+  }
+
+  private void mergeProjectId(List<Integer> projectIds, List<Integer> newProjectIds){
+    if (Objects.isNull(projectIds)){
+      projectIds = new ArrayList<>();
+    }
+    projectIds = projectIds.stream().filter(item -> newProjectIds.contains(item)).collect(Collectors.toList());
   }
 }

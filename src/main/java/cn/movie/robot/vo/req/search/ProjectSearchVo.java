@@ -27,17 +27,45 @@ public class ProjectSearchVo {
 
   private Integer childCompanyId;
 
+  //合同金额
   private BigDecimal contractAmountStart;
 
   private BigDecimal contractAmountEnd;
 
+  //回款金额
+  private BigDecimal returnAmountStart;
+
+  private BigDecimal returnAmountEnd;
+
+  //实际总金额
   private BigDecimal realCostStart;
 
   private BigDecimal realCostEnd;
 
+  //预算总金额
   private BigDecimal budgetCostStart;
 
   private BigDecimal budgetCostEnd;
+
+  //拍摄预算金额
+  private BigDecimal shootingBudgetCostStart;
+
+  private BigDecimal shootingBudgetCostEnd;
+
+  //后期预算金额
+  private BigDecimal lateStateBudgetCostStart;
+
+  private BigDecimal lateStateBudgetCostEnd;
+
+  //拍摄实际金额
+  private BigDecimal shootingRealCostStart;
+
+  private BigDecimal shootingRealCostEnd;
+
+  //后期实际金额
+  private BigDecimal lateStateRealCostStart;
+
+  private BigDecimal lateStateRealCostEnd;
 
   private Integer filmDurationStart;
 
@@ -50,6 +78,24 @@ public class ProjectSearchVo {
   private Integer shootingDurationStart;
 
   private Integer shootingDurationEnd;
+
+  private List<Integer> projectLeaderList;
+
+  private List<Integer> customerManagerList;
+
+  private List<Integer> executiveDirecrotList;
+
+  private List<Integer> copyWritingList;
+
+  private List<Integer> postEditingList;
+
+  private List<Integer> compositingList;
+
+  private List<Integer> artList;
+
+  private List<Integer> musicList;
+
+  private List<Integer> storyBoardList;
 
   private List<Integer> directorList;
 
