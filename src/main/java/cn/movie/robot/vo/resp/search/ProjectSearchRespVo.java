@@ -1,8 +1,10 @@
 package cn.movie.robot.vo.resp.search;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -18,5 +20,14 @@ public class ProjectSearchRespVo {
   private Integer state;
   private BigDecimal contractAmount;
   private BigDecimal realCost;
+  private BigDecimal budgetCost;
+  private BigDecimal shootingBudget;
+  private BigDecimal lateStateBudget;
+  private BigDecimal shootingCost;
+  private BigDecimal lateStateCost;
+  private String filmDuration;
+  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+  private Date shootingStartAt;
+  private String shootingDuration;
   private List<ProjectSearchParentFeeRespVo> projectDetailList;
 }

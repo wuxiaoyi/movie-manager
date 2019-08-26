@@ -129,7 +129,7 @@ public class ProjectSearchServiceImpl implements IProjectSearchService {
 
   private List<ProjectSearchRespVo> dealSearchResult(List<Project> projects, ProjectSearchVo projectSearchVo){
     if (CollectionUtils.isEmpty(projectSearchVo.getFeeList())){
-      return dealSearchResultWithoutFee(projects);
+      return dealSearchResultWithoutFee(projects, projectSearchVo);
     }else {
       return dealSearchResultWithFee(projects, projectSearchVo);
     }
@@ -140,7 +140,7 @@ public class ProjectSearchServiceImpl implements IProjectSearchService {
    * @param projects
    * @return
    */
-  private List<ProjectSearchRespVo> dealSearchResultWithoutFee(List<Project> projects){
+  private List<ProjectSearchRespVo> dealSearchResultWithoutFee(List<Project> projects, ProjectSearchVo projectSearchVo){
     List<ProjectSearchRespVo> projectSearchRespVoList = new ArrayList<>();
     for (Project project : projects) {
       ProjectSearchRespVo projectSearchRespVo = new ProjectSearchRespVo();
@@ -151,6 +151,15 @@ public class ProjectSearchServiceImpl implements IProjectSearchService {
       projectSearchRespVo.setContractSubjectId(project.getContractSubjectId());
       projectSearchRespVo.setContractAmount(project.getContractAmount());
       projectSearchRespVo.setRealCost(project.getRealCost());
+      projectSearchRespVo.setBudgetCost(project.getBudgetCost());
+      projectSearchRespVo.setLateStateBudget(project.getLateStateBudget());
+      projectSearchRespVo.setLateStateCost(project.getLateStateCost());
+      projectSearchRespVo.setShootingBudget(project.getShootingBudget());
+      projectSearchRespVo.setShootingCost(project.getShootingCost());
+      projectSearchRespVo.setFilmDuration(filmDuration(project.getFilmDuration()));
+      projectSearchRespVo.setShootingDuration(shootingDuration(project.getShootingDuration()));
+      projectSearchRespVo.setShootingStartAt(project.getShootingStartAt());
+
       projectSearchRespVoList.add(projectSearchRespVo);
     }
     return projectSearchRespVoList;
@@ -182,6 +191,15 @@ public class ProjectSearchServiceImpl implements IProjectSearchService {
       projectSearchRespVo.setContractSubjectId(project.getContractSubjectId());
       projectSearchRespVo.setContractAmount(project.getContractAmount());
       projectSearchRespVo.setRealCost(project.getRealCost());
+      projectSearchRespVo.setBudgetCost(project.getBudgetCost());
+      projectSearchRespVo.setLateStateBudget(project.getLateStateBudget());
+      projectSearchRespVo.setLateStateCost(project.getLateStateCost());
+      projectSearchRespVo.setShootingBudget(project.getShootingBudget());
+      projectSearchRespVo.setShootingCost(project.getShootingCost());
+      projectSearchRespVo.setFilmDuration(filmDuration(project.getFilmDuration()));
+      projectSearchRespVo.setShootingDuration(shootingDuration(project.getShootingDuration()));
+      projectSearchRespVo.setShootingStartAt(project.getShootingStartAt());
+
       List<ProjectSearchParentFeeRespVo> parentFeeList = parentFeeRespVoHashMap.get(project.getId());
       List<ProjectSearchParentFeeRespVo> childFeeList = childFeeRespVoHashMap.get(project.getId());
       if (Objects.isNull(parentFeeList)){
@@ -261,77 +279,77 @@ public class ProjectSearchServiceImpl implements IProjectSearchService {
           ProjectMemberTypeEnum.PRODUCER.getType(),
           projectSearchVo.getProducerList()
       );
-      mergeProjectId(projectIds, members.stream().map(ProjectMember::getProjectId).collect(Collectors.toList()));
+      projectIds = mergeProjectId(projectIds, members.stream().map(ProjectMember::getProjectId).collect(Collectors.toList()));
     }
     if (!CollectionUtils.isEmpty(projectSearchVo.getDirectorList())){
       List<ProjectMember> members = projectMemberRepository.queryByMemberTypeAndStaffIdIn(
           ProjectMemberTypeEnum.DIRECTOR.getType(),
           projectSearchVo.getDirectorList()
       );
-      mergeProjectId(projectIds, members.stream().map(ProjectMember::getProjectId).collect(Collectors.toList()));
+      projectIds = mergeProjectId(projectIds, members.stream().map(ProjectMember::getProjectId).collect(Collectors.toList()));
     }
     if (!CollectionUtils.isEmpty(projectSearchVo.getProjectLeaderList())){
       List<ProjectMember> members = projectMemberRepository.queryByMemberTypeAndStaffIdIn(
           ProjectMemberTypeEnum.PROJECT_LEADER.getType(),
           projectSearchVo.getProjectLeaderList()
       );
-      mergeProjectId(projectIds, members.stream().map(ProjectMember::getProjectId).collect(Collectors.toList()));
+      projectIds = mergeProjectId(projectIds, members.stream().map(ProjectMember::getProjectId).collect(Collectors.toList()));
     }
     if (!CollectionUtils.isEmpty(projectSearchVo.getCustomerManagerList())){
       List<ProjectMember> members = projectMemberRepository.queryByMemberTypeAndStaffIdIn(
           ProjectMemberTypeEnum.CUSTOMER_MANAGER.getType(),
           projectSearchVo.getCustomerManagerList()
       );
-      mergeProjectId(projectIds, members.stream().map(ProjectMember::getProjectId).collect(Collectors.toList()));
+      projectIds = mergeProjectId(projectIds, members.stream().map(ProjectMember::getProjectId).collect(Collectors.toList()));
     }
     if (!CollectionUtils.isEmpty(projectSearchVo.getArtList())){
       List<ProjectMember> members = projectMemberRepository.queryByMemberTypeAndStaffIdIn(
           ProjectMemberTypeEnum.ART.getType(),
           projectSearchVo.getArtList()
       );
-      mergeProjectId(projectIds, members.stream().map(ProjectMember::getProjectId).collect(Collectors.toList()));
+      projectIds = mergeProjectId(projectIds, members.stream().map(ProjectMember::getProjectId).collect(Collectors.toList()));
     }
     if (!CollectionUtils.isEmpty(projectSearchVo.getCompositingList())){
       List<ProjectMember> members = projectMemberRepository.queryByMemberTypeAndStaffIdIn(
           ProjectMemberTypeEnum.COMPOSITING.getType(),
           projectSearchVo.getCompositingList()
       );
-      mergeProjectId(projectIds, members.stream().map(ProjectMember::getProjectId).collect(Collectors.toList()));
+      projectIds = mergeProjectId(projectIds, members.stream().map(ProjectMember::getProjectId).collect(Collectors.toList()));
     }
     if (!CollectionUtils.isEmpty(projectSearchVo.getCopyWritingList())){
       List<ProjectMember> members = projectMemberRepository.queryByMemberTypeAndStaffIdIn(
           ProjectMemberTypeEnum.COPYWRITING.getType(),
           projectSearchVo.getCopyWritingList()
       );
-      mergeProjectId(projectIds, members.stream().map(ProjectMember::getProjectId).collect(Collectors.toList()));
+      projectIds = mergeProjectId(projectIds, members.stream().map(ProjectMember::getProjectId).collect(Collectors.toList()));
     }
     if (!CollectionUtils.isEmpty(projectSearchVo.getExecutiveDirecrotList())){
       List<ProjectMember> members = projectMemberRepository.queryByMemberTypeAndStaffIdIn(
           ProjectMemberTypeEnum.EXECUTIVE_DIRECTOR.getType(),
           projectSearchVo.getExecutiveDirecrotList()
       );
-      mergeProjectId(projectIds, members.stream().map(ProjectMember::getProjectId).collect(Collectors.toList()));
+      projectIds = mergeProjectId(projectIds, members.stream().map(ProjectMember::getProjectId).collect(Collectors.toList()));
     }
     if (!CollectionUtils.isEmpty(projectSearchVo.getMusicList())){
       List<ProjectMember> members = projectMemberRepository.queryByMemberTypeAndStaffIdIn(
           ProjectMemberTypeEnum.MUSIC.getType(),
           projectSearchVo.getMusicList()
       );
-      mergeProjectId(projectIds, members.stream().map(ProjectMember::getProjectId).collect(Collectors.toList()));
+      projectIds = mergeProjectId(projectIds, members.stream().map(ProjectMember::getProjectId).collect(Collectors.toList()));
     }
     if (!CollectionUtils.isEmpty(projectSearchVo.getPostEditingList())){
       List<ProjectMember> members = projectMemberRepository.queryByMemberTypeAndStaffIdIn(
           ProjectMemberTypeEnum.POST_EDITING.getType(),
           projectSearchVo.getPostEditingList()
       );
-      mergeProjectId(projectIds, members.stream().map(ProjectMember::getProjectId).collect(Collectors.toList()));
+      projectIds = mergeProjectId(projectIds, members.stream().map(ProjectMember::getProjectId).collect(Collectors.toList()));
     }
     if (!CollectionUtils.isEmpty(projectSearchVo.getStoryBoardList())){
       List<ProjectMember> members = projectMemberRepository.queryByMemberTypeAndStaffIdIn(
           ProjectMemberTypeEnum.STORY_BOARD.getType(),
           projectSearchVo.getStoryBoardList()
       );
-      mergeProjectId(projectIds, members.stream().map(ProjectMember::getProjectId).collect(Collectors.toList()));
+      projectIds = mergeProjectId(projectIds, members.stream().map(ProjectMember::getProjectId).collect(Collectors.toList()));
     }
     return projectIds;
   }
@@ -606,10 +624,39 @@ public class ProjectSearchServiceImpl implements IProjectSearchService {
     return nameHash;
   }
 
-  private void mergeProjectId(List<Integer> projectIds, List<Integer> newProjectIds){
+  /**
+   * 取项目成员projectid交集
+   * @param projectIds
+   * @param newProjectIds
+   * @return
+   */
+  private List<Integer> mergeProjectId(List<Integer> projectIds, List<Integer> newProjectIds){
     if (Objects.isNull(projectIds)){
-      projectIds = new ArrayList<>();
+      return newProjectIds;
     }
-    projectIds = projectIds.stream().filter(item -> newProjectIds.contains(item)).collect(Collectors.toList());
+    return projectIds.stream().filter(item -> newProjectIds.contains(item)).collect(Collectors.toList());
+  }
+
+  private String filmDuration(Integer duration){
+    if (Objects.isNull(duration)){
+      return "";
+    }
+    int hour = duration / 60;
+    int minute = duration % 60;
+    String result = "";
+    if (hour != 0){
+      result += hour + "小时";
+    }
+    if (minute != 0){
+      result += minute + "分钟";
+    }
+    return result;
+  }
+
+  private String shootingDuration(Integer duration){
+    if (Objects.isNull(duration)){
+      return "";
+    }
+    return duration.toString() + "天";
   }
 }
