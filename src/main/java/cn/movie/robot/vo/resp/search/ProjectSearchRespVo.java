@@ -26,7 +26,30 @@ public class ProjectSearchRespVo {
   private BigDecimal shootingCost;
   private BigDecimal lateStateCost;
   private String filmDuration;
-  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+
+  private String projectLeaderList;
+
+  private String customerManagerList;
+
+  private String executiveDirecrotList;
+
+  private String copyWritingList;
+
+  private String postEditingList;
+
+  private String compositingList;
+
+  private String artList;
+
+  private String musicList;
+
+  private String storyBoardList;
+
+  private String directorList;
+
+  private String producerList;
+
+  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "GMT+8")
   private Date shootingStartAt;
   private String shootingDuration;
   private List<ProjectSearchParentFeeRespVo> projectDetailList;

@@ -1,15 +1,9 @@
 package cn.movie.robot.service.impl;
 
 import cn.movie.robot.common.Constants;
-import cn.movie.robot.dao.ProjectDetailRepository;
-import cn.movie.robot.dao.ProjectMemberRepository;
-import cn.movie.robot.dao.ProjectRepository;
-import cn.movie.robot.dao.ProviderRepository;
+import cn.movie.robot.dao.*;
 import cn.movie.robot.enums.ProjectMemberTypeEnum;
-import cn.movie.robot.model.Project;
-import cn.movie.robot.model.ProjectDetail;
-import cn.movie.robot.model.ProjectMember;
-import cn.movie.robot.model.Provider;
+import cn.movie.robot.model.*;
 import cn.movie.robot.service.IProjectSearchService;
 import cn.movie.robot.vo.common.Result;
 import cn.movie.robot.vo.req.search.FeeSearchVo;
@@ -55,6 +49,9 @@ public class ProjectSearchServiceImpl implements IProjectSearchService {
   @Resource
   ProviderRepository providerRepository;
 
+  @Resource
+  StaffRepository staffRepository;
+
   @Override
   public Result search(ProjectSearchVo projectSearchVo) {
     List<Integer> projectIds = null;
@@ -65,8 +62,12 @@ public class ProjectSearchServiceImpl implements IProjectSearchService {
       if (memberProjectIds.size() == 0){
         return emptyResult();
       }
-      projectIds = new ArrayList<>();
-      projectIds.addAll(memberProjectIds);
+      if (Objects.isNull(projectIds)) {
+        projectIds = new ArrayList<>();
+        projectIds.addAll(memberProjectIds);
+      }else {
+        projectIds = projectIds.stream().filter(item -> memberProjectIds.contains(item)).collect(Collectors.toList());
+      }
     }
 
     // 处理费用项搜索
@@ -77,8 +78,10 @@ public class ProjectSearchServiceImpl implements IProjectSearchService {
       }
       if (Objects.isNull(projectIds)){
         projectIds = new ArrayList<>();
+        projectIds.addAll(feeProjectIds);
+      }else {
+        projectIds = projectIds.stream().filter(item -> feeProjectIds.contains(item)).collect(Collectors.toList());
       }
-      projectIds.addAll(feeProjectIds);
     }
 
     Specification<Project> specification = buildBaseQuery(projectSearchVo, projectIds);
@@ -104,8 +107,12 @@ public class ProjectSearchServiceImpl implements IProjectSearchService {
       if (memberProjectIds.size() == 0){
         return result;
       }
-      projectIds = new ArrayList<>();
-      projectIds.addAll(memberProjectIds);
+      if (Objects.isNull(projectIds)) {
+        projectIds = new ArrayList<>();
+        projectIds.addAll(memberProjectIds);
+      }else {
+        projectIds = projectIds.stream().filter(item -> memberProjectIds.contains(item)).collect(Collectors.toList());
+      }
     }
 
     // 处理费用项搜索
@@ -116,8 +123,10 @@ public class ProjectSearchServiceImpl implements IProjectSearchService {
       }
       if (Objects.isNull(projectIds)){
         projectIds = new ArrayList<>();
+        projectIds.addAll(feeProjectIds);
+      }else {
+        projectIds = projectIds.stream().filter(item -> feeProjectIds.contains(item)).collect(Collectors.toList());
       }
-      projectIds.addAll(feeProjectIds);
     }
 
     Specification<Project> specification = buildBaseQuery(projectSearchVo, projectIds);
@@ -142,25 +151,16 @@ public class ProjectSearchServiceImpl implements IProjectSearchService {
    */
   private List<ProjectSearchRespVo> dealSearchResultWithoutFee(List<Project> projects, ProjectSearchVo projectSearchVo){
     List<ProjectSearchRespVo> projectSearchRespVoList = new ArrayList<>();
-    for (Project project : projects) {
-      ProjectSearchRespVo projectSearchRespVo = new ProjectSearchRespVo();
-      projectSearchRespVo.setId(project.getId());
-      projectSearchRespVo.setName(project.getName());
-      projectSearchRespVo.setSid(project.getSid());
-      projectSearchRespVo.setState(project.getState());
-      projectSearchRespVo.setContractSubjectId(project.getContractSubjectId());
-      projectSearchRespVo.setContractAmount(project.getContractAmount());
-      projectSearchRespVo.setRealCost(project.getRealCost());
-      projectSearchRespVo.setBudgetCost(project.getBudgetCost());
-      projectSearchRespVo.setLateStateBudget(project.getLateStateBudget());
-      projectSearchRespVo.setLateStateCost(project.getLateStateCost());
-      projectSearchRespVo.setShootingBudget(project.getShootingBudget());
-      projectSearchRespVo.setShootingCost(project.getShootingCost());
-      projectSearchRespVo.setFilmDuration(filmDuration(project.getFilmDuration()));
-      projectSearchRespVo.setShootingDuration(shootingDuration(project.getShootingDuration()));
-      projectSearchRespVo.setShootingStartAt(project.getShootingStartAt());
 
+    List<Integer> projectIds = projects.stream().map(Project::getId).collect(Collectors.toList());
+    List<ProjectMember> projectMemberList = projectMemberRepository.queryByProjectIdIn(projectIds);
+    List<Integer> staffIds = projectMemberList.stream().map(ProjectMember::getStaffId).collect(Collectors.toList());
+    HashMap<Integer, String> staffNameHash = genStaffNameHash(staffIds);
+
+    for (Project project : projects) {
+      ProjectSearchRespVo projectSearchRespVo = buildBaseResp(project);
       projectSearchRespVoList.add(projectSearchRespVo);
+      buildMemberResp(projectSearchRespVo, projectMemberList, staffNameHash);
     }
     return projectSearchRespVoList;
   }
@@ -181,24 +181,13 @@ public class ProjectSearchServiceImpl implements IProjectSearchService {
     List<Integer> childFeeCatogoryIds = parseChildFeeCatgoryIds(feeList);
     HashMap<Integer, List<ProjectSearchParentFeeRespVo>> childFeeRespVoHashMap = buildChildFeeVo(projectIds, childFeeCatogoryIds);
 
+    List<ProjectMember> projectMemberList = projectMemberRepository.queryByProjectIdIn(projectIds);
+    List<Integer> staffIds = projectMemberList.stream().map(ProjectMember::getStaffId).collect(Collectors.toList());
+    HashMap<Integer, String> staffNameHash = genStaffNameHash(staffIds);
 
     for (Project project : projects){
-      ProjectSearchRespVo projectSearchRespVo = new ProjectSearchRespVo();
-      projectSearchRespVo.setId(project.getId());
-      projectSearchRespVo.setName(project.getName());
-      projectSearchRespVo.setSid(project.getSid());
-      projectSearchRespVo.setState(project.getState());
-      projectSearchRespVo.setContractSubjectId(project.getContractSubjectId());
-      projectSearchRespVo.setContractAmount(project.getContractAmount());
-      projectSearchRespVo.setRealCost(project.getRealCost());
-      projectSearchRespVo.setBudgetCost(project.getBudgetCost());
-      projectSearchRespVo.setLateStateBudget(project.getLateStateBudget());
-      projectSearchRespVo.setLateStateCost(project.getLateStateCost());
-      projectSearchRespVo.setShootingBudget(project.getShootingBudget());
-      projectSearchRespVo.setShootingCost(project.getShootingCost());
-      projectSearchRespVo.setFilmDuration(filmDuration(project.getFilmDuration()));
-      projectSearchRespVo.setShootingDuration(shootingDuration(project.getShootingDuration()));
-      projectSearchRespVo.setShootingStartAt(project.getShootingStartAt());
+      ProjectSearchRespVo projectSearchRespVo = buildBaseResp(project);
+      buildMemberResp(projectSearchRespVo, projectMemberList, staffNameHash);
 
       List<ProjectSearchParentFeeRespVo> parentFeeList = parentFeeRespVoHashMap.get(project.getId());
       List<ProjectSearchParentFeeRespVo> childFeeList = childFeeRespVoHashMap.get(project.getId());
@@ -624,6 +613,18 @@ public class ProjectSearchServiceImpl implements IProjectSearchService {
     return nameHash;
   }
 
+  private HashMap<Integer, String> genStaffNameHash(List<Integer> staffIds){
+    HashMap<Integer, String> nameHash = new HashMap<>();
+    if (staffIds.size() == 0){
+      return nameHash;
+    }
+    List<Staff> staffs = staffRepository.queryByIdIn(staffIds);
+    for (Staff staff : staffs){
+      nameHash.put(staff.getId(), staff.getName());
+    }
+    return nameHash;
+  }
+
   /**
    * 取项目成员projectid交集
    * @param projectIds
@@ -635,6 +636,78 @@ public class ProjectSearchServiceImpl implements IProjectSearchService {
       return newProjectIds;
     }
     return projectIds.stream().filter(item -> newProjectIds.contains(item)).collect(Collectors.toList());
+  }
+
+  private ProjectSearchRespVo buildBaseResp(Project project){
+    ProjectSearchRespVo projectSearchRespVo = new ProjectSearchRespVo();
+    projectSearchRespVo.setId(project.getId());
+    projectSearchRespVo.setName(project.getName());
+    projectSearchRespVo.setSid(project.getSid());
+    projectSearchRespVo.setState(project.getState());
+    projectSearchRespVo.setContractSubjectId(project.getContractSubjectId());
+    projectSearchRespVo.setContractAmount(project.getContractAmount());
+    projectSearchRespVo.setRealCost(project.getRealCost());
+    projectSearchRespVo.setBudgetCost(project.getBudgetCost());
+    projectSearchRespVo.setLateStateBudget(project.getLateStateBudget());
+    projectSearchRespVo.setLateStateCost(project.getLateStateCost());
+    projectSearchRespVo.setShootingBudget(project.getShootingBudget());
+    projectSearchRespVo.setShootingCost(project.getShootingCost());
+    projectSearchRespVo.setFilmDuration(filmDuration(project.getFilmDuration()));
+    projectSearchRespVo.setShootingDuration(shootingDuration(project.getShootingDuration()));
+    projectSearchRespVo.setShootingStartAt(project.getShootingStartAt());
+    return projectSearchRespVo;
+  }
+
+  private void buildMemberResp(ProjectSearchRespVo projectSearchRespVo, List<ProjectMember> projectMemberList, HashMap<Integer, String> staffNameHash){
+    List<String> projectLeaderList = new ArrayList<>();
+    List<String> customerManagerList = new ArrayList<>();
+    List<String> executiveDirecrotList = new ArrayList<>();
+    List<String> copyWritingList = new ArrayList<>();
+    List<String> postEditingList = new ArrayList<>();
+    List<String> compositingList = new ArrayList<>();
+    List<String> artList = new ArrayList<>();
+    List<String> musicList = new ArrayList<>();
+    List<String> storyBoardList = new ArrayList<>();
+    List<String> directorList = new ArrayList<>();
+    List<String> producerList = new ArrayList<>();
+    for (ProjectMember projectMember : projectMemberList){
+      if (projectMember.getProjectId().equals(projectSearchRespVo.getId())){
+        if (projectMember.getMemberType().equals(ProjectMemberTypeEnum.PROJECT_LEADER.getType())){
+          projectLeaderList.add(staffNameHash.get(projectMember.getStaffId()));
+        }else if (projectMember.getMemberType().equals(ProjectMemberTypeEnum.CUSTOMER_MANAGER.getType())){
+          customerManagerList.add(staffNameHash.get(projectMember.getStaffId()));
+        }else if (projectMember.getMemberType().equals(ProjectMemberTypeEnum.DIRECTOR.getType())){
+          directorList.add(staffNameHash.get(projectMember.getStaffId()));
+        }else if (projectMember.getMemberType().equals(ProjectMemberTypeEnum.EXECUTIVE_DIRECTOR.getType())){
+          executiveDirecrotList.add(staffNameHash.get(projectMember.getStaffId()));
+        }else if (projectMember.getMemberType().equals(ProjectMemberTypeEnum.COPYWRITING.getType())){
+          copyWritingList.add(staffNameHash.get(projectMember.getStaffId()));
+        }else if (projectMember.getMemberType().equals(ProjectMemberTypeEnum.PRODUCER.getType())){
+          producerList.add(staffNameHash.get(projectMember.getStaffId()));
+        }else if (projectMember.getMemberType().equals(ProjectMemberTypeEnum.POST_EDITING.getType())){
+          postEditingList.add(staffNameHash.get(projectMember.getStaffId()));
+        }else if (projectMember.getMemberType().equals(ProjectMemberTypeEnum.COMPOSITING.getType())){
+          compositingList.add(staffNameHash.get(projectMember.getStaffId()));
+        }else if (projectMember.getMemberType().equals(ProjectMemberTypeEnum.ART.getType())){
+          artList.add(staffNameHash.get(projectMember.getStaffId()));
+        }else if (projectMember.getMemberType().equals(ProjectMemberTypeEnum.MUSIC.getType())){
+          musicList.add(staffNameHash.get(projectMember.getStaffId()));
+        }else if (projectMember.getMemberType().equals(ProjectMemberTypeEnum.STORY_BOARD.getType())){
+          storyBoardList.add(staffNameHash.get(projectMember.getStaffId()));
+        }
+      }
+    }
+    projectSearchRespVo.setProjectLeaderList(String.join(",", projectLeaderList));
+    projectSearchRespVo.setCustomerManagerList(String.join(",", customerManagerList));
+    projectSearchRespVo.setDirectorList(String.join(",", directorList));
+    projectSearchRespVo.setExecutiveDirecrotList(String.join(",", executiveDirecrotList));
+    projectSearchRespVo.setCopyWritingList(String.join(",", copyWritingList));
+    projectSearchRespVo.setProducerList(String.join(",", producerList));
+    projectSearchRespVo.setPostEditingList(String.join(",", postEditingList));
+    projectSearchRespVo.setCompositingList(String.join(",", compositingList));
+    projectSearchRespVo.setArtList(String.join(",", artList));
+    projectSearchRespVo.setMusicList(String.join(",", musicList));
+    projectSearchRespVo.setStoryBoardList(String.join(",", storyBoardList));
   }
 
   private String filmDuration(Integer duration){
