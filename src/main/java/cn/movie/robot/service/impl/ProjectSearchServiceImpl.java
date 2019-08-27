@@ -645,6 +645,8 @@ public class ProjectSearchServiceImpl implements IProjectSearchService {
     projectSearchRespVo.setSid(project.getSid());
     projectSearchRespVo.setState(project.getState());
     projectSearchRespVo.setContractSubjectId(project.getContractSubjectId());
+    projectSearchRespVo.setCompanyId(project.getCompanyId());
+    projectSearchRespVo.setChildCompanyId(project.getChildCompanyId());
     projectSearchRespVo.setContractAmount(project.getContractAmount());
     projectSearchRespVo.setRealCost(project.getRealCost());
     projectSearchRespVo.setBudgetCost(project.getBudgetCost());

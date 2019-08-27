@@ -26,6 +26,8 @@ public class ProjectSearchRespVo {
   private BigDecimal shootingCost;
   private BigDecimal lateStateCost;
   private String filmDuration;
+  private Integer companyId;
+  private Integer childCompanyId;
 
   private String projectLeaderList;
 
