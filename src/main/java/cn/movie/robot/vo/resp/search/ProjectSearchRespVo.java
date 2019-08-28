@@ -19,6 +19,7 @@ public class ProjectSearchRespVo {
   private Integer contractSubjectId;
   private Integer state;
   private BigDecimal contractAmount;
+  private BigDecimal returnAmount;
   private BigDecimal realCost;
   private BigDecimal budgetCost;
   private BigDecimal shootingBudget;

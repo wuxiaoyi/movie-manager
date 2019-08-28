@@ -650,6 +650,7 @@ public class ProjectSearchServiceImpl implements IProjectSearchService {
     projectSearchRespVo.setContractAmount(project.getContractAmount());
     projectSearchRespVo.setRealCost(project.getRealCost());
     projectSearchRespVo.setBudgetCost(project.getBudgetCost());
+    projectSearchRespVo.setReturnAmount(project.getReturnAmount());
     projectSearchRespVo.setLateStateBudget(project.getLateStateBudget());
     projectSearchRespVo.setLateStateCost(project.getLateStateCost());
     projectSearchRespVo.setShootingBudget(project.getShootingBudget());
