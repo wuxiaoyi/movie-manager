@@ -62,6 +62,11 @@ public class UserServiceImpl implements IUserService {
       return Result.succ("此邮箱已存在");
     }
 
+    existUser = userRepository.findByCAndCellphone(signUpVo.getCellphone());
+    if (Objects.nonNull(existUser)){
+      return Result.succ("此手机号已存在");
+    }
+
     User user = new User();
     user.setName(signUpVo.getName());
     user.setCellphone(signUpVo.getCellphone());

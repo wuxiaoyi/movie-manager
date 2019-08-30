@@ -62,7 +62,7 @@ public class FeeCategoryServiceImpl implements IFeeCategoryService {
     newFee.setStage(feeCategoryVo.getStage());
     newFee.setCategoryType(feeCategoryVo.getCategoryType());
     newFee.setName(feeCategoryVo.getName());
-    newFee.setParentCategoryId(newFee.getParentCategoryId());
+    newFee.setParentCategoryId(feeCategoryVo.getParentCategoryId());
     feeCategoryRepository.save(newFee);
     return Result.succ();
   }
