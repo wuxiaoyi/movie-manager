@@ -10,7 +10,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface UserRepository extends JpaRepository<User, Integer> {
   User findByEmail(String email);
 
-  User findByCAndCellphone(String cellphone);
+  User findByCellphone(String cellphone);
 
   User findByEmailOrCellphone(String email, String cellphone);
 }
