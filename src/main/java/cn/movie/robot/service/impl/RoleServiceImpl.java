@@ -4,6 +4,7 @@ import cn.movie.robot.dao.*;
 import cn.movie.robot.model.*;
 import cn.movie.robot.service.IRoleService;
 import cn.movie.robot.vo.common.Result;
+import cn.movie.robot.vo.req.RolePermissionVo;
 import cn.movie.robot.vo.req.RoleVo;
 import cn.movie.robot.vo.resp.PageBean;
 import org.springframework.data.domain.Page;
@@ -137,25 +138,29 @@ public class RoleServiceImpl implements IRoleService {
 
   @Transactional
   @Override
-  public Result updatePermission(Integer rolId, List<Integer> permissionIdList) {
+  public Result updatePermission(Integer rolId, RolePermissionVo rolePermissionVo) {
     Role role = roleRepository.getOne(rolId);
     if (Objects.isNull(role)){
       return Result.error("该角色不存在");
     }
+
+    role.setName(rolePermissionVo.getName());
+    roleRepository.save(role);
+
     List<PermissionRole> permissionRoleList = permissionRoleRepository.findAllByRoleId(rolId);
     List<Integer> existPermissionIds = permissionRoleList.stream().map(PermissionRole::getPermissionId).collect(Collectors.toList());
 
 
     List<Integer> needAddIds = new ArrayList<>();
     List<Integer> needDeleteIds = new ArrayList<>();
-    for (Integer newId : permissionIdList){
+    for (Integer newId : rolePermissionVo.getPermissionIds()){
       if (!existPermissionIds.contains(newId)){
         needAddIds.add(newId);
       }
     }
 
     for (Integer oldId : existPermissionIds){
-      if (!permissionIdList.contains(oldId)){
+      if (!rolePermissionVo.getPermissionIds().contains(oldId)){
         needDeleteIds.add(oldId);
       }
     }

@@ -212,47 +212,40 @@ public class ProjectSearchServiceImpl implements IProjectSearchService {
    */
 
   private List<Integer> queryProjectIdByFee(ProjectSearchVo projectSearchVo){
+    List<Integer> projectIds = null;
+
     List<FeeSearchVo> feeList = projectSearchVo.getFeeList();
+    List<Integer> providerIds = projectSearchVo.getProviderList();
 
-    if (CollectionUtils.isEmpty(feeList)){
-      return null;
+    if (CollectionUtils.isEmpty(feeList) && CollectionUtils.isEmpty(providerIds)){
+      return projectIds;
     }
-
-    List<ProjectDetail> parentDetails = new ArrayList<>();
-    List<ProjectDetail> childDetails = new ArrayList<>();
-    boolean searchParentCategory = false;
-    boolean searchChildCategory = false;
 
     List<Integer> parentFeeCatogoryIds = parseParentFeeCatgoryIds(feeList);
 
     if (parentFeeCatogoryIds.size() > 0){
-      searchParentCategory = true;
-      parentDetails = projectDetailRepository.queryByFeeCategoryIdInAndRealAmountGreaterThanAndFeeChildCategoryIdIsNull(
+      List<ProjectDetail> parentDetails = projectDetailRepository.queryByFeeCategoryIdInAndRealAmountGreaterThanAndFeeChildCategoryIdIsNull(
           parentFeeCatogoryIds,
           BigDecimal.ZERO
       );
+      projectIds = mergeProjectId(projectIds, parentDetails.stream().map(ProjectDetail::getProjectId).collect(Collectors.toList()));
     }
 
     List<Integer> childFeeCategoryIds = parseChildFeeCatgoryIds(feeList);
     if (childFeeCategoryIds.size() > 0){
-      searchChildCategory = true;
-      childDetails = projectDetailRepository.queryByFeeChildCategoryIdInAndRealAmountGreaterThan(
+      List<ProjectDetail> childDetails = projectDetailRepository.queryByFeeChildCategoryIdInAndRealAmountGreaterThan(
           childFeeCategoryIds,
           BigDecimal.ZERO
       );
+      projectIds = mergeProjectId(projectIds, childDetails.stream().map(ProjectDetail::getProjectId).collect(Collectors.toList()));
     }
 
-    List<Integer> parentProjectIds = parentDetails.stream().map(ProjectDetail::getProjectId).collect(Collectors.toList());
-    List<Integer> childProjectIds = childDetails.stream().map(ProjectDetail::getProjectId).collect(Collectors.toList());
-    if (searchParentCategory && searchChildCategory){
-      return parentProjectIds.stream().filter(item -> childProjectIds.contains(item)).collect(Collectors.toList());
-    }else if (searchParentCategory){
-      return parentProjectIds;
-    }else if (searchChildCategory){
-      return childProjectIds;
+    if (!CollectionUtils.isEmpty(providerIds)){
+      List<ProjectDetail> providerDetails = projectDetailRepository.queryByProviderIdIn(providerIds);
+      projectIds = mergeProjectId(projectIds, providerDetails.stream().map(ProjectDetail::getProjectId).collect(Collectors.toList()));
     }
 
-    return null;
+    return projectIds;
   }
 
   /**
@@ -626,7 +619,7 @@ public class ProjectSearchServiceImpl implements IProjectSearchService {
   }
 
   /**
-   * 取项目成员projectid交集
+   * 取项目id交集
    * @param projectIds
    * @param newProjectIds
    * @return

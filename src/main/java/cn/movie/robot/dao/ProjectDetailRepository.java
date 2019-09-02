@@ -18,7 +18,7 @@ public interface ProjectDetailRepository extends JpaRepository<ProjectDetail, In
 
   List<ProjectDetail> queryByProjectIdInAndFeeChildCategoryIdIn(List<Integer> projectIds, List<Integer> feeCategoryIds);
 
-  List<ProjectDetail> queryByProjectIdInAndFeeCategoryIdIsNull(List<Integer> projectIds);
+  List<ProjectDetail> queryByProviderIdIn(List<Integer> providerIds);
   /**
    * 根据projectid和stage查询二级费用类别不为空的数据
    * @param projectId

@@ -1,6 +1,7 @@
 package cn.movie.robot.service;
 
 import cn.movie.robot.vo.common.Result;
+import cn.movie.robot.vo.req.RolePermissionVo;
 import cn.movie.robot.vo.req.RoleVo;
 import org.springframework.data.domain.Pageable;
 
@@ -21,7 +22,7 @@ public interface IRoleService {
 
   Result updateUser(Integer userId, List<Integer> roleIds);
 
-  Result updatePermission(Integer rolId, List<Integer> permissionIds);
+  Result updatePermission(Integer rolId, RolePermissionVo rolePermissionVo);
 
   Result delete(Integer roleId);
 

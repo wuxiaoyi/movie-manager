@@ -102,4 +102,6 @@ public class ProjectSearchVo {
   private List<Integer> producerList;
 
   private List<FeeSearchVo> feeList;
+
+  private List<Integer> providerList;
 }

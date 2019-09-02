@@ -177,7 +177,7 @@ public class ProjectServiceImpl implements IProjectService {
       List<Predicate> predicates = new ArrayList<>();
 
       if (StringUtils.isNoneEmpty(baseSearchVo.getSid())){
-        predicates.add(criteriaBuilder.equal(root.get("sid"), baseSearchVo.getSid()));
+        predicates.add(criteriaBuilder.like(root.get("sid"), "%" + baseSearchVo.getSid() + "%"));
       }
       if (StringUtils.isNoneEmpty(baseSearchVo.getProjectName())){
         predicates.add(criteriaBuilder.like(root.get("name"), "%" + baseSearchVo.getProjectName() + "%"));

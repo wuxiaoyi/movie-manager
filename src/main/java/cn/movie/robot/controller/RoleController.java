@@ -3,6 +3,7 @@ package cn.movie.robot.controller;
 import cn.movie.robot.common.Constants;
 import cn.movie.robot.service.IRoleService;
 import cn.movie.robot.vo.common.Result;
+import cn.movie.robot.vo.req.RolePermissionVo;
 import cn.movie.robot.vo.req.RoleVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -50,8 +51,8 @@ public class RoleController {
   }
 
   @PutMapping("/{role_id}/update_permission")
-  public Result updatePermission(@PathVariable("role_id") Integer roleId, @RequestBody List<Integer> permissionIdList){
-    return roleService.updatePermission(roleId, permissionIdList);
+  public Result updatePermission(@PathVariable("role_id") Integer roleId, @RequestBody RolePermissionVo rolePermissionVo){
+    return roleService.updatePermission(roleId, rolePermissionVo);
   }
 
   @GetMapping("/{role_id}/permissions")
