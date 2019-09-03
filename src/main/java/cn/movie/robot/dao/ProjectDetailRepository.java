@@ -14,11 +14,15 @@ import java.util.List;
 public interface ProjectDetailRepository extends JpaRepository<ProjectDetail, Integer> {
   List<ProjectDetail> queryByProjectId(int projectId);
 
+  List<ProjectDetail> queryByProjectIdIn(List<Integer> projectIds);
+
   Integer deleteByIdIn(List<Integer> id);
 
   List<ProjectDetail> queryByProjectIdInAndFeeChildCategoryIdIn(List<Integer> projectIds, List<Integer> feeCategoryIds);
 
   List<ProjectDetail> queryByProviderIdIn(List<Integer> providerIds);
+
+  List<ProjectDetail> queryByProjectIdInAndProviderIdIn(List<Integer> projectIds, List<Integer> providerIds);
   /**
    * 根据projectid和stage查询二级费用类别不为空的数据
    * @param projectId

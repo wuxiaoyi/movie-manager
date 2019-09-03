@@ -175,11 +175,19 @@ public class ProjectSearchServiceImpl implements IProjectSearchService {
     List<ProjectSearchRespVo> projectSearchRespVoList = new ArrayList<>();
     List<Integer> projectIds = projects.stream().map(Project::getId).collect(Collectors.toList());
 
+    /**
+     * 过滤并查询出父费用项
+     */
     List<FeeSearchVo> feeList = projectSearchVo.getFeeList();
     List<Integer> parentFeeCatogoryIds = parseParentFeeCatgoryIds(feeList);
     HashMap<Integer, List<ProjectSearchParentFeeRespVo>> parentFeeRespVoHashMap = buildParentFeeVo(projectIds, parentFeeCatogoryIds);
-    List<Integer> childFeeCatogoryIds = parseChildFeeCatgoryIds(feeList);
-    HashMap<Integer, List<ProjectSearchParentFeeRespVo>> childFeeRespVoHashMap = buildChildFeeVo(projectIds, childFeeCatogoryIds);
+
+    /**
+     * 根据子费用项和供应商过滤并查询出子费用项
+     */
+    List<Integer> childFeeCategoryIds = parseChildFeeCatgoryIds(feeList);
+    List<Integer> providerIds = projectSearchVo.getProviderList();
+    HashMap<Integer, List<ProjectSearchParentFeeRespVo>> childFeeRespVoHashMap = buildChildFeeVo(projectIds, childFeeCategoryIds, providerIds);
 
     List<ProjectMember> projectMemberList = projectMemberRepository.queryByProjectIdIn(projectIds);
     List<Integer> staffIds = projectMemberList.stream().map(ProjectMember::getStaffId).collect(Collectors.toList());
@@ -544,9 +552,19 @@ public class ProjectSearchServiceImpl implements IProjectSearchService {
    * @param feeCategoryIds
    * @return
    */
-  private HashMap<Integer, List<ProjectSearchParentFeeRespVo>> buildChildFeeVo(List<Integer> projectIds, List<Integer> feeCategoryIds){
+  private HashMap<Integer, List<ProjectSearchParentFeeRespVo>> buildChildFeeVo(List<Integer> projectIds, List<Integer> feeCategoryIds, List<Integer> providerIds){
     HashMap<Integer, List<ProjectSearchParentFeeRespVo>> result = new HashMap<>(feeCategoryIds.size());
-    List<ProjectDetail> projectDetailList = projectDetailRepository.queryByProjectIdInAndFeeChildCategoryIdIn(projectIds, feeCategoryIds);
+
+//    List<ProjectDetail> projectDetailList = projectDetailRepository.queryByProjectIdInAndFeeChildCategoryIdIn(projectIds, feeCategoryIds);
+    List<ProjectDetail> projectDetailList = projectDetailRepository.queryByProjectIdIn(projectIds);
+
+    if (!CollectionUtils.isEmpty(feeCategoryIds)){
+      projectDetailList = projectDetailList.stream().filter(projectDetail -> feeCategoryIds.contains(projectDetail.getFeeChildCategoryId())).collect(Collectors.toList());
+    }
+    if (!CollectionUtils.isEmpty(providerIds)){
+      projectDetailList = projectDetailList.stream().filter(projectDetail -> providerIds.contains(projectDetail.getProviderId())).collect(Collectors.toList());
+    }
+
     if (projectDetailList.size() == 0){
       return result;
     }
