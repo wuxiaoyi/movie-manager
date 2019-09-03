@@ -137,7 +137,7 @@ public class ProjectSearchServiceImpl implements IProjectSearchService {
   }
 
   private List<ProjectSearchRespVo> dealSearchResult(List<Project> projects, ProjectSearchVo projectSearchVo){
-    if (CollectionUtils.isEmpty(projectSearchVo.getFeeList())){
+    if (CollectionUtils.isEmpty(projectSearchVo.getFeeList()) && CollectionUtils.isEmpty(projectSearchVo.getProviderList())){
       return dealSearchResultWithoutFee(projects, projectSearchVo);
     }else {
       return dealSearchResultWithFee(projects, projectSearchVo);
