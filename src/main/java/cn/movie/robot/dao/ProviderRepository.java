@@ -12,4 +12,5 @@ import java.util.List;
 public interface ProviderRepository extends JpaRepository<Provider, Integer> {
   List<Provider> queryByState(Integer state);
   List<Provider> queryByIdIn(List<Integer> ids);
+  Provider findByName(String name);
 }

@@ -55,6 +55,10 @@ public class ProviderServiceImpl implements IProviderService {
 
   @Override
   public Result save(ProviderVo providerVo) {
+    Provider existProvider = providerRepository.findByName(providerVo.getName());
+    if (Objects.nonNull(existProvider)){
+      return Result.error("该供应商名称已存在");
+    }
     Provider provider = new Provider();
     provider.setName(providerVo.getName());
     provider.setBankName(providerVo.getBankName());
