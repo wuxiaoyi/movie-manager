@@ -54,6 +54,11 @@ public class CustomerCompanyServiceImpl implements ICustomerCompanyService {
 
   @Override
   public Result save(CustomerCompanyVo customerCompanyVo) {
+    CustomerCompany existCompany = customerCompanyRepository.findByName(customerCompanyVo.getName());
+    if (Objects.nonNull(existCompany)){
+      return Result.error("该客户公司名称已存在");
+    }
+
     CustomerCompany company = new CustomerCompany();
     company.setName(customerCompanyVo.getName());
     company.setParentCompanyId(customerCompanyVo.getParentCompanyId());

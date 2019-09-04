@@ -8,4 +8,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
  * @date 2019/7/9
  */
 public interface CustomerCompanyRepository extends JpaRepository<CustomerCompany, Integer> {
+  CustomerCompany findByName(String name);
 }
