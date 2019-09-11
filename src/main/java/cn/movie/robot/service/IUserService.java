@@ -2,6 +2,7 @@ package cn.movie.robot.service;
 
 import cn.movie.robot.vo.common.Result;
 import cn.movie.robot.vo.req.SignUpVo;
+import cn.movie.robot.vo.req.UserVo;
 import org.springframework.data.domain.Pageable;
 
 /**
@@ -30,11 +31,12 @@ public interface IUserService {
   Result updateState(Integer userId, int state);
 
   /**
-   * 生成忘记密码key
-   * @param email
+   * 更新用户
+   * @param userId
+   * @param userVo
    * @return
    */
-//  Result forgetPwdKey(String email);
+  Result update(Integer userId, UserVo userVo);
 
   /**
    * 重置密码

@@ -6,6 +6,7 @@ import cn.movie.robot.service.IUserService;
 import cn.movie.robot.vo.common.Result;
 import cn.movie.robot.vo.req.ResetPwdVo;
 import cn.movie.robot.vo.req.SignUpVo;
+import cn.movie.robot.vo.req.UserVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -42,6 +43,11 @@ public class UserController {
   @PutMapping("/{user_id}/update_role")
   public Result updatePermission(@PathVariable("user_id") Integer userId, @RequestBody List<Integer> roleIdList){
     return roleService.updateUser(userId, roleIdList);
+  }
+
+  @PutMapping("/{user_id}")
+  public Result updateInfo(@PathVariable("user_id") Integer userId, @RequestBody UserVo userVo){
+    return userService.update(userId, userVo);
   }
 
   @GetMapping("/signup_key")
