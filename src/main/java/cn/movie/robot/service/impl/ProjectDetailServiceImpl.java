@@ -182,10 +182,14 @@ public class ProjectDetailServiceImpl implements IProjectDetailService {
     List<ProjectDetail> parentCategoryDetailList = projectDetailList.stream()
         .filter(projectDetail -> Objects.isNull(projectDetail.getFeeChildCategoryId()))
         .collect(Collectors.toList());
+    List<ProjectDetail> childCategoryDetailList = projectDetailList.stream()
+        .filter(projectDetail -> Objects.nonNull(projectDetail.getFeeChildCategoryId()))
+        .collect(Collectors.toList());
+
     for (ProjectDetail parentCategoryDetail : parentCategoryDetailList){
       BigDecimal budgetAmount = new BigDecimal(0);
       BigDecimal realAmount = new BigDecimal(0);
-      for (ProjectDetail childDetail : projectDetailList){
+      for (ProjectDetail childDetail : childCategoryDetailList){
         if (childDetail.getFeeCategoryId().equals(parentCategoryDetail.getFeeCategoryId())){
           budgetAmount = budgetAmount.add(childDetail.getBudgetAmount());
           realAmount = realAmount.add(childDetail.getRealAmount());

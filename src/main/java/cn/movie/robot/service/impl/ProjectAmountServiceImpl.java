@@ -13,6 +13,7 @@ import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * @author Wuxiaoyi
@@ -34,6 +35,10 @@ public class ProjectAmountServiceImpl implements IProjectAmountService {
       return;
     }
     List<ProjectDetail> projectDetailList = projectDetailRepository.queryByProjectId(projectId);
+    List<ProjectDetail> parentDetailList = projectDetailList.stream()
+        .filter(projectDetail -> Objects.isNull(projectDetail.getFeeChildCategoryId()))
+        .collect(Collectors.toList());
+
     BigDecimal budgetCost = new BigDecimal(0);
     BigDecimal realCost = new BigDecimal(0);
     BigDecimal shootingBudget = new BigDecimal(0);
@@ -41,7 +46,7 @@ public class ProjectAmountServiceImpl implements IProjectAmountService {
     BigDecimal shootingCost = new BigDecimal(0);
     BigDecimal lateStateCost = new BigDecimal(0);
 
-    for (ProjectDetail projectDetail : projectDetailList){
+    for (ProjectDetail projectDetail : parentDetailList){
       realCost = realCost.add(projectDetail.getRealAmount());
       budgetCost = budgetCost.add(projectDetail.getBudgetAmount());
       if (projectDetail.getStage().equals(Constants.PROJECT_DETAIL_STATG_SHOOTING)){
