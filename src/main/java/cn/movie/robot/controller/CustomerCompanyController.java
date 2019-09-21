@@ -4,6 +4,7 @@ import cn.movie.robot.common.Constants;
 import cn.movie.robot.service.ICustomerCompanyService;
 import cn.movie.robot.vo.common.Result;
 import cn.movie.robot.vo.req.ContractSubjectVo;
+import cn.movie.robot.vo.req.CustomerCompanySearchVo;
 import cn.movie.robot.vo.req.CustomerCompanyVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -29,6 +30,11 @@ public class CustomerCompanyController {
   public Result list(@RequestParam("page") int page, @RequestParam("page_size") int pageSize){
     Pageable pageable = PageRequest.of(page-1, pageSize, Sort.by(ASC, Constants.COMMON_FIELD_NAME_ID));
     return customerCompanyService.queryAll(pageable);
+  }
+
+  @PostMapping("/search")
+  public Result search(@RequestBody CustomerCompanySearchVo companySearchVo){
+    return customerCompanyService.search(companySearchVo);
   }
 
   @PostMapping("")

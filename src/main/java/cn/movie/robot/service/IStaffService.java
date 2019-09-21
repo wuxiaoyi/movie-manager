@@ -1,6 +1,7 @@
 package cn.movie.robot.service;
 
 import cn.movie.robot.vo.common.Result;
+import cn.movie.robot.vo.req.StaffSearchVo;
 import cn.movie.robot.vo.req.StaffVo;
 import org.springframework.data.domain.Pageable;
 
@@ -15,6 +16,13 @@ public interface IStaffService {
    * @return
    */
   Result queryAll(Pageable pageable);
+
+  /**
+   * 搜索员工
+   * @param staffSearchVo
+   * @return
+   */
+  Result search(StaffSearchVo staffSearchVo);
 
   /**
    * 查询所有员工

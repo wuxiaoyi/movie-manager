@@ -1,6 +1,7 @@
 package cn.movie.robot.service;
 
 import cn.movie.robot.vo.common.Result;
+import cn.movie.robot.vo.req.ProviderSearchVo;
 import cn.movie.robot.vo.req.ProviderVo;
 import org.springframework.data.domain.Pageable;
 
@@ -15,6 +16,13 @@ public interface IProviderService {
    * @return
    */
   Result queryAll(Pageable pageable);
+
+  /**
+   * 搜索供应商
+   * @param providerSearchVo
+   * @return
+   */
+  Result search(ProviderSearchVo providerSearchVo);
 
   /**
    * 根据状态查询供应商

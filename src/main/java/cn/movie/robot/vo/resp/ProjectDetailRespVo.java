@@ -12,5 +12,6 @@ import java.util.List;
 public class ProjectDetailRespVo {
   private int projectId;
   private String projectName;
+  private String projectSid;
   private List<ProjectFeeRespVo> projectFees;
 }

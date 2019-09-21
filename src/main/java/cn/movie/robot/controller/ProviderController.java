@@ -3,6 +3,7 @@ package cn.movie.robot.controller;
 import cn.movie.robot.common.Constants;
 import cn.movie.robot.service.IProviderService;
 import cn.movie.robot.vo.common.Result;
+import cn.movie.robot.vo.req.ProviderSearchVo;
 import cn.movie.robot.vo.req.ProviderVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -28,6 +29,11 @@ public class ProviderController {
   public Result list(@RequestParam("page") int page, @RequestParam("page_size") int pageSize){
     Pageable pageable = PageRequest.of(page-1, pageSize, Sort.by(ASC, Constants.COMMON_FIELD_NAME_ID));
     return providerService.queryAll(pageable);
+  }
+
+  @PostMapping("/search")
+  public Result search(@RequestBody ProviderSearchVo providerSearchVo){
+    return providerService.search(providerSearchVo);
   }
 
   @PostMapping("")

@@ -118,6 +118,7 @@ public class ProjectDetailServiceImpl implements IProjectDetailService {
     ProjectDetailRespVo projectDetailRespVo = new ProjectDetailRespVo();
     projectDetailRespVo.setProjectId(project.getId());
     projectDetailRespVo.setProjectName(project.getName());
+    projectDetailRespVo.setProjectSid(project.getSid());
 
     List<ProjectFeeRespVo> projectFeeRespVos = new ArrayList<>();
     for (ProjectDetail projectDetail : projectDetailList){

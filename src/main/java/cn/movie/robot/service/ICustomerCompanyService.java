@@ -1,6 +1,7 @@
 package cn.movie.robot.service;
 
 import cn.movie.robot.vo.common.Result;
+import cn.movie.robot.vo.req.CustomerCompanySearchVo;
 import cn.movie.robot.vo.req.CustomerCompanyVo;
 import org.springframework.data.domain.Pageable;
 
@@ -10,6 +11,13 @@ import org.springframework.data.domain.Pageable;
  */
 public interface ICustomerCompanyService {
   Result queryAll(Pageable pageable);
+
+  /**
+   * 搜索客户公司
+   * @param companySearchVo
+   * @return
+   */
+  Result search(CustomerCompanySearchVo companySearchVo);
 
   /**
    * 查询所有合同主体
