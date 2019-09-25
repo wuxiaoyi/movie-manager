@@ -205,7 +205,10 @@ public class ProjectSearchServiceImpl implements IProjectSearchService {
       if (Objects.isNull(childFeeList)){
         childFeeList = new ArrayList<>();
       }
-      parentFeeList.addAll(childFeeList);
+      // 如果没有选择一级搜索项，才放入二级搜索项结果，否则页面只需要展示一级费用
+      if (CollectionUtils.isEmpty(parentFeeCatogoryIds)){
+        parentFeeList.addAll(childFeeList);
+      }
       projectSearchRespVo.setProjectDetailList(parentFeeList);
       projectSearchRespVoList.add(projectSearchRespVo);
     }
