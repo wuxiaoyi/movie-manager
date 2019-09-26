@@ -88,6 +88,10 @@ public class ProjectSearchServiceImpl implements IProjectSearchService {
       logger.info("ProjectSearchServiceImpl search, fee search project ids: {}", projectIds);
     }
 
+    if (Objects.nonNull(projectIds) && projectIds.size() == 0){
+      return emptyResult();
+    }
+
     Specification<Project> specification = buildBaseQuery(projectSearchVo, projectIds);
     Pageable pageable = PageRequest.of(projectSearchVo.getPage()-1, projectSearchVo.getPageSize(), Sort.by(ASC, Constants.COMMON_FIELD_NAME_ID));
 
