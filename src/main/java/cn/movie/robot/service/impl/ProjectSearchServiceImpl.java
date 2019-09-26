@@ -362,7 +362,7 @@ public class ProjectSearchServiceImpl implements IProjectSearchService {
     return (root, criteriaQuery, criteriaBuilder) -> {
       List<Predicate> predicates = new ArrayList<>();
 
-      if (Objects.nonNull(projectIds)){
+      if (!CollectionUtils.isEmpty(projectIds)){
         predicates.add(root.<Integer>get("id").in(projectIds));
       }
 

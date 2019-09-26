@@ -44,8 +44,8 @@ public class LogRecordAspect {
       result = joinPoint.proceed();
       return result;
     } finally {
-      logger.info("IP:{}, URI:{}, Method:{}, Param:{}, Result:{}, Cost:{}ms",
-          ip, uri, method, params, this.convertObjectToJson(result), System.currentTimeMillis() - start);
+      logger.info("IP:{}, URI:{}, Method:{}, Param:{}, Cost:{}ms",
+          ip, uri, method, params, System.currentTimeMillis() - start);
     }
   }
 
