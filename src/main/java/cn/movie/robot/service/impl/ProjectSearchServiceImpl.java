@@ -12,6 +12,7 @@ import cn.movie.robot.vo.resp.PageBean;
 import cn.movie.robot.vo.resp.search.ProjectSearchChildFeeRespVo;
 import cn.movie.robot.vo.resp.search.ProjectSearchParentFeeRespVo;
 import cn.movie.robot.vo.resp.search.ProjectSearchRespVo;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.crypto.hash.Hash;
 import org.springframework.data.domain.Page;
@@ -34,6 +35,7 @@ import static org.springframework.data.domain.Sort.Direction.ASC;
  * @author Wuxiaoyi
  * @date 2019/7/6
  */
+@Slf4j
 @Service
 public class ProjectSearchServiceImpl implements IProjectSearchService {
 
@@ -68,6 +70,7 @@ public class ProjectSearchServiceImpl implements IProjectSearchService {
       }else {
         projectIds = projectIds.stream().filter(item -> memberProjectIds.contains(item)).collect(Collectors.toList());
       }
+      logger.info("ProjectSearchServiceImpl search, merber search project ids: {}", projectIds);
     }
 
     // 处理费用项搜索
@@ -82,6 +85,7 @@ public class ProjectSearchServiceImpl implements IProjectSearchService {
       }else {
         projectIds = projectIds.stream().filter(item -> feeProjectIds.contains(item)).collect(Collectors.toList());
       }
+      logger.info("ProjectSearchServiceImpl search, fee search project ids: {}", projectIds);
     }
 
     Specification<Project> specification = buildBaseQuery(projectSearchVo, projectIds);
