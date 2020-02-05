@@ -215,6 +215,7 @@ public class ProjectServiceImpl implements IProjectService {
       }else {
         projectRespVo.setCanEdit(false);
       }
+      projectRespVoList.add(projectRespVo);
     }
 
     return projectRespVoList;

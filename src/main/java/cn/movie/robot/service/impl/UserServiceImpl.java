@@ -5,10 +5,14 @@ import cn.movie.robot.dao.UserRepository;
 import cn.movie.robot.model.Provider;
 import cn.movie.robot.model.User;
 import cn.movie.robot.service.IUserService;
+import cn.movie.robot.utils.CopyUtil;
 import cn.movie.robot.vo.common.Result;
 import cn.movie.robot.vo.req.SignUpVo;
 import cn.movie.robot.vo.req.UserVo;
 import cn.movie.robot.vo.resp.PageBean;
+import cn.movie.robot.vo.resp.UserRespVo;
+import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.shiro.crypto.RandomNumberGenerator;
 import org.apache.shiro.crypto.SecureRandomNumberGenerator;
 import org.apache.shiro.crypto.hash.SimpleHash;
@@ -19,6 +23,8 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -39,10 +45,10 @@ public class UserServiceImpl implements IUserService {
   @Override
   public Result queryAll(Pageable pageable) {
     Page<User> userPage = userRepository.findAll(pageable);
-    PageBean<User> userPageBean = new PageBean<>(
+    PageBean<UserRespVo> userPageBean = new PageBean<>(
         userPage.getTotalElements(),
         userPage.getTotalPages(),
-        userPage.getContent()
+        dealUserList(userPage.getContent())
     );
     return Result.succ(userPageBean);
   }
@@ -125,5 +131,20 @@ public class UserServiceImpl implements IUserService {
     user.setName(userVo.getName());
     userRepository.save(user);
     return Result.succ();
+  }
+
+  @Override
+  public Result queryAll() {
+    return Result.succ(dealUserList(userRepository.findAll()));
+  }
+
+  private List<UserRespVo> dealUserList(List<User> userList){
+    List<UserRespVo> userRespVoList = new ArrayList<>();
+    for (User user : userList){
+      UserRespVo userRespVo = new UserRespVo();
+      CopyUtil.copyProperty(userRespVo, user);
+      userRespVoList.add(userRespVo);
+    }
+    return userRespVoList;
   }
 }

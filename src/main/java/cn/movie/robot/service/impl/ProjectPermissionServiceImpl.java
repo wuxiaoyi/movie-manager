@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
 import javax.annotation.Resource;
+import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -63,6 +64,7 @@ public class ProjectPermissionServiceImpl implements IProjectPermissionService {
     return Result.succ(projectPermissionVoList);
   }
 
+  @Transactional
   @Override
   public Result update(Integer projectId, ProjectPermissionVo projectPermissionVo) {
     Project project = projectRepository.getOne(projectId);

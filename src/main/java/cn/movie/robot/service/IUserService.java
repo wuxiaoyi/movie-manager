@@ -47,9 +47,15 @@ public interface IUserService {
   Result resetPwd(Integer userId, String password);
 
   /**
-   * 查询所有后台用户
+   * 分页查询所有后台用户
    * @param pageable
    * @return
    */
   Result queryAll(Pageable pageable);
+
+  /**
+   * 查询所有后台用户
+   * @return
+   */
+  Result queryAll();
 }

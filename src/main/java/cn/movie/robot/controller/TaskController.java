@@ -43,4 +43,10 @@ public class TaskController {
     }
     return Result.succ();
   }
+
+  @PostMapping("/fix_project_creator")
+  public Result fixProjectCreator(){
+    List<Project> projects = projectRepository.findAll();
+    return Result.succ();
+  }
 }
