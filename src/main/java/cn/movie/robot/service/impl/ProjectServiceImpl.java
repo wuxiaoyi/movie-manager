@@ -2,14 +2,14 @@ package cn.movie.robot.service.impl;
 
 import cn.movie.robot.common.Constants;
 import cn.movie.robot.dao.ProjectMemberRepository;
+import cn.movie.robot.dao.ProjectPermissionRepository;
 import cn.movie.robot.dao.ProjectRepository;
 import cn.movie.robot.enums.ProjectStateEnum;
 import cn.movie.robot.model.Project;
 import cn.movie.robot.model.ProjectMember;
-import cn.movie.robot.service.IOplogService;
-import cn.movie.robot.service.IProjectDetailService;
-import cn.movie.robot.service.IProjectMemberService;
-import cn.movie.robot.service.IProjectService;
+import cn.movie.robot.model.ProjectPermission;
+import cn.movie.robot.service.*;
+import cn.movie.robot.utils.SessionUtil;
 import cn.movie.robot.vo.common.Result;
 import cn.movie.robot.vo.req.project.ProjectBaseInfoVo;
 import cn.movie.robot.vo.req.search.BaseSearchVo;
@@ -25,6 +25,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
 import javax.persistence.criteria.Predicate;
@@ -32,6 +33,7 @@ import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import static org.springframework.data.domain.Sort.Direction.DESC;
 
@@ -52,6 +54,12 @@ public class ProjectServiceImpl implements IProjectService {
   IProjectDetailService projectDetailService;
 
   @Autowired
+  IProjectPermissionService projectPermissionService;
+
+  @Resource
+  ProjectPermissionRepository projectPermissionRepository;
+
+  @Autowired
   IOplogService oplogService;
 
   @Resource
@@ -63,10 +71,13 @@ public class ProjectServiceImpl implements IProjectService {
     Specification<Project> specification = buildBaseQuery(baseSearchVo);
 
     Page<Project> projectPage = projectRepository.findAll(specification, pageable);
-    PageBean<Project> projectPageBean = new PageBean<>(
+
+
+
+    PageBean<ProjectRespVo> projectPageBean = new PageBean<>(
         projectPage.getTotalElements(),
         projectPage.getTotalPages(),
-        projectPage.getContent()
+        dealProjectListInfo(projectPage.getContent())
     );
     return Result.succ(projectPageBean);
   }
@@ -80,6 +91,7 @@ public class ProjectServiceImpl implements IProjectService {
     }
     Project project = new Project();
     project.setName(name);
+    project.setCreatorId(SessionUtil.getCurrentUser().getId());
     projectRepository.save(project);
     projectDetailService.initShootingInfo(project.getId());
     projectDetailService.initLastStateInfo(project.getId());
@@ -172,6 +184,42 @@ public class ProjectServiceImpl implements IProjectService {
     return Result.succ();
   }
 
+  private List<ProjectRespVo> dealProjectListInfo(List<Project> projectList){
+    List<ProjectRespVo> projectRespVoList = new ArrayList<>();
+    Integer currentUserId = SessionUtil.getCurrentUserId();
+    boolean canManageAllProject = SessionUtil.hasPermission(Constants.PROJECT_MANAGE_ALL_PERMISSION);
+    List<ProjectPermission> projectPermissionList = projectPermissionRepository.findByUserIdAndPermissionType(
+        currentUserId, Constants.PROJECT_PERMISSION_WRITE
+    );
+    List<Integer> availProjectIds = projectPermissionList.stream().map(ProjectPermission::getProjectId).collect(Collectors.toList());
+
+    for (Project project : projectList){
+      ProjectRespVo projectRespVo = new ProjectRespVo();
+      projectRespVo.setId(project.getId());
+      projectRespVo.setName(project.getName());
+      projectRespVo.setSid(project.getSid());
+      projectRespVo.setContractSubjectId(project.getContractSubjectId());
+      projectRespVo.setCompanyId(project.getCompanyId());
+      projectRespVo.setChildCompanyId(project.getChildCompanyId());
+      projectRespVo.setState(project.getState());
+      projectRespVo.setCreatedAt(project.getCreatedAt());
+      projectRespVo.setUpdatedAt(project.getUpdatedAt());
+      if (canManageAllProject || currentUserId.equals(project.getCreatorId())){
+        projectRespVo.setCanGrantPermission(true);
+      }else {
+        projectRespVo.setCanGrantPermission(false);
+      }
+
+      if (canManageAllProject || availProjectIds.contains(project.getId())){
+        projectRespVo.setCanEdit(true);
+      }else {
+        projectRespVo.setCanEdit(false);
+      }
+    }
+
+    return projectRespVoList;
+  }
+
   private Specification<Project> buildBaseQuery(BaseSearchVo baseSearchVo) {
     return (root, criteriaQuery, criteriaBuilder) -> {
       List<Predicate> predicates = new ArrayList<>();
@@ -188,7 +236,21 @@ public class ProjectServiceImpl implements IProjectService {
       if (Objects.nonNull(baseSearchVo.getState())){
         predicates.add(criteriaBuilder.equal(root.get("state"), baseSearchVo.getState()));
       }
+      /**
+       * 用户可见项目过滤
+       */
+      if (!SessionUtil.hasPermission(Constants.PROJECT_MANAGE_ALL_PERMISSION)){
+        List<Integer> projectIds = projectPermissionService.queryUserAvailProjectIds(
+            Constants.PROJECT_PERMISSION_READ
+        );
+        if (CollectionUtils.isEmpty(projectIds)){
+          predicates.add(criteriaBuilder.equal(root.get("id"), 0));
+        }else {
+          predicates.add(root.<Integer>get("id").in(projectIds));
+        }
+      }
       return criteriaQuery.where(predicates.toArray(new Predicate[0])).getRestriction();
     };
   }
+
 }

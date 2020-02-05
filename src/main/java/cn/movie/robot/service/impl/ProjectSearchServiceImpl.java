@@ -4,7 +4,9 @@ import cn.movie.robot.common.Constants;
 import cn.movie.robot.dao.*;
 import cn.movie.robot.enums.ProjectMemberTypeEnum;
 import cn.movie.robot.model.*;
+import cn.movie.robot.service.IProjectPermissionService;
 import cn.movie.robot.service.IProjectSearchService;
+import cn.movie.robot.utils.SessionUtil;
 import cn.movie.robot.vo.common.Result;
 import cn.movie.robot.vo.req.search.FeeSearchVo;
 import cn.movie.robot.vo.req.search.ProjectSearchVo;
@@ -15,6 +17,7 @@ import cn.movie.robot.vo.resp.search.ProjectSearchRespVo;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.crypto.hash.Hash;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -54,9 +57,28 @@ public class ProjectSearchServiceImpl implements IProjectSearchService {
   @Resource
   StaffRepository staffRepository;
 
+  @Autowired
+  IProjectPermissionService projectPermissionService;
+
   @Override
   public Result search(ProjectSearchVo projectSearchVo) {
     List<Integer> projectIds = null;
+
+    // 用户可见项目过滤
+    if (!SessionUtil.hasPermission(Constants.PROJECT_MANAGE_ALL_PERMISSION)){
+      List<Integer> availProjectIds = projectPermissionService.queryUserAvailProjectIds(
+          Constants.PROJECT_PERMISSION_READ
+      );
+      if (availProjectIds.size() == 0){
+        return emptyResult();
+      }
+      if (Objects.isNull(projectIds)) {
+        projectIds = new ArrayList<>();
+        projectIds.addAll(availProjectIds);
+      }else {
+        projectIds = projectIds.stream().filter(item -> availProjectIds.contains(item)).collect(Collectors.toList());
+      }
+    }
 
     // 处理项目成员搜索
     List<Integer> memberProjectIds = queryProjectIdByMember(projectSearchVo);
@@ -108,6 +130,22 @@ public class ProjectSearchServiceImpl implements IProjectSearchService {
   public List<ProjectSearchRespVo> searchForExport(ProjectSearchVo projectSearchVo) {
     List<ProjectSearchRespVo> result = new ArrayList<>();
     List<Integer> projectIds = null;
+
+    // 用户可见项目过滤
+    if (!SessionUtil.hasPermission(Constants.PROJECT_MANAGE_ALL_PERMISSION)){
+      List<Integer> availProjectIds = projectPermissionService.queryUserAvailProjectIds(
+          Constants.PROJECT_PERMISSION_READ
+      );
+      if (availProjectIds.size() == 0){
+        return result;
+      }
+      if (Objects.isNull(projectIds)) {
+        projectIds = new ArrayList<>();
+        projectIds.addAll(availProjectIds);
+      }else {
+        projectIds = projectIds.stream().filter(item -> availProjectIds.contains(item)).collect(Collectors.toList());
+      }
+    }
 
     // 处理项目成员搜索
     List<Integer> memberProjectIds = queryProjectIdByMember(projectSearchVo);
@@ -355,8 +393,6 @@ public class ProjectSearchServiceImpl implements IProjectSearchService {
     return projectIds;
   }
 
-
-
   /**
    * 构建项目基本信息搜索
    * @param projectSearchVo
@@ -376,6 +412,10 @@ public class ProjectSearchServiceImpl implements IProjectSearchService {
 
       if (Objects.nonNull(projectSearchVo.getChildCompanyId())){
         predicates.add(criteriaBuilder.equal(root.get("childCompanyId"), projectSearchVo.getChildCompanyId()));
+      }
+
+      if (Objects.nonNull(projectSearchVo.getContractSubjectId())){
+        predicates.add(criteriaBuilder.equal(root.get("contractSubjectId"), projectSearchVo.getContractSubjectId()));
       }
 
       if (StringUtils.isNoneEmpty(projectSearchVo.getName())){

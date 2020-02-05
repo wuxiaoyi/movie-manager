@@ -38,6 +38,7 @@ public class Constants {
 
   public static final String USER_SIGN_UP_KEY_PREFIX = "user_sign_up:";
   public static final String USER_FORGET_PWD_KEY_PREFIX = "user_forget_pwd:";
+  public static final String PROJECT_MANAGE_ALL_PERMISSION = "project:manage_all";
 
   /**
    * 登录注册相关 end
@@ -82,6 +83,12 @@ public class Constants {
    */
   public static final int CUSTOMER_COMPANY_PARENT = 1;
   public static final int CUSTOMER_COMPANY_CHILD = 2;
+
+  /**
+   * 项目授权类型
+   */
+  public static final int PROJECT_PERMISSION_READ = 1;
+  public static final int PROJECT_PERMISSION_WRITE = 2;
 
   /**
    * 操作记录类型

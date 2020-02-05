@@ -53,6 +53,12 @@ public class ProjectRespVo {
 
   private List<ProjectMemberRespVo> projectMembers;
 
+  // 权限相关：可编辑
+  private boolean canEdit;
+
+  // 权限相关：可授权其他用户
+  private boolean canGrantPermission;
+
   @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
   private Date createdAt;
 

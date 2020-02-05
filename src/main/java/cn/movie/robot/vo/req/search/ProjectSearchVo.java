@@ -27,6 +27,8 @@ public class ProjectSearchVo {
 
   private Integer childCompanyId;
 
+  private Integer contractSubjectId;
+
   //合同金额
   private BigDecimal contractAmountStart;
 
