@@ -6,4 +6,5 @@ package cn.movie.robot.service;
  */
 public interface ITaskService {
   void refreshProjectAmount(Integer projectId);
+  void fixProjectCreator();
 }

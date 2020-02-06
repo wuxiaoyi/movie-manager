@@ -1,9 +1,18 @@
 package cn.movie.robot.service.impl;
 
+import cn.movie.robot.common.Constants;
+import cn.movie.robot.dao.OperationLogRepository;
 import cn.movie.robot.dao.ProjectDetailRepository;
+import cn.movie.robot.dao.ProjectPermissionRepository;
+import cn.movie.robot.dao.ProjectRepository;
+import cn.movie.robot.model.OperationLog;
+import cn.movie.robot.model.Project;
 import cn.movie.robot.model.ProjectDetail;
+import cn.movie.robot.model.ProjectPermission;
 import cn.movie.robot.service.ITaskService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.ObjectUtils;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
@@ -20,6 +29,15 @@ public class TaskServiceImpl implements ITaskService {
 
   @Resource
   ProjectDetailRepository projectDetailRepository;
+
+  @Resource
+  ProjectRepository projectRepository;
+
+  @Resource
+  OperationLogRepository operationLogRepository;
+
+  @Resource
+  ProjectPermissionRepository projectPermissionRepository;
 
   @Override
   public void refreshProjectAmount(Integer projectId) {
@@ -43,6 +61,48 @@ public class TaskServiceImpl implements ITaskService {
       parentCategoryDetail.setRealAmount(realAmount);
       parentCategoryDetail.setBudgetAmount(budgetAmount);
       projectDetailRepository.save(parentCategoryDetail);
+    }
+  }
+
+  @Transactional(rollbackFor = Exception.class)
+  @Override
+  public void fixProjectCreator() {
+    List<Project> projectList = projectRepository.findAll();
+    for (Project project : projectList){
+      if (project.getCreatorId() == null || project.getCreatorId() == 0){
+        OperationLog log = operationLogRepository.findFirstByTargetIdAndTargetType(
+            project.getId(), Constants.OPERATION_LOG_TYPE_BASE_INFO
+        );
+        if (!ObjectUtils.isEmpty(log)){
+
+          project.setCreatorId(log.getOperatorId());
+          projectRepository.save(project);
+
+          ProjectPermission readPermission = projectPermissionRepository.findFirstByUserIdAndProjectIdAndPermissionType(
+              project.getCreatorId(), project.getId(), Constants.PROJECT_PERMISSION_READ
+          );
+          if (ObjectUtils.isEmpty(readPermission)){
+            ProjectPermission newReadPermission = new ProjectPermission();
+            newReadPermission.setUserId(project.getCreatorId());
+            newReadPermission.setProjectId(project.getId());
+            newReadPermission.setOperatorId(1);
+            newReadPermission.setPermissionType(Constants.PROJECT_PERMISSION_READ);
+            projectPermissionRepository.save(newReadPermission);
+          }
+
+          ProjectPermission writePermission = projectPermissionRepository.findFirstByUserIdAndProjectIdAndPermissionType(
+              project.getCreatorId(), project.getId(), Constants.PROJECT_PERMISSION_WRITE
+          );
+          if (ObjectUtils.isEmpty(writePermission)){
+            ProjectPermission newWritePermission = new ProjectPermission();
+            newWritePermission.setUserId(project.getCreatorId());
+            newWritePermission.setProjectId(project.getId());
+            newWritePermission.setOperatorId(1);
+            newWritePermission.setPermissionType(Constants.PROJECT_PERMISSION_WRITE);
+            projectPermissionRepository.save(newWritePermission);
+          }
+        }
+      }
     }
   }
 }

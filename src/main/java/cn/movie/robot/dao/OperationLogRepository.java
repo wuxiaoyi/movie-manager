@@ -13,4 +13,5 @@ import java.util.List;
  */
 public interface OperationLogRepository extends JpaRepository<OperationLog, Integer> {
   Page<OperationLog> queryAllByTargetIdAndTargetType(int targetId, int targetType, Pageable pageable);
+  OperationLog findFirstByTargetIdAndTargetType(int targetId, int targetType);
 }
