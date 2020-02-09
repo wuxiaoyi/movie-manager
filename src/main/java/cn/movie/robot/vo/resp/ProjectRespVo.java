@@ -26,6 +26,8 @@ public class ProjectRespVo {
 
   private Integer childCompanyId;
 
+  private Integer creatorId;
+
   private Integer filmDuration;
 
   @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "GMT+8")

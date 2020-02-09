@@ -200,6 +200,7 @@ public class ProjectServiceImpl implements IProjectService {
       projectRespVo.setSid(project.getSid());
       projectRespVo.setContractSubjectId(project.getContractSubjectId());
       projectRespVo.setCompanyId(project.getCompanyId());
+      projectRespVo.setCreatorId(project.getCreatorId());
       projectRespVo.setChildCompanyId(project.getChildCompanyId());
       projectRespVo.setState(project.getState());
       projectRespVo.setCreatedAt(project.getCreatedAt());
