@@ -1,5 +1,6 @@
 package cn.movie.robot.model;
 
+import cn.movie.robot.common.Constants;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import org.hibernate.annotations.DynamicInsert;
@@ -43,4 +44,11 @@ public class ProjectPermission {
   @LastModifiedDate
   @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
   private Date updatedAt;
+
+  public void buildByProject(Project project, Integer pType){
+    this.permissionType = pType;
+    this.userId = project.getCreatorId();
+    this.operatorId = project.getCreatorId();
+    this.projectId = project.getId();
+  }
 }

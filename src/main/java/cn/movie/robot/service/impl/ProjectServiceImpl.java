@@ -72,8 +72,6 @@ public class ProjectServiceImpl implements IProjectService {
 
     Page<Project> projectPage = projectRepository.findAll(specification, pageable);
 
-
-
     PageBean<ProjectRespVo> projectPageBean = new PageBean<>(
         projectPage.getTotalElements(),
         projectPage.getTotalPages(),
@@ -95,6 +93,7 @@ public class ProjectServiceImpl implements IProjectService {
     projectRepository.save(project);
     projectDetailService.initShootingInfo(project.getId());
     projectDetailService.initLastStateInfo(project.getId());
+    initProjectPermission(project);
 
     return Result.succ(project.getId());
   }
@@ -182,6 +181,15 @@ public class ProjectServiceImpl implements IProjectService {
     project.setState(state);
     projectRepository.save(project);
     return Result.succ();
+  }
+
+  private void initProjectPermission(Project project){
+    ProjectPermission readPermission = new ProjectPermission();
+    readPermission.buildByProject(project, Constants.PROJECT_PERMISSION_READ);
+    ProjectPermission writePermission = new ProjectPermission();
+    writePermission.buildByProject(project, Constants.PROJECT_PERMISSION_WRITE);
+    projectPermissionRepository.save(readPermission);
+    projectPermissionRepository.save(writePermission);
   }
 
   private List<ProjectRespVo> dealProjectListInfo(List<Project> projectList){
