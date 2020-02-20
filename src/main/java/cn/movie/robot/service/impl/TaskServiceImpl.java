@@ -1,14 +1,8 @@
 package cn.movie.robot.service.impl;
 
 import cn.movie.robot.common.Constants;
-import cn.movie.robot.dao.OperationLogRepository;
-import cn.movie.robot.dao.ProjectDetailRepository;
-import cn.movie.robot.dao.ProjectPermissionRepository;
-import cn.movie.robot.dao.ProjectRepository;
-import cn.movie.robot.model.OperationLog;
-import cn.movie.robot.model.Project;
-import cn.movie.robot.model.ProjectDetail;
-import cn.movie.robot.model.ProjectPermission;
+import cn.movie.robot.dao.*;
+import cn.movie.robot.model.*;
 import cn.movie.robot.service.ITaskService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,6 +32,9 @@ public class TaskServiceImpl implements ITaskService {
 
   @Resource
   ProjectPermissionRepository projectPermissionRepository;
+
+  @Resource
+  UserRepository userRepository;
 
   @Override
   public void refreshProjectAmount(Integer projectId) {
@@ -75,7 +72,14 @@ public class TaskServiceImpl implements ITaskService {
         );
         if (!ObjectUtils.isEmpty(log)){
 
-          project.setCreatorId(log.getOperatorId());
+          User user = userRepository.getOne(log.getOperatorId());
+
+          int creatorId = 1;
+          if (!ObjectUtils.isEmpty(user)){
+            creatorId = user.getId();
+          }
+
+          project.setCreatorId(creatorId);
           projectRepository.save(project);
 
           ProjectPermission readPermission = projectPermissionRepository.findFirstByUserIdAndProjectIdAndPermissionType(
