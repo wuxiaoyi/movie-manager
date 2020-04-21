@@ -39,6 +39,7 @@ public class Constants {
   public static final String USER_SIGN_UP_KEY_PREFIX = "user_sign_up:";
   public static final String USER_FORGET_PWD_KEY_PREFIX = "user_forget_pwd:";
   public static final String PROJECT_MANAGE_ALL_PERMISSION = "project:manage_all";
+  public static final String PROJECT_READ_ALL_PERMISSION = "project:read_all";
 
   /**
    * 登录注册相关 end

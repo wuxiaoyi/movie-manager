@@ -65,7 +65,7 @@ public class ProjectSearchServiceImpl implements IProjectSearchService {
     List<Integer> projectIds = null;
 
     // 用户可见项目过滤
-    if (!SessionUtil.hasPermission(Constants.PROJECT_MANAGE_ALL_PERMISSION)){
+    if (!SessionUtil.hasPermission(Constants.PROJECT_MANAGE_ALL_PERMISSION) && !SessionUtil.hasPermission(Constants.PROJECT_READ_ALL_PERMISSION)){
       List<Integer> availProjectIds = projectPermissionService.queryUserAvailProjectIds(
           Constants.PROJECT_PERMISSION_READ
       );
@@ -423,7 +423,7 @@ public class ProjectSearchServiceImpl implements IProjectSearchService {
       }
 
       if (StringUtils.isNoneEmpty(projectSearchVo.getSid())){
-        predicates.add(criteriaBuilder.equal(root.get("sid"), projectSearchVo.getSid()));
+        predicates.add(criteriaBuilder.like(root.get("sid"), "%" + projectSearchVo.getSid() + "%"));
       }
 
       if (!CollectionUtils.isEmpty(projectSearchVo.getStates())){

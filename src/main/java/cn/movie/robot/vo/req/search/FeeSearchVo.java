@@ -22,4 +22,5 @@ public class FeeSearchVo {
    * 二级费用ids
    */
   private List<Integer> childFeeCategoryList;
+
 }
