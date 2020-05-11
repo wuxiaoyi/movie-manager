@@ -69,7 +69,6 @@ public class ProjectDetailServiceImpl implements IProjectDetailService {
   }
 
   @Override
-  @Transactional
   public Result saveShottingInfo(int projectId, List<ProjectFeeDetailVo> projectFeeDetailVoList) {
     Project project = projectRepository.getOne(projectId);
     if (Objects.isNull(project)){
