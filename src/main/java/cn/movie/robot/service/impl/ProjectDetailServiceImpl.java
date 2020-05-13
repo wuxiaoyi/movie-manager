@@ -80,8 +80,8 @@ public class ProjectDetailServiceImpl implements IProjectDetailService {
 
     int projectStage = Constants.PROJECT_DETAIL_STATG_SHOOTING;
     updateDetails(projectId, projectFeeDetailVoList, projectStage);
-    projectAmountService.refreshAmount(projectId);
     refreshAmount(projectId);
+    projectAmountService.refreshAmount(projectId);
     return Result.succ();
   }
 
@@ -97,9 +97,8 @@ public class ProjectDetailServiceImpl implements IProjectDetailService {
 
     int projectStage = Constants.PROJECT_DETAIL_STATG_LAST_STATE;
     updateDetails(projectId, projectFeeDetailVoList, projectStage);
-    projectAmountService.refreshAmount(projectId);
     refreshAmount(projectId);
-
+    projectAmountService.refreshAmount(projectId);
     return Result.succ();
   }
 

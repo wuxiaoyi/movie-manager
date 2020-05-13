@@ -8,6 +8,8 @@ import cn.movie.robot.model.ProjectDetail;
 import cn.movie.robot.service.IProjectAmountService;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
@@ -28,6 +30,8 @@ public class ProjectAmountServiceImpl implements IProjectAmountService {
   @Resource
   ProjectDetailRepository projectDetailRepository;
 
+
+  @Transactional(isolation = Isolation.READ_UNCOMMITTED)
   @Override
   public void refreshAmount(Integer projectId) {
     Project project = projectRepository.getOne(projectId);
