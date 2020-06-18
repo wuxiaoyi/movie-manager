@@ -176,7 +176,7 @@ public class ProjectSearchServiceImpl implements IProjectSearchService {
     }
 
     Specification<Project> specification = buildBaseQuery(projectSearchVo, projectIds);
-    Pageable pageable = PageRequest.of(0, 100, Sort.by(ASC, Constants.COMMON_FIELD_NAME_ID));
+    Pageable pageable = PageRequest.of(0, 200, Sort.by(ASC, Constants.COMMON_FIELD_NAME_ID));
 
     Page<Project> projectPage = projectRepository.findAll(specification, pageable);
     return dealSearchResult(projectPage.getContent(), projectSearchVo);
